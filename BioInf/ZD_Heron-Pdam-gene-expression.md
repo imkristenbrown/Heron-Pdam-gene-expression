@@ -150,10 +150,8 @@ echo "Read trimming of adapters complete." $(date)
 
 multiqc /data/putnamlab/zdellaert/Pdam-TagSeq/trimmed_qc/ #Compile MultiQC report from FastQC files 
 
-mv multiqc_* trimmed_qc/
-
-mv raw_data/multiqc_report.html trimmed_qc/ #move output files to the QC directory
-mv raw_data/multiqc_data trimmed_qc/ #move output files to the QC directory
+mv multiqc_report.html trimmed_qc/ #move output files to the QC directory
+mv multiqc_data trimmed_qc/ #move output files to the QC directory
 
 echo "Cleaned MultiQC report generated." $(date)
 ```
@@ -171,3 +169,83 @@ scp  -r zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/trimmed
 ```
 
 ### Initiated trimming and QC 20230202 sbatch job id 221857
+
+# Download Genome: [*Pocillopora damicornis*](https://www.ncbi.nlm.nih.gov/nuccore/RCHS00000000)
+
+Cunning et al. 2018 [Publication](https://www.nature.com/articles/s41598-018-34459-8)
+
+Obtain reference genome assembly and gff annotation file.
+
+```
+mkdir references/ 
+cd references/ 
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/704/095/GCF_003704095.1_ASM370409v1/GCF_003704095.1_ASM370409v1_genomic.fna.gz #download reference genome
+
+wget https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/003/704/095/GCF_003704095.1_ASM370409v1/GCF_003704095.1_ASM370409v1_genomic.gff.gz #download genome annotation file
+
+gunzip GCF_003704095.1_ASM370409v1_genomic.fna.gz #unzip genome file
+gunzip GCF_003704095.1_ASM370409v1_genomic.gff.gz #unzip gff annotation file
+```
+
+# Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
+Rutgers University Stephens et al. 2022 [Publication](https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giac098/6815755)
+
+Obtain reference genome assembly and gff annotation file.
+
+```
+mkdir references/
+cd references/ 
+
+wget http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.assembly.fasta.gz
+
+wget http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.genes.gff3.gz
+```
+
+# Alignment with HISAT2
+
+```
+cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
+nano scripts/align.sh #make script for alignment, enter text in next code chunk
+```
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=zdellaert@uri.edu #your email to send notifications
+#SBATCH --partition=putnamlab                  
+#SBATCH --error="align_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="align_output" #once your job is completed, any final job report comments will be put in this file
+#SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/processed
+
+# load modules needed
+module load HISAT2/2.2.1-foss-2019b #Alignment to reference genome: HISAT2
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+# index the reference genome for Montipora capitata output index to working directory
+hisat2-build -f /data/putnamlab/zdellaert/Pdam-TagSeq/references/GCF_003704095.1_ASM370409v1_genomic.fna ./Pdam_ref # called the reference genome (scaffolds)
+echo "Referece genome indexed. Starting alingment" $(date)
+
+# This script exports alignments as bam files
+# sorts the bam file because Stringtie takes a sorted file for input (--dta)
+# removes the sam file because it is no longer needed
+
+array=($(ls clean*)) # call the clean sequences - make an array to align
+for i in ${array[@]}; do
+        sample_name=`echo $i| awk -F [.] '{print $2}'`
+	hisat2 -p 8 --dta -x Pdam_ref -U ${i} -S ${sample_name}.sam
+        samtools sort -@ 8 -o ${sample_name}.bam ${sample_name}.sam
+    		echo "${i} bam-ified!"
+        rm ${sample_name}.sam
+done
+```
+
+```
+sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align.sh
+```
+
+### Initiated Alignment 20230202 sbatch job id 221930
