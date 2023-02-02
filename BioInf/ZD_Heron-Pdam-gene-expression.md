@@ -190,6 +190,8 @@ gunzip GCF_003704095.1_ASM370409v1_genomic.gff.gz #unzip gff annotation file
 
 # Alignment with HISAT2
 
+## Code is based off of [Emma Strand's Pipeline](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-02-03-KBay-Bleaching-Pairs-RNASeq-Pipeline-Analysis.md) to utilize script for paired reads 
+
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
 nano scripts/align.sh #make script for alignment, enter text in next code chunk
@@ -223,7 +225,7 @@ echo "Referece genome indexed. Starting alingment" $(date)
 array=($(ls clean*)) # call the clean sequences - make an array to align
 for i in ${array[@]}; do
         sample_name=`echo $i| awk -F [.] '{print $2}'`
-	hisat2 -p 8 --dta -x Pdam_ref -U ${i} -S ${sample_name}.sam
+	hisat2 -p 8 --rna-strandness RF --dta -q -x Pdam_ref -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -S ${sample_name}.sam
         samtools sort -@ 8 -o ${sample_name}.bam ${sample_name}.sam
     		echo "${i} bam-ified!"
         rm ${sample_name}.sam
@@ -234,7 +236,18 @@ done
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align.sh
 ```
 
-### Initiated Alignment 20230202 sbatch job id 221930
+### Initiated Alignment 20230202 sbatch job id 221947
+
+### To view number of mapped reads in a given file:
+
+```
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+for i in *.bam; do
+    echo "${i}" >> mapped_reads_counts
+    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts
+done
+```
 
 # Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
 Rutgers University Stephens et al. 2022 [Publication](https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giac098/6815755)
@@ -257,6 +270,7 @@ gunzip Pocillopora_acuta_HIv2.genes.gff3.gz #unzip gff annotation file
 
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
+mkdir processed/aligned_Pacuta
 nano scripts/align_Pacuta.sh #make script for alignment, enter text in next code chunk
 ```
 
@@ -269,8 +283,8 @@ nano scripts/align_Pacuta.sh #make script for alignment, enter text in next code
 #SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
 #SBATCH --mail-user=zdellaert@uri.edu #your email to send notifications
 #SBATCH --partition=putnamlab                  
-#SBATCH --error="align_error" #if your job fails, the error report will be put in this file
-#SBATCH --output="align_output" #once your job is completed, any final job report comments will be put in this file
+#SBATCH --error="align_Pacuta_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="align_Pacuta_output" #once your job is completed, any final job report comments will be put in this file
 #SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/processed
 
 # load modules needed
@@ -286,12 +300,15 @@ echo "Referece genome indexed. Starting alingment" $(date)
 # removes the sam file because it is no longer needed
 
 array=($(ls clean*)) # call the clean sequences - make an array to align
+
+cd /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta
+
 for i in ${array[@]}; do
-        sample_name=`echo $i| awk -F [.] '{print $2}'`
-	hisat2 -p 8 --dta -x Pacuta_ref -U ${i} -S ${sample_name}.sam
-        samtools sort -@ 8 -o ${sample_name}.bam ${sample_name}.sam
+    sample_name=`echo $i| awk -F [.] '{print $2}'`
+	hisat2 -p 8 --rna-strandness RF --dta -q -x Pacuta_ref -1 ${i} -2 $(echo ${i}|sed s/_R1/_R2/) -S /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
+        samtools sort -@ 8 -o /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.bam /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
     		echo "${i} bam-ified!"
-        rm ${sample_name}.sam
+        rm /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
 done
 ```
 
@@ -299,4 +316,4 @@ done
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align_Pacuta.sh
 ```
 
-### Initiated Alignment ____ sbatch job id ____
+### Initiated Alignment 20230202 sbatch job id ___
