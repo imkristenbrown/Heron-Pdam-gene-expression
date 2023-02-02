@@ -238,7 +238,7 @@ sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align.sh
 
 ### Initiated Alignment 20230202 sbatch job id 221947
 
-### To view number of mapped reads in a given file:
+### To view mapping percentages:
 
 ```
 module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
@@ -317,3 +317,14 @@ sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align_Pacuta.sh
 ```
 
 ### Initiated Alignment 20230202 sbatch job id ___
+
+### To view mapping percentages:
+
+```
+module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
+
+for i in *.bam; do
+    echo "${i}" >> mapped_reads_counts
+    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts
+done
+```
