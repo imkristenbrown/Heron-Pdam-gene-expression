@@ -248,6 +248,9 @@ cd references/
 wget http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.assembly.fasta.gz
 
 wget http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.genes.gff3.gz
+
+gunzip Pocillopora_acuta_HIv2.assembly.fasta.gz #unzip genome file
+gunzip Pocillopora_acuta_HIv2.genes.gff3.gz #unzip gff annotation file
 ```
 
 # Alignment with HISAT2 to *P. acuta* genome
@@ -275,7 +278,7 @@ module load HISAT2/2.2.1-foss-2019b #Alignment to reference genome: HISAT2
 module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
 
 # index the reference genome for Pocillopora acuta output index to working directory
-hisat2-build -f /data/putnamlab/zdellaert/Pdam-TagSeq/references/GCF_003704095.1_ASM370409v1_genomic.fna ./Pacuta_ref # called the reference genome (scaffolds)
+hisat2-build -f /data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.assembly.fasta ./Pacuta_ref # called the reference genome (scaffolds)
 echo "Referece genome indexed. Starting alingment" $(date)
 
 # This script exports alignments as bam files
