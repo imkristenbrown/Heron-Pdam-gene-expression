@@ -244,10 +244,17 @@ sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align.sh
 module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
 
 for i in *.bam; do
-    echo "${i}" >> mapped_reads_counts
-    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts
+    echo "${i}" >> mapped_reads_counts_Pdam_paired
+    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Pdam_paired
 done
 ```
+
+Average mapping rate: 25-35%
+
+    min	23.81%
+    max	35.53%
+    average	28.79%
+    count	48
 
 # Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
 Rutgers University Stephens et al. 2022 [Publication](https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giac098/6815755)
@@ -301,8 +308,6 @@ echo "Referece genome indexed. Starting alingment" $(date)
 
 array=($(ls /data/putnamlab/zdellaert/Pdam-TagSeq/processed/*L001_R1_001.fastq.gz)) # call the clean sequences - make an array 
 
-cd /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta
-
 for i in ${array[@]}; do
     sample_name=`echo $i| awk -F [.] '{print $2}'`
 	hisat2 -p 8 --rna-strandness RF --dta -q -x Pacuta_ref -1 ${i} -2 $(echo ${i}|sed s/_L001/_L002/) -S /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
@@ -316,7 +321,7 @@ done
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align_Pacuta.sh
 ```
 
-### Initiated Alignment 20230202 sbatch job id #SBATCH 221970
+### Initiated Alignment 20230202 sbatch job id #SBATCH 221971
 
 ### To view mapping percentages:
 
@@ -328,3 +333,10 @@ for i in *.bam; do
     samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts
 done
 ```
+
+Average mapping rate: 68-75%
+
+    min	59.27%
+    max	77.74%
+    average	72.33%
+    count	48
