@@ -301,12 +301,12 @@ for i in *.bam; do
 done
 ```
 
-Average mapping rate: 72.48%
+Average mapping rate: 29%
 
-  min	59.41%
-  max	77.98%
-  average	72.48%
-  count	48
+- min	24.01%
+- max	36.06%
+- average	29.10%
+- count	48
 
 ### Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
 
@@ -407,12 +407,12 @@ for i in *.bam; do
 done
 ```
 
-Average mapping rate: 29%
+Average mapping rate: 72.48%
 
-  min	24.01%
-  max	36.06%
-  average	29.10%
-  count	48
+- min	59.41%
+- max	77.98%
+- average	72.48%
+- count	48
 
 ## Below is the code for assembly and DE prep, we first need to sort out the alignment discrepancy and then choose which .bam files to use for the next steps
 
