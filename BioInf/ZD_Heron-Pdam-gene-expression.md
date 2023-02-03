@@ -170,6 +170,8 @@ scp  -r zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/trimmed
 
 ### Initiated trimming and QC 20230202 sbatch job id 221857
 
+**Data look great after trimming, but we should keep an eye out for samples RF16A and RF16C, both of which had high sequence duplication levels.**
+
 # Download Genome: [*Pocillopora damicornis*](https://www.ncbi.nlm.nih.gov/nuccore/RCHS00000000)
 
 Cunning et al. 2018 [Publication](https://www.nature.com/articles/s41598-018-34459-8)
@@ -190,7 +192,49 @@ gunzip GCF_003704095.1_ASM370409v1_genomic.gff.gz #unzip gff annotation file
 
 # Alignment with HISAT2
 
-## Code is based off of [Emma Strand's Pipeline](https://github.com/emmastrand/EmmaStrand_Notebook/blob/master/_posts/2022-02-03-KBay-Bleaching-Pairs-RNASeq-Pipeline-Analysis.md) to utilize script for paired reads 
+## Concatenate L001 and L002 reads for each sample before alignment
+
+### This code is from Dr. Kevin Wong's [pipeline](https://github.com/kevinhwong1/Porites_Rim_Bleaching_2019/blob/master/scripts/TagSeq/TagSeq_Analysis_HPC.md)
+
+```
+cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
+nano scripts/cat.clean.sh #make script for concatenation, enter text in next code chunk
+```
+
+Note: I removed "#SBATCH --exclusive" from Kevin's script
+I also added a "\" before the ls *R1_001.fastq.gz because I have an alias for ls in my bash.profile
+
+```
+#!/bin/bash
+#SBATCH -t 100:00:00
+#SBATCH --export=NONE
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=zdellaert@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab   
+#SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/processed
+#SBATCH --mem=100GB
+
+module load SAMtools/1.9-foss-2018b
+
+echo "Concatenate files" $(date)
+
+\ls *R1_001.fastq.gz | awk -F '[_]' '{print $1"_"$2}' | sort | uniq > ID
+
+for i in `cat ./ID`;
+	do cat $i\_L001_R1_001.fastq.gz $i\_L002_R1_001.fastq.gz > $i\_ALL.fastq.gz;
+	done
+
+echo "Mission complete." $(date)
+```
+
+```
+sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/cat.clean.sh
+```
+
+### Initiated 20230203 sbatch job id 222008
+
+## Alignment with HISAT2: Pdam genome
 
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
@@ -222,10 +266,10 @@ echo "Referece genome indexed. Starting alingment" $(date)
 # sorts the bam file because Stringtie takes a sorted file for input (--dta)
 # removes the sam file because it is no longer needed
 
-array=($(ls /data/putnamlab/zdellaert/Pdam-TagSeq/processed/*L001_R1_001.fastq.gz)) # call the clean sequences - make an array to align
+array=($(ls /data/putnamlab/zdellaert/Pdam-TagSeq/processed/*_ALL.fastq.gz)) # call the clean sequences - make an array to align
 for i in ${array[@]}; do
         sample_name=`echo $i| awk -F [.] '{print $2}'`
-	hisat2 -p 8 --rna-strandness RF --dta -q -x Pdam_ref -1 ${i} -2 $(echo ${i}|sed s/_L001/_L002/) -S ${sample_name}.sam
+	hisat2 -p 8 --dta -x Pdam_ref -U ${i} -S ${sample_name}.sam
         samtools sort -@ 8 -o ${sample_name}.bam ${sample_name}.sam
     		echo "${i} bam-ified!"
         rm ${sample_name}.sam
@@ -236,7 +280,7 @@ done
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align.sh
 ```
 
-### Initiated Alignment 20230202 sbatch job id 221969
+### Initiated Alignment 20230203 sbatch job id 222014
 
 ### To view mapping percentages:
 
@@ -249,14 +293,10 @@ for i in *.bam; do
 done
 ```
 
-Average mapping rate: 25-35%
+Average mapping rate: ______
 
-    min	23.81%
-    max	35.53%
-    average	28.79%
-    count	48
 
-# Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
+## Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
 Rutgers University Stephens et al. 2022 [Publication](https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giac098/6815755)
 
 Obtain reference genome assembly and gff annotation file.
@@ -273,7 +313,7 @@ gunzip Pocillopora_acuta_HIv2.assembly.fasta.gz #unzip genome file
 gunzip Pocillopora_acuta_HIv2.genes.gff3.gz #unzip gff annotation file
 ```
 
-# Alignment with HISAT2 to *P. acuta* genome
+## Alignment with HISAT2 to *P. acuta* genome
 
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
@@ -306,11 +346,11 @@ echo "Referece genome indexed. Starting alingment" $(date)
 # sorts the bam file because Stringtie takes a sorted file for input (--dta)
 # removes the sam file because it is no longer needed
 
-array=($(ls /data/putnamlab/zdellaert/Pdam-TagSeq/processed/*L001_R1_001.fastq.gz)) # call the clean sequences - make an array 
+array=($(ls /data/putnamlab/zdellaert/Pdam-TagSeq/processed/*_ALL.fastq.gz)) # call the clean sequences - make an array 
 
 for i in ${array[@]}; do
     sample_name=`echo $i| awk -F [.] '{print $2}'`
-	hisat2 -p 8 --rna-strandness RF --dta -q -x Pacuta_ref -1 ${i} -2 $(echo ${i}|sed s/_L001/_L002/) -S /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
+    hisat2 -p 8 --dta -x Pacuta_ref -U ${i} -S /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
         samtools sort -@ 8 -o /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.bam /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
     		echo "${i} bam-ified!"
         rm /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
@@ -321,7 +361,7 @@ done
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align_Pacuta.sh
 ```
 
-### Initiated Alignment 20230202 sbatch job id #SBATCH 221971
+### Initiated Alignment 20230203 sbatch job id #SBATCH 222015
 
 ### To view mapping percentages:
 
@@ -334,9 +374,4 @@ for i in *.bam; do
 done
 ```
 
-Average mapping rate: 68-75%
-
-    min	59.27%
-    max	77.74%
-    average	72.33%
-    count	48
+Average mapping rate: __
