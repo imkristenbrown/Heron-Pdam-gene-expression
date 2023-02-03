@@ -6,7 +6,7 @@ Last Updated: 20230202
 Run ID: 376886519
 Project ID: JA22512
 
-# Download Data
+## Download Data
 Work will be done on URI server Andromeda
 
 ```
@@ -29,7 +29,7 @@ module load IlluminaUtils/2.11-GCCcore-9.3.0-Python-3.8.2
 bs download project -i 376886519 -o /data/putnamlab/KITT/hputnam/20230125_Barott_Pdam
 ```
 
-# QC raw files
+## QC raw files
 
 ```
 nano /data/putnamlab/KITT/hputnam/20230125_Barott_Pdam/scripts/qc.sh
@@ -69,9 +69,9 @@ sbatch /data/putnamlab/KITT/hputnam/20230125_Barott_Pdam/scripts/qc.sh
 
 MultiQC report (.html formats) can be found in the [GitHub repository](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/raw_qc)
 
-# TagSeq Pipeline based on [Dr. Ariana Huffmyer's pipeline](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/TagSeq_BioInf_genomeV3.md) and [Dr. Sam Gurr's pipeline](https://github.com/SamGurr/SamGurr.github.io/blob/master/_posts/2021-01-07-Geoduck-TagSeq-Pipeline.md)
+## TagSeq Pipeline based on [Dr. Ariana Huffmyer's pipeline](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/TagSeq_BioInf_genomeV3.md) and [Dr. Sam Gurr's pipeline](https://github.com/SamGurr/SamGurr.github.io/blob/master/_posts/2021-01-07-Geoduck-TagSeq-Pipeline.md)
 
-# Trimming and Trimmed QC
+## Trimming and Trimmed QC
 
 Working on URI Andromeda Server
 
@@ -90,7 +90,6 @@ ln -s /data/putnamlab/KITT/hputnam/20230125_Barott_Pdam/*.fastq.gz /data/putnaml
 Raw data are now sym-linked in:
 
 > /data/putnamlab/zdellaert/Pdam-TagSeq/raw_data/
-
 
 This script will:
 
@@ -172,7 +171,7 @@ scp  -r zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/trimmed
 
 **Data look great after trimming, but we should keep an eye out for samples RF16A and RF16C, both of which had high sequence duplication levels.**
 
-# Download Genome: [*Pocillopora damicornis*](https://www.ncbi.nlm.nih.gov/nuccore/RCHS00000000)
+## Download Genome: [*Pocillopora damicornis*](https://www.ncbi.nlm.nih.gov/nuccore/RCHS00000000)
 
 Cunning et al. 2018 [Publication](https://www.nature.com/articles/s41598-018-34459-8)
 
@@ -190,19 +189,18 @@ gunzip GCF_003704095.1_ASM370409v1_genomic.fna.gz #unzip genome file
 gunzip GCF_003704095.1_ASM370409v1_genomic.gff.gz #unzip gff annotation file
 ```
 
-# Alignment with HISAT2
+## Alignment with HISAT2
 
-## Concatenate L001 and L002 reads for each sample before alignment
+### Concatenate L001 and L002 reads for each sample before alignment
 
-### This code is from Dr. Kevin Wong's [pipeline](https://github.com/kevinhwong1/Porites_Rim_Bleaching_2019/blob/master/scripts/TagSeq/TagSeq_Analysis_HPC.md)
+#### This code is from Dr. Kevin Wong's [pipeline](https://github.com/kevinhwong1/Porites_Rim_Bleaching_2019/blob/master/scripts/TagSeq/TagSeq_Analysis_HPC.md)
 
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
 nano scripts/cat.clean.sh #make script for concatenation, enter text in next code chunk
 ```
 
-Note: I removed "#SBATCH --exclusive" from Kevin's script
-I also added a "\" before the ls *R1_001.fastq.gz because I have an alias for ls in my bash.profile
+Note: I added a backslash before the ls *R1_001.fastq.gz because I have an alias for ls in my bash.profile
 
 ```
 #!/bin/bash
@@ -219,7 +217,7 @@ module load SAMtools/1.9-foss-2018b
 
 echo "Concatenate files" $(date)
 
-\ls *R1_001.fastq.gz | awk -F '[_]' '{print $1"_"$2}' | sort | uniq > ID
+\ls *R1_001.fastq.gz | awk -F '[_]' '{print $1"_"$2}' | sort | uniq > ID #Create list of the sample IDs in this format: "clean.RF25C_S110"
 
 for i in `cat ./ID`;
 	do cat $i\_L001_R1_001.fastq.gz $i\_L002_R1_001.fastq.gz > $i\_ALL.fastq.gz;
@@ -232,9 +230,9 @@ echo "Mission complete." $(date)
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/cat.clean.sh
 ```
 
-### Initiated 20230203 sbatch job id 222008
+#### Initiated 20230203 sbatch job id 222008
 
-## Alignment with HISAT2: Pdam genome
+### Alignment with HISAT2: Pdam genome
 
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
@@ -274,29 +272,44 @@ for i in ${array[@]}; do
     		echo "${i} bam-ified!"
         rm ${sample_name}.sam
 done
+
+cp align_* ../scripts/script_outputs/ #copy script outputs to script_outputs folder
 ```
 
 ```
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align.sh
 ```
 
-### Initiated Alignment 20230203 sbatch job id 222014
+#### Initiated Alignment 20230203 sbatch job id 222014
 
-### To view mapping percentages:
+- Nodes: 1
+- Cores per node: 10
+- CPU Utilized: 05:59:59
+- CPU Efficiency: 65.10% of 09:13:00 core-walltime
+- Job Wall-clock time: 00:55:18
+- Memory Utilized: 2.87 GB
+- Memory Efficiency: 2.87% of 100.00 GB
+
+#### To view mapping percentages:
 
 ```
 module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
 
 for i in *.bam; do
-    echo "${i}" >> mapped_reads_counts_Pdam_paired
-    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Pdam_paired
+    echo "${i}" >> mapped_reads_counts_Pdam
+    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Pdam
 done
 ```
 
-Average mapping rate: ______
+Average mapping rate: 72.48%
 
+  min	59.41%
+  max	77.98%
+  average	72.48%
+  count	48
 
-## Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
+### Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
+
 Rutgers University Stephens et al. 2022 [Publication](https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giac098/6815755)
 
 Obtain reference genome assembly and gff annotation file.
@@ -313,7 +326,7 @@ gunzip Pocillopora_acuta_HIv2.assembly.fasta.gz #unzip genome file
 gunzip Pocillopora_acuta_HIv2.genes.gff3.gz #unzip gff annotation file
 ```
 
-## Alignment with HISAT2 to *P. acuta* genome
+### Alignment with HISAT2 to *P. acuta* genome
 
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
@@ -355,23 +368,108 @@ for i in ${array[@]}; do
     		echo "${i} bam-ified!"
         rm /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
 done
+
+cp align_Pacuta_* ../scripts/script_outputs/ #copy script outputs to script_outputs folder
 ```
 
 ```
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align_Pacuta.sh
 ```
 
-### Initiated Alignment 20230203 sbatch job id #SBATCH 222015
+Moved the following files into the aligned_Pacuta folder so that bam files and reference files were together:
 
-### To view mapping percentages:
+```
+cd /data/putnamlab/zdellaert/Pdam-TagSeq/processed #Enter working directory
+mv align_Pacuta_* aligned_Pacuta/
+mv Pac* aligned_Pacuta/
+```
+
+#### Initiated Alignment 20230203 sbatch job id #SBATCH 222015
+
+- Nodes: 1
+- Cores per node: 10
+- CPU Utilized: 07:49:16
+- CPU Efficiency: 60.97% of 12:49:40 core-walltime
+- Job Wall-clock time: 01:16:58
+- Memory Utilized: 4.12 GB
+- Memory Efficiency: 4.12% of 100.00 GB
+
+#### To view mapping percentages:
 
 ```
 module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
 
+cd /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta #Enter working directory
+
 for i in *.bam; do
-    echo "${i}" >> mapped_reads_counts
-    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts
+    echo "${i}" >> mapped_reads_counts_Pacuta
+    samtools flagstat ${i} | grep "mapped (" >> mapped_reads_counts_Pacuta
 done
 ```
 
-Average mapping rate: __
+Average mapping rate: 29%
+
+  min	24.01%
+  max	36.06%
+  average	29.10%
+  count	48
+
+## Below is the code for assembly and DE prep, we first need to sort out the alignment discrepancy and then choose which .bam files to use for the next steps
+
+## Assembly with Stringtie 2
+
+```
+cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
+mkdir Stringtie2 #make directory for assembly results
+nano scripts/stringtie.sh #make script for assembly, enter text in next code chunk
+```
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=zdellaert@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab              
+#SBATCH --error="stringtie_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="stringtie_output" #once your job is completed, any final job report comments will be put in this file
+#SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/processed
+
+#load packages
+module load StringTie/2.1.4-GCC-9.3.0
+
+#Transcript assembly: StringTie
+
+array=($(ls *_ALL.bam)) #Make an array of sequences to assemble
+ 
+for i in ${array[@]}; do #Running with the -e option to compare output to exclude novel genes. Also output a file with the gene abundances
+        sample_name=`echo $i| awk -F [_] '{print $1"_"$2}'` #use only "RS11B_S86" part of name, removes text after second underscore
+  stringtie -p 8 -e -B -G /data/putnamlab/zdellaert/Pdam-TagSeq/references/GCF_003704095.1_ASM370409v1_genomic.gff -A ../Stringtie2/${sample_name}.gene_abund.tab -o ../Stringtie2/${sample_name}.gtf ${i}
+        echo "StringTie assembly for seq file ${i}" $(date)
+done
+
+echo "StringTie assembly COMPLETE, starting assembly analysis" $(date)
+```
+
+-p means number of threads/CPUs to use (8 here)
+
+-e means only estimate abundance of given reference transcripts (only genes from the genome) - dont use if using splice variance aware to merge novel and ref based.
+
+-B means enable output of ballgown table files to be created in same output as GTF
+
+-G means genome reference to be included in the merging
+
+```
+sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/stringtie.sh
+```
+
+This will make a .gtf file for each sample.
+
+## Generate gene count matrix Prep DE
+
+```
+cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
+nano scripts/prepDE.sh #make script for assembly, enter text in next code chunk
+```
