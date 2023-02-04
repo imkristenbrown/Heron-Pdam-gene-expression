@@ -426,7 +426,7 @@ Average mapping rate: 72.48%
 scp  -r zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes.gff3 /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf
 ```
 
-2. In R on your computer, use [this script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/fix_gff_format.Rmd), modified from [Dr. Ariana Huffmyer](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/fix_gff_format.Rmd) to correct the Pacuta GFF3 file. 
+2. In R on your computer, use [this script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/scripts/fix_gff_format.Rmd), modified from [Dr. Ariana Huffmyer](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/fix_gff_format.Rmd) to correct the Pacuta GFF3 file. 
 
 3. Upload fixed *P. acuta* gff3 to andromeda
 
