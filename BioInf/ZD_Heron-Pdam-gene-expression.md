@@ -1,12 +1,14 @@
 # Heron-Pdam-gene-expression
+
 Script Written By: Putnam, Brown, Dellaert
-Last Updated: 20230202
+Last Updated: 20230204
 
 [BaseSpace Data Info for CLI](https://developer.basespace.illumina.com/docs/content/documentation/cli/cli-examples)
 Run ID: 376886519
 Project ID: JA22512
 
 ## Download Data
+
 Work will be done on URI server Andromeda
 
 ```
@@ -139,7 +141,7 @@ array1=($(ls *.fastq.gz))
 # fastp loop; trim the Read 1 TruSeq adapter sequence; trim poly x default 10 (to trim polyA) 
 
 for i in ${array1[@]}; do
-	fastp --in1 ${i} --out1 /data/putnamlab/zdellaert/Pdam-TagSeq/processed/clean.${i} --adapter_sequence=AGATCGGAAGAGCACACGTCTGAACTCCAGTCA --trim_poly_x 6 -q 30 -y -Y 50 
+ fastp --in1 ${i} --out1 /data/putnamlab/zdellaert/Pdam-TagSeq/processed/clean.${i} --adapter_sequence=AGATCGGAAGAGCACACGTCTGAACTCCAGTCA --trim_poly_x 6 -q 30 -y -Y 50 
         fastqc /data/putnamlab/zdellaert/Pdam-TagSeq/processed/clean.${i} -o /data/putnamlab/zdellaert/Pdam-TagSeq/trimmed_qc/ # fastqc the cleaned reads
 done 
 
@@ -220,8 +222,8 @@ echo "Concatenate files" $(date)
 \ls *R1_001.fastq.gz | awk -F '[_]' '{print $1"_"$2}' | sort | uniq > ID #Create list of the sample IDs in this format: "clean.RF25C_S110"
 
 for i in `cat ./ID`;
-	do cat $i\_L001_R1_001.fastq.gz $i\_L002_R1_001.fastq.gz > $i\_ALL.fastq.gz;
-	done
+ do cat $i\_L001_R1_001.fastq.gz $i\_L002_R1_001.fastq.gz > $i\_ALL.fastq.gz;
+ done
 
 echo "Mission complete." $(date)
 ```
@@ -267,9 +269,9 @@ echo "Referece genome indexed. Starting alingment" $(date)
 array=($(ls /data/putnamlab/zdellaert/Pdam-TagSeq/processed/*_ALL.fastq.gz)) # call the clean sequences - make an array to align
 for i in ${array[@]}; do
         sample_name=`echo $i| awk -F [.] '{print $2}'`
-	hisat2 -p 8 --dta -x Pdam_ref -U ${i} -S ${sample_name}.sam
+ hisat2 -p 8 --dta -x Pdam_ref -U ${i} -S ${sample_name}.sam
         samtools sort -@ 8 -o ${sample_name}.bam ${sample_name}.sam
-    		echo "${i} bam-ified!"
+      echo "${i} bam-ified!"
         rm ${sample_name}.sam
 done
 
@@ -290,7 +292,7 @@ sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/align.sh
 - Memory Utilized: 2.87 GB
 - Memory Efficiency: 2.87% of 100.00 GB
 
-#### To view mapping percentages:
+#### To view mapping percentages
 
 ```
 module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
@@ -303,12 +305,12 @@ done
 
 Average mapping rate: 29%
 
-- min	24.01%
-- max	36.06%
-- average	29.10%
-- count	48
+- min 24.01%
+- max 36.06%
+- average 29.10%
+- count 48
 
-### Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/) 
+### Alternative genome to map to: [*Pocillopora acuta*](http://cyanophora.rutgers.edu/Pocillopora_acuta/)
 
 Rutgers University Stephens et al. 2022 [Publication](https://academic.oup.com/gigascience/article/doi/10.1093/gigascience/giac098/6815755)
 
@@ -365,7 +367,7 @@ for i in ${array[@]}; do
     sample_name=`echo $i| awk -F [.] '{print $2}'`
     hisat2 -p 8 --dta -x Pacuta_ref -U ${i} -S /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
         samtools sort -@ 8 -o /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.bam /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
-    		echo "${i} bam-ified!"
+      echo "${i} bam-ified!"
         rm /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta/${sample_name}.sam
 done
 
@@ -394,7 +396,7 @@ mv Pac* aligned_Pacuta/
 - Memory Utilized: 4.12 GB
 - Memory Efficiency: 4.12% of 100.00 GB
 
-#### To view mapping percentages:
+#### To view mapping percentages
 
 ```
 module load SAMtools/1.9-foss-2018b #Preparation of alignment for assembly: SAMtools
@@ -409,14 +411,12 @@ done
 
 Average mapping rate: 72.48%
 
-- min	59.41%
-- max	77.98%
-- average	72.48%
-- count	48
+- min 59.41%
+- max 77.98%
+- average 72.48%
+- count 48
 
-## Below is the code for assembly and DE prep, we first need to sort out the alignment discrepancy and then choose which .bam files to use for the next steps
-
-## Assembly with Stringtie 2
+## Assembly with Stringtie 2, using reads aligned to *P. acuta* genome and *P. acuta* GFF3 file
 
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
@@ -435,7 +435,7 @@ nano scripts/stringtie.sh #make script for assembly, enter text in next code chu
 #SBATCH --account=putnamlab              
 #SBATCH --error="stringtie_error" #if your job fails, the error report will be put in this file
 #SBATCH --output="stringtie_output" #once your job is completed, any final job report comments will be put in this file
-#SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/processed
+#SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta
 
 #load packages
 module load StringTie/2.1.4-GCC-9.3.0
@@ -446,9 +446,11 @@ array=($(ls *_ALL.bam)) #Make an array of sequences to assemble
  
 for i in ${array[@]}; do #Running with the -e option to compare output to exclude novel genes. Also output a file with the gene abundances
         sample_name=`echo $i| awk -F [_] '{print $1"_"$2}'` #use only "RS11B_S86" part of name, removes text after second underscore
-  stringtie -p 8 -e -B -G /data/putnamlab/zdellaert/Pdam-TagSeq/references/GCF_003704095.1_ASM370409v1_genomic.gff -A ../Stringtie2/${sample_name}.gene_abund.tab -o ../Stringtie2/${sample_name}.gtf ${i}
+  stringtie -p 8 -e -B -G /data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes.gff3 -A ../../Stringtie2/${sample_name}.gene_abund.tab -o ../../Stringtie2/${sample_name}.gtf ${i}
         echo "StringTie assembly for seq file ${i}" $(date)
 done
+
+cp stringtie_* ../../scripts/script_outputs/ #copy script outputs to script_outputs folder
 
 echo "StringTie assembly COMPLETE, starting assembly analysis" $(date)
 ```
@@ -467,9 +469,250 @@ sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/stringtie.sh
 
 This will make a .gtf file for each sample.
 
+#### Initiated Assembly 20230204 sbatch job id #SBATCH 223879
+
+- Nodes: 1
+- Cores per node: 20
+- CPU Utilized: 00:17:04
+- CPU Efficiency: 6.14% of 04:38:00 core-walltime
+- Job Wall-clock time: 00:13:54
+- Memory Utilized: 164.22 MB
+- Memory Efficiency: 0.08% of 200.00 GB
+
 ## Generate gene count matrix Prep DE
+
+### First, need to download script prepDE.py and add to scripts folder
+
+1. This can be downloaded from the [Stringtie github repository](https://github.com/gpertea/stringtie/blob/master/prepDE.py) and uploaded to andromeda into your scripts folder
+2. Alternatively, copy the script from github and create your own script
+3. 3rd option, copy from another user in the lab :) (see below)
 
 ```
 cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
+cp /data/putnamlab/ashuffmyer/pairs-rnaseq/prepDE.py scripts
 nano scripts/prepDE.sh #make script for assembly, enter text in next code chunk
+```
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=zdellaert@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab              
+#SBATCH --error="prepDE_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="prepDE_output" #once your job is completed, any final job report comments will be put in this file
+#SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/Stringtie2
+
+#load packages
+module load Python/2.7.15-foss-2018b #Python
+module load StringTie/2.1.4-GCC-9.3.0 #Transcript assembly: StringTie
+module load GffCompare/0.12.1-GCCcore-8.3.0 #Transcript assembly QC: GFFCompare
+
+#make gtf_list.txt file
+ls *.gtf > gtf_list.txt
+
+stringtie --merge -p 8 -G /data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes.gff3 -o HeronPdam_merged.gtf gtf_list.txt #Merge GTFs 
+echo "Stringtie merge complete" $(date)
+
+gffcompare -r /data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes.gff3 -G -o merged HeronPdam_merged.gtf #Compute the accuracy 
+echo "GFFcompare complete, Starting gene count matrix assembly..." $(date)
+
+#make gtf list text file
+for filename in *.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+
+python ../scripts/prepDE.py -g HeronPdam_gene_count_matrix.csv -i listGTF.txt #Compile the gene count matrix
+
+cp prepDE_* ../scripts/script_outputs/ #copy script outputs to script_outputs folder
+
+echo "Gene count matrix compiled." $(date)
+```
+
+```
+sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/prepDE.sh
+```
+
+#### Initiated prepDE 20230204 sbatch job id #SBATCH 223882
+
+### Error here, likely due to the GFF3 issues mentioned in [Ariana's pipeline](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/TagSeq_BioInf_genomeV3.md) and in [this github issue](https://github.com/Putnam-Lab/Lab_Management/issues/51) or [this one](https://github.com/Putnam-Lab/Lab_Management/issues/11) however my script is not creating any errors...
+
+### My issue: no gene count matrix is created.
+```
+cat prepDE_error
+```
+```
+GCC/9.3.0(24):ERROR:150: Module 'GCC/9.3.0' conflicts with the currently loaded module(s) 'GCC/7.3.0-2.30'
+GCC/9.3.0(24):ERROR:102: Tcl command execution failed: conflict GCC
+
+GCCcore/9.3.0(24):ERROR:150: Module 'GCCcore/9.3.0' conflicts with the currently loaded module(s) 'GCCcore/7.3.0'
+GCCcore/9.3.0(24):ERROR:102: Tcl command execution failed: conflict GCCcore
+
+GCCcore/8.3.0(24):ERROR:150: Module 'GCCcore/8.3.0' conflicts with the currently loaded module(s) 'GCCcore/7.3.0'
+GCCcore/8.3.0(24):ERROR:102: Tcl command execution failed: conflict GCCcore
+
+  33730 reference transcripts loaded.
+  33730 query transfrags loaded.
+```
+
+# Fixing GFF3 file in hopes of fixing gene count matrix issue as described by Ariana in [her pipeline](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/TagSeq_BioInf_genomeV3.md) and in [this github issue](https://github.com/Putnam-Lab/Lab_Management/issues/51)
+
+### The Mcap and Pacuta genomes both came from the same source, so we need to adjust the GFF3 file for Pacuta in the same way.
+
+1. Download *P. acuta* gff3 from andromeda (or directly from [Rutgers](http://cyanophora.rutgers.edu/Pocillopora_acuta/))
+
+```
+scp  -r zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes.gff3 /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf
+```
+
+2. In R on your computer, use [this script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/fix_gff_format.Rmd), modified from [Dr. Ariana Huffmyer](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/fix_gff_format.Rmd) to correct the Pacuta GFF3 file. 
+
+3. Upload fixed *P. acuta* gff3 to andromeda
+
+```
+scp /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/Pocillopora_acuta_HIv2.genes_fixed.gff3.gz zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/references/
+```
+
+4. Unzip fixed gff3 file in andromeda
+
+```
+cd /data/putnamlab/zdellaert/Pdam-TagSeq/references #Enter working directory
+gunzip Pocillopora_acuta_HIv2.genes_fixed.gff3.gz
+```
+
+5. Redo pipeline from Stringtie onwards:
+
+## Assembly with Stringtie 2, using reads aligned to *P. acuta* genome and **Fixed** *P. acuta* GFF3 file
+
+```
+cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
+mkdir Stringtie2 #make directory for assembly results
+nano scripts/stringtie.sh #make script for assembly, enter text in next code chunk
+```
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=zdellaert@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab              
+#SBATCH --error="stringtie_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="stringtie_output" #once your job is completed, any final job report comments will be put in this file
+#SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/processed/aligned_Pacuta
+
+#load packages
+module load StringTie/2.1.4-GCC-9.3.0
+
+#Transcript assembly: StringTie
+
+array=($(ls *_ALL.bam)) #Make an array of sequences to assemble
+ 
+for i in ${array[@]}; do #Running with the -e option to compare output to exclude novel genes. Also output a file with the gene abundances
+        sample_name=`echo $i| awk -F [_] '{print $1"_"$2}'` #use only "RS11B_S86" part of name, removes text after second underscore
+  stringtie -p 8 -e -B -G /data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes_fixed.gff3 -A ../../Stringtie2/${sample_name}.gene_abund.tab -o ../../Stringtie2/${sample_name}.gtf ${i}
+        echo "StringTie assembly for seq file ${i}" $(date)
+done
+
+cp stringtie_* ../../scripts/script_outputs/ #copy script outputs to script_outputs folder
+
+echo "StringTie assembly COMPLETE, starting assembly analysis" $(date)
+```
+
+-p means number of threads/CPUs to use (8 here)
+
+-e means only estimate abundance of given reference transcripts (only genes from the genome) - dont use if using splice variance aware to merge novel and ref based.
+
+-B means enable output of ballgown table files to be created in same output as GTF
+
+-G means genome reference to be included in the merging
+
+```
+sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/stringtie.sh
+```
+
+This will make a .gtf file for each sample.
+
+#### Initiated Assembly 20230204 sbatch job id #SBATCH 223895
+
+- Nodes: 1
+- Cores per node: 20
+- CPU Utilized: 00:16:59
+- CPU Efficiency: 6.32% of 04:28:40 core-walltime
+- Job Wall-clock time: 00:13:26
+- Memory Utilized: 167.74 MB
+- Memory Efficiency: 0.08% of 200.00 GB
+
+## Generate gene count matrix Prep DE
+
+### First, need to download script prepDE.py and add to scripts folder
+
+1. This can be downloaded from the [Stringtie github repository](https://github.com/gpertea/stringtie/blob/master/prepDE.py) and uploaded to andromeda into your scripts folder
+2. Alternatively, copy the script from github and create your own script (see below)
+3. 3rd option, copy from another user in the lab :)
+        - `cp /data/putnamlab/ashuffmyer/pairs-rnaseq/prepDE.py scripts`
+
+```
+cd /data/putnamlab/zdellaert/Pdam-TagSeq #Enter working directory
+nano scripts/prepDE.py #paste in code from github page above
+nano scripts/prepDE.sh #make script for assembly, enter text in next code chunk
+```
+
+```
+#!/bin/bash
+#SBATCH -t 120:00:00
+#SBATCH --nodes=1 --ntasks-per-node=20
+#SBATCH --export=NONE
+#SBATCH --mem=200GB
+#SBATCH --mail-type=BEGIN,END,FAIL #email you when job starts, stops and/or fails
+#SBATCH --mail-user=zdellaert@uri.edu #your email to send notifications
+#SBATCH --account=putnamlab              
+#SBATCH --error="prepDE_error" #if your job fails, the error report will be put in this file
+#SBATCH --output="prepDE_output" #once your job is completed, any final job report comments will be put in this file
+#SBATCH -D /data/putnamlab/zdellaert/Pdam-TagSeq/Stringtie2
+
+#load packages
+module load Python/2.7.15-foss-2018b #Python
+module load StringTie/2.1.4-GCC-9.3.0 #Transcript assembly: StringTie
+module load GffCompare/0.12.1-GCCcore-8.3.0 #Transcript assembly QC: GFFCompare
+
+#make gtf_list.txt file
+ls *.gtf > gtf_list.txt
+
+stringtie --merge -p 8 -G /data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes_fixed.gff3 -o HeronPdam_merged.gtf gtf_list.txt #Merge GTFs 
+echo "Stringtie merge complete" $(date)
+
+gffcompare -r /data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes_fixed.gff3 -G -o merged HeronPdam_merged.gtf #Compute the accuracy 
+echo "GFFcompare complete, Starting gene count matrix assembly..." $(date)
+
+#make gtf list text file
+for filename in *.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+
+python ../scripts/prepDE.py -g HeronPdam_gene_count_matrix.csv -i listGTF.txt #Compile the gene count matrix
+
+cp prepDE_* ../scripts/script_outputs/ #copy script outputs to script_outputs folder
+
+echo "Gene count matrix compiled." $(date)
+```
+
+```
+sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/prepDE.sh
+```
+
+#### Initiated prepDE 20230204 sbatch job id 223896
+
+### Note: This did not fix the missing gene count table issue. However, fixing the gff3 file is still likely needed so I will rewrite a smoother workflow above.
+
+
+
+
+#### To do once csv file is created:
+
+Export gene count matrix report to my computer using scp and upload results to [GitHub repository](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/HeronPdam_gene_count_matrix.csv).
+
+```
+scp  zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/Stringtie2/HeronPdam_gene_count_matrix.csv /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/HeronPdam_gene_count_matrix.csv
 ```

@@ -77,7 +77,3 @@ gzip("Pocillopora_acuta_HIv2.genes_fixed.gff3")
 ```
 
 `scp /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/Pocillopora_acuta_HIv2.genes_fixed.gff3.gz zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/references/`
-
-or 
-
-`wget https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/Pocillopora_acuta_HIv2.genes_fixed.gff3.gz`  
