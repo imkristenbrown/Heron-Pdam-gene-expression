@@ -1,0 +1,96 @@
+RF13B_S85_ALL.bam
+2068636 + 0 mapped (28.79% : N/A)
+RF13D_S112_ALL.bam
+2346200 + 0 mapped (29.70% : N/A)
+RF14B_S116_ALL.bam
+2394203 + 0 mapped (30.32% : N/A)
+RF14C_S95_ALL.bam
+2139012 + 0 mapped (25.58% : N/A)
+RF15B_S122_ALL.bam
+2324061 + 0 mapped (30.07% : N/A)
+RF15D_S84_ALL.bam
+2500089 + 0 mapped (32.84% : N/A)
+RF16A_S118_ALL.bam
+2618442 + 0 mapped (36.06% : N/A)
+RF16C_S97_ALL.bam
+2214935 + 0 mapped (32.51% : N/A)
+RF17B_S80_ALL.bam
+1924386 + 0 mapped (28.27% : N/A)
+RF17D_S99_ALL.bam
+2030801 + 0 mapped (28.93% : N/A)
+RF18B_S90_ALL.bam
+2079041 + 0 mapped (27.30% : N/A)
+RF18D_S113_ALL.bam
+2332044 + 0 mapped (26.57% : N/A)
+RF19B_S103_ALL.bam
+2714746 + 0 mapped (25.38% : N/A)
+RF19C_S83_ALL.bam
+1981909 + 0 mapped (28.54% : N/A)
+RF20B_S88_ALL.bam
+2136106 + 0 mapped (27.71% : N/A)
+RF20C_S115_ALL.bam
+2383910 + 0 mapped (29.76% : N/A)
+RF22B_S91_ALL.bam
+2685766 + 0 mapped (32.84% : N/A)
+RF22C_S126_ALL.bam
+2366596 + 0 mapped (28.88% : N/A)
+RF23A_S125_ALL.bam
+2217392 + 0 mapped (29.24% : N/A)
+RF23C_S108_ALL.bam
+2403376 + 0 mapped (31.42% : N/A)
+RF24B_S92_ALL.bam
+2280392 + 0 mapped (27.59% : N/A)
+RF24D_S111_ALL.bam
+2505697 + 0 mapped (30.13% : N/A)
+RF25A_S96_ALL.bam
+2526588 + 0 mapped (31.74% : N/A)
+RF25C_S110_ALL.bam
+2209271 + 0 mapped (28.08% : N/A)
+RS11B_S86_ALL.bam
+2343475 + 0 mapped (29.25% : N/A)
+RS11D_S87_ALL.bam
+1998090 + 0 mapped (28.33% : N/A)
+RS12A_S105_ALL.bam
+2136695 + 0 mapped (24.01% : N/A)
+RS12C_S106_ALL.bam
+2483463 + 0 mapped (33.26% : N/A)
+RS13A_S121_ALL.bam
+2308907 + 0 mapped (26.59% : N/A)
+RS13C_S119_ALL.bam
+2373485 + 0 mapped (28.08% : N/A)
+RS14B_S107_ALL.bam
+2807278 + 0 mapped (30.84% : N/A)
+RS14C_S109_ALL.bam
+2650933 + 0 mapped (31.00% : N/A)
+RS15B_S104_ALL.bam
+2437776 + 0 mapped (31.42% : N/A)
+RS15D_S82_ALL.bam
+1586468 + 0 mapped (26.97% : N/A)
+RS1B_S102_ALL.bam
+1859298 + 0 mapped (25.69% : N/A)
+RS1C_S127_ALL.bam
+2396511 + 0 mapped (28.50% : N/A)
+RS2B_S123_ALL.bam
+2634807 + 0 mapped (29.04% : N/A)
+RS2C_S89_ALL.bam
+2089585 + 0 mapped (30.24% : N/A)
+RS3B_S100_ALL.bam
+2359997 + 0 mapped (29.96% : N/A)
+RS3D_S117_ALL.bam
+2295066 + 0 mapped (29.76% : N/A)
+RS6A_S81_ALL.bam
+1558713 + 0 mapped (27.16% : N/A)
+RS6D_S124_ALL.bam
+2515343 + 0 mapped (29.69% : N/A)
+RS7B_S120_ALL.bam
+1838060 + 0 mapped (28.43% : N/A)
+RS7C_S101_ALL.bam
+2453222 + 0 mapped (29.65% : N/A)
+RS8B_S94_ALL.bam
+2229377 + 0 mapped (26.39% : N/A)
+RS8C_S114_ALL.bam
+2193508 + 0 mapped (24.37% : N/A)
+RS9A_S98_ALL.bam
+2049901 + 0 mapped (28.97% : N/A)
+RS9C_S93_ALL.bam
+2764844 + 0 mapped (30.97% : N/A)
