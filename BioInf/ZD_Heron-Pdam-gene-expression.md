@@ -552,8 +552,10 @@ echo "Stringtie merge complete" $(date)
 gffcompare -r /data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes_fixed.gff3 -G -o merged HeronPdam_merged.gtf #Compute the accuracy 
 echo "GFFcompare complete, Starting gene count matrix assembly..." $(date)
 
+#Note: the merged part is actually redundant and unnecessary unless we perform the original stringtie step without the -e function and perform re-estimation with -e after stringtie --merge, but will redo the pipeline later and confirm that I get equal results.
+
 #make gtf list text file
-for filename in *.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
+for filename in *bam.gtf; do echo $filename $PWD/$filename; done > listGTF.txt
 
 python ../scripts/prepDE.py -g HeronPdam_gene_count_matrix.csv -i listGTF.txt #Compile the gene count matrix
 
@@ -588,5 +590,3 @@ Errors from using Ariana, Sam, and Kevin's versions
 ```
 scp  zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/Stringtie2/HeronPdam_gene_count_matrix.csv /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/HeronPdam_gene_count_matrix.csv
 ```
-
-Theoretically done! Although I am seeing issues with the csv file which seem very similar to what [Emma] and [Ariana] described in their pipelines. These issues should have been fixed by the R step above where I edited the gff3 file...
