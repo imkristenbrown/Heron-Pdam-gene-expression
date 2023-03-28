@@ -161,19 +161,21 @@ cts_filtpoa %>% filter(row.names(cts_filtpoa) %in% c('Pocillopora_acuta_HIv2___R
 
 ```{r, eval=FALSE}
 glmmLRT <- glmmSeq(~ Treatment * Origin + (1 | Colony),
-                   reduced = ~ Treatment + Origin + (1 | Colony),
+                   reduced = ~ Origin + (1 | Colony),
                    countdata = cts_filtpoa,
                    metadata = coldata,
                    dispersion = dispersions_filt, verbose = FALSE)
-saveRDS(glmmLRT, file = "glmmLRT.rds")
+saveRDS(glmmLRT, file = "glmmLRT_Origin.rds")
 rm(glmmLRT)
 ```
 
 
-```{r}
-glmmLRT <- readRDS(file = "glmmLRT.rds")
+```{r, eval=FALSE}
+glmmLRT <- readRDS(file = "glmmLRT_Origin.rds")
 
 summary(glmmLRT, "Pocillopora_acuta_HIv2___TS.g25814.t1")
+
+summary(results_filt, "Pocillopora_acuta_HIv2___TS.g25814.t1")
 ```
 
 
@@ -216,12 +218,23 @@ results_filt <- glmmQvals(results_filt) # adds a matrix to the results object co
 
 ## Model Plots
 
-Does not work when x1var, which in our case is Treatment, is a factor.
+As written the plotting function from this package does not work when x1var, which in our case is Treatment, is a factor.
+
+I changed the function to allow for discrete values on the X axis:
+
 ```{r}
-# ggmodelPlot(results_filt,
-#             geneName = "Pocillopora_acuta_HIv2___TS.g25814.t1",
-#             x1var = "Treatment",
-#             x2var="Origin")
+source(file = "Factor_ggmodelPlot.R")
+```
+
+```{r}
+source(file = "Factor_ggmodelPlot.R")
+
+formPlot(results_filt,geneName = "Pocillopora_acuta_HIv2___RNAseq.g13538.t2",x1var = "Treatment",x2var="Origin",x2shift=NULL)
+
+Factor_ggmodelPlot(results_filt,
+            geneName = "Pocillopora_acuta_HIv2___RNAseq.g13538.t2",
+            x1var = "Treatment",
+            x2var="Origin", addBox = T, xlab = "Treatment and Origin")
 ```
 
 
