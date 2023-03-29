@@ -522,6 +522,11 @@ fcPlot(results_filt_outrm, x1var = "Origin", x2var = "Treatment", graphics = "pl
 ```
 
 ```{r}
+fcPlot(results_filt_outrm, x1var = "Origin", x2var = "Colony", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
+```{r}
 fcPlot(results_filt_outrm, x1var = "Treatment", x2var = "Origin", graphics = "plotly",
        pCutoff = 0.05, useAdjusted = TRUE)
 ```
