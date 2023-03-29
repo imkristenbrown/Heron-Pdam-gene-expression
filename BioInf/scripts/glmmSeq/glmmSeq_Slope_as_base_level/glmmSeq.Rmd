@@ -1,0 +1,332 @@
+---
+title: "glmmSeq, with pOverA filtering and outliers removed, factor levels reversed"
+author: "Zoe Dellaert"
+date: "3/29/2023"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is a Rmd file analyzing our raw count data by the glmmSeq package as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html) and [manual](https://cran.r-project.org/web/packages/glmmSeq/glmmSeq.pdf).
+
+```{r}
+sessionInfo() #provides list of loaded packages and version of R. I still have version 4.1 for now.
+```
+
+First, download the glmmSeq package. I had to install qvalue using BiocManager as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html)
+
+```{r install packages, eval=FALSE}
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+    #install.packages("BiocManager")
+    #BiocManager::install("qvalue"))
+
+#install.packages("glmmSeq") #from CRAN
+#devtools::install_github("myles-lewis/glmmSeq") # from github
+#install.packages("plotly")
+```
+
+Next, load the package 
+  
+```{r}
+library(glmmSeq)
+library(dplyr) #load dplyr, which is required to run this tutorial but not included in the vignette
+library(kableExtra) #load kableExtra, which is also required to run this tutorial but not included in the vignette
+library(plotly) #library plotly to make interactive plots
+sessionInfo()
+```
+
+
+and load in raw count data
+```{r}
+cts_raw <- read.csv("../../../TagSeq_Output/HeronPdam_gene_count_matrix.csv") #load in data
+rownames(cts_raw) <- cts_raw[,1] #set first column that contains gene names as rownames
+cts_raw <- cts_raw[,-1] #remove the column with gene names
+```
+
+Clean up sample names from "RF13B_S85_ALL.bam.gtf" to "RF13B"
+```{r}
+colnames(cts_raw)<-gsub("_[^_]+$", "",colnames(cts_raw)) #get rid of "_ALL.bam.gtf"
+colnames(cts_raw)<-gsub("_[^_]+$", "",colnames(cts_raw)) #get rid of "_S85"
+head(colnames(cts_raw)) #see first 6 clean sample names
+```
+
+Metadata from this dataset
+```{r}
+coldata <- read.csv("../../../../RAnalysis/Data/RNA Submission Sample List metadata.csv") #read in metadata file
+coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
+coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+
+coldata$Origin <- factor(coldata$Origin, levels = c("Slope","Flat")) #set variables to factors, with Slope as the baseline
+coldata$Colony <- factor(coldata$Colony) #set variables to factors
+coldata$Treatment <- factor(coldata$Treatment) #set variables to factors
+head(coldata)
+```
+
+Data sanity checks:
+```{r}
+all(rownames(coldata$Coral_ID) %in% colnames(cts_raw)) #are all of the sample names (rows) in the metadata column names in the gene count matrix?
+all(rownames(coldata$Coral_ID) == colnames(cts_raw)) #are they the same in the same order?
+```
+
+## Remmoving outlier "RF16A" and "RF16C"
+
+```{r}
+cts_raw_outrm <- cts_raw %>% select(-c("RF16A","RF16C")) #remove those columns from count matrix
+coldata_outrm <- coldata %>% filter(Coral_ID != c("RF16A","RF16C")) #removed those rows from metadata
+```
+
+## Using filtered data instead of raw counts as input
+
+```{r}
+cts_filt_outrm <- cts_raw_outrm[rowSums(!as.matrix(cts_raw_outrm)) < ncol(cts_raw_outrm), ] #here we remove all genes that were not expressed in any of our samples- we are left with 24,220 genes.
+```
+
+
+## pOverA filtering
+
+```{r}
+library(genefilter)
+
+#use pOverA filtering to reduce dataset
+
+ffun<-filterfun(pOverA(0.25,10))  #set up filtering parameters
+cts_filt_outrm_poa <- genefilter((cts_filt_outrm), ffun) #apply filter
+sum(cts_filt_outrm_poa) #count number of genes left
+
+cts_filt_outrm_poa <- cts_filt_outrm[cts_filt_outrm_poa,] #keep only rows that passed filter
+```
+
+After removing outliers, there are now 9012 genes in the filtered dataset.
+
+Data sanity checks:
+```{r}
+all(rownames(coldata_outrm$Coral_ID) %in% colnames(cts_filt_outrm_poa)) #are all of the sample names (rows) in the metadata column names in the gene count matrix?
+all(rownames(coldata_outrm$Coral_ID) == colnames(cts_filt_outrm_poa)) #are they the same in the same order?
+```
+
+
+### Time to calculate dispersion!
+
+"Using negative binomial models requires gene dispersion estimates to be made. This can be achieved in a number of ways. A common way to calculate this for gene i is to use the equation:
+
+Dispersioni = (variancei - meani)/meani2
+
+Starting with raw counts, so using [DESeq2](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html), but could also import a normalized gene count matrix (i.e. transcripts per million) and calculate disperson manually as in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html).
+
+```{r, eval=FALSE}
+library(DESeq2) #library in DEseq to use to calculate dispersions
+
+dds_filt_outrm <- DESeqDataSetFromMatrix(countData = cts_filt_outrm_poa,
+                              colData = coldata_outrm,
+                              design = ~1) #this is what the glmmseq vignette says, cannot tell if we should put our formula in here yet or just calculate around the intercept.
+
+# dds <- DESeqDataSetFromMatrix(countData = cts_raw,
+#                               colData = coldata,
+#                               design = ~ Treatment * Origin + (1 | Colony)) #ALTERNATIVE, but probably without the "1 | Colony" bit.
+
+dds_filt_outrm <- DESeq(dds_filt_outrm) #apply DEseq dispersion calculation
+dispersions_filt_outrm <- setNames(dispersions(dds_filt_outrm), rownames(cts_filt_outrm_poa)) #save dispersions as vector for each gene
+
+rm(dds_filt_outrm) #remove large DEseq object, we no longer need it once we have saved the dispersions
+```
+
+
+### Size Factors
+There is also an option to include size factors for each gene.
+
+```{r, eval=FALSE}
+sizeFactors_filt <- estimateSizeFactorsForMatrix(cts_filt_outrm_poa)
+```
+
+## Fitting Models
+
+In this case study we want to use time and response as fixed effects and the patients as random effects:
+
+> gene expression ~ Origin * Treatment + (1 | Colony)
+
+To fit this model for all genes we can use the glmmSeq function.
+
+```{r, eval=FALSE}
+results <- glmmSeq(~ Treatment * Origin + (1 | Colony),
+                   countdata = cts_filt_outrm_poa,
+                   metadata = coldata_outrm,
+                   dispersion = dispersions_filt_outrm,
+                   progress = TRUE)
+
+#this fitting takes a while, so I save it as an RDS and load this in when needed instead of re-running everytime (unless something upstream of here changes)
+
+saveRDS(results, file = "glmmSeq.rds")  #save RDS
+```
+
+Showed errors in one gene, Pocillopora_acuta_HIv2___RNAseq.g5950.t1.
+
+```{r}
+results <- readRDS(file = "glmmSeq.rds") #load in RDS from previous step / previous iteration
+
+results@errors   # show detailed gene error
+```
+
+Interrogate that gene's counts to try to understand this error better.
+
+```{r}
+cts_filt_outrm_poa %>% filter(row.names(cts_filt_outrm_poa) %in% c('Pocillopora_acuta_HIv2___RNAseq.g5950.t1')) %>% unlist
+```
+
+
+## Hypothesis testing: How much does the interaction factor affect the fit of the model
+
+I am a little lost here.
+
+```{r, eval=FALSE}
+glmmLRT <- glmmSeq(~ Treatment * Origin + (1 | Colony),
+                   reduced = ~ Treatment + Origin + (1 | Colony), #changed * to + to have reduced model without interaction term
+                   countdata = cts_filt_outrm_poa,
+                   metadata = coldata,
+                   dispersion = dispersions_filt_outrm, verbose = FALSE)
+
+#this fitting takes a while, so I save it as an RDS and load this in when needed instead of re-running everytime (unless something upstream of here changes)
+
+saveRDS(glmmLRT, file = "glmmLRT.rds") #save RDS
+```
+
+
+```{r, eval=FALSE}
+glmmLRT <- readRDS(file = "glmmLRT.rds") #load in RDS from previous step / previous iteration
+
+summary(glmmLRT, "Pocillopora_acuta_HIv2___TS.g25814.t1") #see example statistics for one example gene
+
+summary(results, "Pocillopora_acuta_HIv2___TS.g25814.t1") #see example statistics for one example gene
+
+rm(glmmLRT) #remove this large object, it will not be used again (and you can always reload the saved RDS)
+```
+
+
+### Outputs
+```{r}
+results@modelData #show model data, basically the different conditions tested
+```
+
+Model fit statistics, w/ p-value ordered by Origin:Treatment:
+```{r}
+stats <- summary(results)  #save the summary table from the model fit results
+
+kable(stats[order(stats[, 'P_Treatment:Origin']), ]) %>%
+  kable_styling() %>%
+  scroll_box(width = "100%", height = "400px") #View stats table as a scrollable markdown table
+
+write.csv(stats, "signif_genes.csv") #save stats file as csv for downstream analysis
+```
+
+
+Summary stats for a specific gene. (basically a pretty way of looking at one row of the stats table via "stats["Pocillopora_acuta_HIv2___TS.g25814.t1",]")
+
+```{r}
+summary(results, gene = "Pocillopora_acuta_HIv2___TS.g25814.t1")
+```
+
+Estimated means based on each gene’s fitted model to show fixed effects and their 95% confidence intervals can be seen in the @predict slot:
+
+```{r}
+predict = data.frame(results@predict) #estimated means based on fitted model with LCI (lower) and UCI (upper) confidence intervals
+
+kable(predict) %>%
+  kable_styling() %>%
+  scroll_box(width = "100%", height = "400px")
+```
+
+
+### Q values
+
+```{r}
+results <- glmmQvals(results) # adds a matrix to the results object containing Q-vals
+```
+
+## Model Plots
+
+As written the plotting function from this package does not work when x1var, which in our case is Treatment, is a factor.
+
+I changed the function to allow for discrete values on the X axis:
+
+```{r}
+source(file = "Factor_ggmodelPlot.R")
+
+#I changed their code a lot and need to document all the changes
+
+formPlot(results,geneName = "Pocillopora_acuta_HIv2___RNAseq.g13538.t2",x1var = "Treatment",x2var="Origin",x2shift=NULL) #the plotting code is based of off these matrices, made using their function "formPlot"
+
+plotColours <- c("skyblue","mediumseagreen")
+modColours <- c("dodgerblue3","seagreen4")
+```
+
+### most significant gene by Treatment:Origin:
+```{r}
+Factor_ggmodelPlot(results,
+            geneName = "Pocillopora_acuta_HIv2___RNAseq.g14176.t1",
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3)
+```
+
+To make these plots interactive, you can use ggplotly(_plot code_, tooltip="id")
+
+### most significant gene by Treatment:
+```{r}
+Factor_ggmodelPlot(results,
+            geneName = "Pocillopora_acuta_HIv2___RNAseq.g13538.t2",
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3)
+```
+
+### most significant gene by Origin:
+```{r}
+Factor_ggmodelPlot(results,
+            geneName = "Pocillopora_acuta_HIv2___RNAseq.g16163.t1",
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3)
+```
+
+
+```{r}
+fcPlot(results, x1var = "Origin", x2var = "Treatment", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
+```{r}
+fcPlot(results, x1var = "Treatment", x2var = "Origin", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
+## MA Plots
+
+Fixed the script for the maplots , just added "scale_y_continuous(limits = c(-4.2,4.2), breaks = seq(-4,4, 2))" to make the scale the same on both plots.
+```{r}
+source("fixed_ylim_maPlot.R")
+maPlots_filt_outrm <- fixed_ylim_maPlot(results,
+                  x1var="Treatment",
+                  x2var="Origin",
+                  x2Values=c("Flat", "Slope"),
+                  graphics="ggplot")
+
+maPlots_filt_outrm$combined
+```
