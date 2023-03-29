@@ -2,7 +2,9 @@
 title: "glmmSeq_trt_fctr"
 author: "Zoe Dellaert"
 date: "3/8/2023"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -40,7 +42,7 @@ sessionInfo()
 
 and load in raw count data
 ```{r}
-cts_raw <- read.csv("../../TagSeq_Output/HeronPdam_gene_count_matrix.csv") #load in data
+cts_raw <- read.csv("../../../TagSeq_Output/HeronPdam_gene_count_matrix.csv") #load in data
 rownames(cts_raw) <- cts_raw[,1]
 cts_raw <- cts_raw[,-1]
 head(cts_raw[,1:10])
