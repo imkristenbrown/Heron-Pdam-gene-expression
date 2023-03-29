@@ -33,7 +33,9 @@ Factor_ggmodelPlot <- function(object, geneName = NULL, x1var = NULL, x2var = NU
   if (addPoints) {
     p <- ggplot(df_long, aes_string(x = "x", y = "y", group = "id", 
                                     shape = "x2", color = "x2")) + geom_point(size = markerSize, 
-                                                                              alpha = alpha, colour = colours[df_long$x2]) + geom_line(alpha = alpha)
+                                                                              alpha = alpha, colour = colours[df_long$x2]) +
+                                      geom_line(alpha = alpha) +
+                                      geom_label(aes(label=id),position = position_dodge(width=.5),size=2)
   }
   else {
     p <- ggplot()
@@ -59,7 +61,8 @@ Factor_ggmodelPlot <- function(object, geneName = NULL, x1var = NULL, x2var = NU
   }
   if (x2shift >= xdiff) {
     p <- p + geom_text(data = data.frame(label = x2labs, 
-                                         x = x2shift * (seq_along(x2labs) - 1) + xdiff/2, 
+                                         #x = x2shift * (seq_along(x2labs) - 1) + xdiff/2, 
+                                         x = x2shift * (seq_along(x2labs) - 1) + xdiff/2 + 1,
                                          y = min(c(modelData$LCI, df_long$y), na.rm = TRUE)), 
                        size = rel(4), mapping = aes_string(label = "label", 
                                                            x = "x", y = "y"), hjust = 0.5, nudge_x = 0, 
