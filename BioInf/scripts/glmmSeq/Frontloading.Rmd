@@ -1,4 +1,6 @@
 ---
+title: "Frontloading Analysis after glmmSeq"
+author: "Zoe Dellaert"
 date: "3/30/2023"
 output: html_document
 ---
@@ -188,8 +190,12 @@ FlatUP_READY <- glmmSeq_predict_DEGs %>%
 colnames(FlatUP_READY)
 
 xall_1 <- ( (FlatUP_READY$y_Variable_Flat / FlatUP_READY$y_Stable_Flat) / (FlatUP_READY$y_Variable_Slope / FlatUP_READY$y_Stable_Slope) ) # call y_Stable_Flat as the control for the y_Variable_Flat ratio
+
 xall_2 <- ( (FlatUP_READY$y_Variable_Flat / FlatUP_READY$y_Stable_Slope) / (FlatUP_READY$y_Variable_Slope / FlatUP_READY$y_Stable_Slope) ) # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
 xall_3 <- (FlatUP_READY$y_Variable_Flat / FlatUP_READY$y_Variable_Slope)  # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+# Xall 2 and Xall3 are the exact same ratios.
 
 FlatUP_READY$xall_1 <- xall_1
 FlatUP_READY$xall_2 <- xall_2
@@ -242,8 +248,148 @@ P <- FlatUP_READY %>% dplyr::filter(yall < 6) %>%
 
 P
 ```
+We need to interrogate the super high y values. These are genes whose raw counts were 0 in certain treatments so the fold change is being divided by 0/a very small # depending on the normalization applied
 
 
+What about the xall_2 ratio?
+
+```{r}
+# lets plot it! 
+library(ggplot2)
+
+P2_allgenes <- FlatUP_READY %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_2, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,max(yall) + 1), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = max(yall) + 1, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P2_allgenes
+
+P2 <- FlatUP_READY %>% dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_2, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,6), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 6, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P2
+```
+
+```{r}
+# call genes with x axis vaulue < 1
+frontloaded_genes <- FlatUP_READY %>% 
+  dplyr::filter(xall_1 < 1) %>% 
+  dplyr::filter(yall > 1) %>% 
+  dplyr::select('Gene') 
+```
+
+So this is a different way of calculating "fold change" : lets take the y axis as example:
+
+Also using the gene with the highest yall as an example to demonstrate the differences in our methods
+
+```{r}
+#yall <- (FlatUP_READY$y_Stable_Flat / FlatUP_READY$y_Stable_Slope)
+
+#fold change calculated for frontloading analysis, which is mean expression in flat divided by mean expression in slope (both in stable treatment)
+
+(FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Flat)%>% unlist)/(FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Slope)%>% unlist)
+
+#aka
+#FlatUP_READY$yall
+
+#The equivalent of this in our glmmseq method:
+#fold change calculated for glmmSeq: log 2 of each mean expression subtracted from one another
+DEGs %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% dplyr::select(contains("FC"))
+
+#Stable_OriginFC = log2(predData[, "y_Stable_Slope"]+1) - log2(predData[, "y_Stable_Flat"]+1)
+
+log2((FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Slope)%>% unlist) + 1) - log2( (FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Flat)%>% unlist) +1)
+
+```
+
+Here, the dividing method of fold change gets us a value of 208.7273, but the log2 subtraction method gives 4.589812.
+
+```{r}
+#xall_3 <- (FlatUP_READY$y_Variable_Flat / FlatUP_READY$y_Variable_Slope)  # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+#xall_3 (same as xall_2) fold change calculated for frontloading analysis, which is mean expression in flat divided by mean expression in slope (both in variable treatment)
+
+(FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Flat)%>% unlist)/(FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Slope)%>% unlist)
+
+#aka
+#FlatUP_READY$xall_3
+
+#The equivalent of this in our glmmseq method:
+#fold change calculated for glmmSeq: log 2 of each mean expression subtracted from one another
+DEGs %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% dplyr::select(contains("FC"))
+
+#Variable_OriginFC = log2(predData[, "y_Variable_Slope"]+1) - log2(predData[, "y_Variable_Flat"]+1)
+
+log2((FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Slope)%>% unlist) + 1) - log2( (FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Flat)%>% unlist) +1)
+
+```
+
+What would the graph look like if we used the fold changes from glmmSeq?
+
+Since we are looking at genes that are higher in Flat, I will take negative of the fold change calculated above:
+
+```{r}
+-(log2((FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Slope)%>% unlist) + 1) - log2( (FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Flat)%>% unlist) +1))
+
+-(log2((FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Slope)%>% unlist) + 1) - log2( (FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Flat)%>% unlist) +1))
+```
+
+If I use a list of all Flat-up genes (like we have throughout this script), then I can just take the absolute value, as we have already done in the object "Origin_DEGs_upFlat_both"
+
+In this object, the columns "Stable_OriginFC" and "Variable_OriginFC" give us the yall ratio and the xall_3 (same as x_all2) ratio
+
+Stable_OriginFC = yall
+Variable_OriginFC = xall_3
+```{r}
+head(Origin_DEGs_upFlat_both %>% dplyr::select(contains("FC")))
+
+P2_glmmFC_allgenes <- Origin_DEGs_upFlat_both %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=Variable_OriginFC, y=Stable_OriginFC)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes")# + 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,max(yall) + 1), expand = c(0, 0)) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = max(Stable_OriginFC) + 1, alpha = .2) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P2_glmmFC_allgenes
+```
+
+This is basically the same as the fold change plot we made with glmmseq, but all the fold changes will be inverse (negative) because here we took the absolute value of them all and only looked at fold changes that were originally negative (higher in Flat), and also we filtered for significance with q_Origin < 0.05:
+
+So! This is the yellow dots in the bottom left quadrant in the glmmSeq fcplot
+
+```{r}
+Origin_DEGs_upFlat_both %>% mutate(across(Stable_OriginFC:Variable_OriginFC, ~ .* -1)) %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=Stable_OriginFC, y=Variable_OriginFC)) +
+        geom_point() +
+        theme_classic() 
+```
 
 -----
 
@@ -288,9 +434,6 @@ melted_merge_READY$yall <- yall
 
 
 ```{r}
-# lets plot it! 
-library(ggplot2)
-
 P_manual_allgenes <- melted_merge_READY %>% #dplyr::filter(yall < 6) %>% 
         ggplot(aes(x=xall_1, y=yall)) +
         geom_point() +
@@ -324,6 +467,13 @@ P_manual <- melted_merge_READY %>% dplyr::filter(yall < 6) %>%
 P_manual
 ```
 
+```{r}
+# call genes with x axis vaulue < 1
+frontloaded_genes_manual <- melted_merge_READY %>% 
+  dplyr::filter(xall_1 < 1) %>% 
+  dplyr::filter(yall > 1) %>% 
+  dplyr::select('Gene') 
+```
 
 
 ----- 
