@@ -26,11 +26,17 @@ From glmmSeq, I saved the following output:
 "signif_genes_cts.csv" #save this as csv for downstream analysis
 "signif_genes_normcts.csv" #save this as csv for downstream analysis
 
-```{r}
+I am going to start by using the normalized counts data frame, we can change this if needed. Most of the analysis uses the first 29 columns, which is the same for all 3 csvs.
+
+```{r DEGs by variable list}
 DEGs <- read.csv(file="signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 rownames(DEGs) <- DEGs$Gene
-  
+```
+
+For frontloading analysis, I am interested in any genes that are constituitively higher expressed in the corals from the "Flat" origin, since these are exposed to a variable CO2 regime in this habitat under normal conditions. What are the genes that these corals express at baseline levels at a higher expression level compared to corals in the Slope habitat?
+
+```{r}
 #List of genes that are upregulated in the Flat origin (negative OriginFC) in the Stable treatment
 Origin_DEGs_upFlat_Stable <- DEGs %>%  dplyr::filter(Origin < 0.05) %>% 
     dplyr::filter(Stable_OriginFC < 0) %>%
@@ -44,18 +50,71 @@ Origin_DEGs_upFlat_Variable <- DEGs %>%  dplyr::filter(Origin < 0.05) %>%
     mutate(Variable_OriginFC = abs(Variable_OriginFC))
 
 nrow(Origin_DEGs_upFlat_Variable) # 486 total genes! 
+```
 
+``` {r digging into FC direction between Stable and Variable, up in Variable}
 #what are the differences here?
-Origin_DEGs_upFlat_Stable[-which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]),"Gene"] #this code checks all of the 483 genes that are upregulated in Flat in the Stable Treatment against all of those in the Variable Treatment. It confirms that the 483 genes in the Stable Treatment are all also represented in the Variable treatment, so it is good to know that these are not different sets of genes. However, 3 genes are extra in the Variable treatment that were not upregulated in Flat in the Stable treatment
+length(which(Origin_DEGs_upFlat_Variable[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"])) #count overlapping genes
 
+extra_variable <- Origin_DEGs_upFlat_Variable[-which(Origin_DEGs_upFlat_Variable[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"]),"Gene"] #this code checks all of the 486 genes that are upregulated in Flat in the Variable Treatment against all of those in the Stable Treatment (483). It confirms that the 480 of the genes are overlapping between both treatments, so it is good to know that these are not completely different sets of genes. However, 6 genes are extra in the Variable treatment that were not upregulated in Flat in the Stable treatment
 
-#while the majority of these genes were the same, 3 genes "Pocillopora_acuta_HIv2___RNAseq.g7761.t1" , "Pocillopora_acuta_HIv2___RNAseq.g5107.t1a" , and "Pocillopora_acuta_HIv2___RNAseq.g13143.t1" had a negative fold change in the Variable treatment but not the stable treatment. This means that these three genes were upregulated in the Flat origin in the Variable treatment but not in the Stable treatment
+#Lets interrogate these genes a little further by looking at the adjusted p-values and fold change for each gene
 
-#Lets interrogate these genes a little further by looking at the p-values and fold change for each gene
+DEGs[extra_variable,23:29]
 
-DEGs["Pocillopora_acuta_HIv2___RNAseq.g7761.t1",20:28]
-DEGs["Pocillopora_acuta_HIv2___RNAseq.g5107.t1a",20:28]
-DEGs["Pocillopora_acuta_HIv2___RNAseq.g13143.t1",20:28]
+#This confirms that while the Stable_OriginFC is positive, the Variable_OriginFC is negative
+
+abs(DEGs[extra_variable,"Stable_OriginFC"]) > abs(DEGs[extra_variable,"Variable_OriginFC"])
+#Interestingly, in all 6 cases, the absolute value of Stable_OriginFC is larger than the absolute value of Variable_OriginFC.
+
+#These 6 genes had a negative fold change in the Variable treatment but not the stable treatment. This means that these genes were unregulated in the Flat origin in the Variable treatment but not in the Stable treatment
+```
+
+```{r digging into FC direction between Stable and Variable, up in Stable}
+#what about the overlap in the other direction?
+length(which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"])) #count overlapping genes
+
+extra_stable <- Origin_DEGs_upFlat_Stable[-which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]),"Gene"] #this code checks all of the 483 genes that are upregulated in Flat in the Stable Treatment against all of those in the Variable Treatment (486). It confirms that the 480 of the genes are overlapping between both treatments, so it is good to know that these are not completely different sets of genes. However, 3 genes are extra in the Stable treatment that were not upregulated in Flat in the Variable treatment
+
+#Lets interrogate these genes a little further by looking at the adjusted p-values and fold change for each gene
+
+DEGs[extra_stable,23:29]
+
+#This confirms that while the Stable_OriginFC is negative, the Variable_OriginFC is positive (opposite pattern from above)
+
+abs(DEGs[extra_stable,"Stable_OriginFC"]) > abs(DEGs[extra_stable,"Variable_OriginFC"])
+#Interestingly, in all 3 cases again, the absolute value of Stable_OriginFC is larger than the absolute value of Variable_OriginFC.
+
+#These 3 genes had a negative fold change in the Stable treatment but not the Variable treatment. This means that these genes were unregulated in the Flat origin in the Stable treatment but not in the Variable treatment
+```
+
+For frontloading analysis, I am going to start by looking at the 480 genes that were upregulated in Flat in both Stable and Variable Treatments
+
+```{r}
+#List of genes that are upregulated in the Flat origin (negative OriginFC) in the Stable treatment
+Origin_DEGs_upFlat_both <- DEGs %>%  dplyr::filter(Origin < 0.05) %>% 
+    dplyr::filter(Stable_OriginFC < 0 & Variable_OriginFC < 0) %>% mutate(Stable_OriginFC = abs(Stable_OriginFC)) %>% mutate(Variable_OriginFC = abs(Variable_OriginFC))
+
+nrow(Origin_DEGs_upFlat_both) #count how many genes this is
+
+length(Origin_DEGs_upFlat_both[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]) #confirm these are the same 480 overlapping genes from above
+length(Origin_DEGs_upFlat_both[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"]) #confirm these are the same 480 overlapping genes from above
 
 ```
 
+Now we have a set of 480 genes, that regardless of treatment were significantly upregulated in the Flat Origin.
+
+
+## Do we want to remove the q_val significance filter? And just look at all genes that are upregulated in Flat regardless of significance? That's what we had discussed but I am going to continue on this path for now
+
+```{r}
+
+```
+
+
+
+Want to come back to the differences in Fold Change direction by treatment. Interesting that the absolute value was always largest in the stable treatment but the direction changed. This suggests that the expression of the genes converges in the Variable treatment, creating a smaller fold change between Slope and Flat origins. For this small set of 9 genes, ______. 
+
+What is happening biologically?
+
+In all 9 genes, they were classified as q_Origin:Treatment < 0.05 (biggest FC in Stable) . They all also were significant by adjusted p-value by Origin (that's how we filtered the list to get these in the first place). None were significant by Treatment alone.

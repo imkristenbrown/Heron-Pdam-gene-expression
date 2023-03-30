@@ -3,8 +3,8 @@ title: "glmmSeq, with pOverA filtering and outliers removed"
 author: "Zoe Dellaert"
 date: "3/29/2023"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -399,6 +399,8 @@ pCutoff <- 0.05
   plotData$col <- factor(plotData$col, levels = colLevels) #turn this new significance column into a factor
 
 print(table(plotData$col))
+
+#reminder that this signifcant list does not include a signficicance test by treatment alone, so any genes listed as "Not Significant" could still be significant but only by Treatment 
 ```
 
 Now we can take these calculated fold changes and bring them into downstream analyses.
@@ -437,4 +439,95 @@ write.csv(stats_cts_merge_cts, "signif_genes_cts.csv") #save this as csv for dow
 write.csv(stats_cts_merge_norm, "signif_genes_normcts.csv") #save this as csv for downstream analysis
 ```
 
+```{r DEGs by variable list}
+DEGs <- stats_wFC
+
+DEGs$Gene <- rownames(DEGs)
+
+Origin_DEGs <- DEGs %>%  dplyr::filter(Origin < 0.05) 
+Treatment_DEGs <- DEGs %>%  dplyr::filter(Treatment < 0.05) 
+Interaction_DEGs <- DEGs %>%  dplyr::filter(`Treatment:Origin` < 0.05) 
+
+nrow(Origin_DEGs)
+
+nrow(Treatment_DEGs)
+
+#lets make a list of genes that are significant only by treatment
+sum(Treatment_DEGs[,"Gene"] %in% Origin_DEGs[,"Gene"]) #how many of these genes are also significant by Origin? 12
+
+#let's list the 7 genes that are significant by treatment but not by Origin
+
+Treatment_DEGs_notOrigin <- Treatment_DEGs[-which(Treatment_DEGs[,"Gene"] %in% Origin_DEGs[,"Gene"]),"Gene"]
+DEGs[Treatment_DEGs_notOrigin,22:28]
+
+sum(Treatment_DEGs_notOrigin %in% Interaction_DEGs[,"Gene"]) #how many of these genes are also significant by Interaction? 4
+
+# four of those are also significant by the interaction term! Let's look more into the 3 that are not significant by Origin or Interaction
+
+Treatment_DEGs_ONLY <- Treatment_DEGs_notOrigin[-which(Treatment_DEGs_notOrigin %in% Interaction_DEGs[,"Gene"])]
+
+DEGs[Treatment_DEGs_ONLY,22:28]
+
+#lets make a list of genes that are significant only by interaction
+nrow(Interaction_DEGs)
+
+sum(Interaction_DEGs[,"Gene"] %in% Origin_DEGs[,"Gene"]) #how many of these genes are also significant by Origin? 26
+
+#let's list the 11 genes that are significant by interaction but not by Origin
+
+Interaction_DEGs_notOrigin <- Interaction_DEGs[-which(Interaction_DEGs[,"Gene"] %in% Origin_DEGs[,"Gene"]),"Gene"]
+DEGs[Interaction_DEGs_notOrigin,22:28]
+
+#Are any of these not significant by treatment?
+
+sum(Interaction_DEGs_notOrigin %in% Treatment_DEGs[,"Gene"]) #how many of these genes are also significant by Treatment? 4
+
+# four of those are also significant by the treatment! Let's look more into the 7 that are not significant by Origin or Treatment
+
+Interaction_DEGs_ONLY <- Interaction_DEGs_notOrigin[-which(Interaction_DEGs_notOrigin %in% Treatment_DEGs[,"Gene"])]
+
+DEGs[Interaction_DEGs_ONLY,22:28]
+```
+
+#Gene lists to look into for enrichment/dive into annotations of the small gene sets:
+Origin_DEGs (847 genes)
+Treatment_DEGs (19 genes)
+Interaction_DEGs(37 genes)
+Treatment_DEGs_ONLY (3 genes)
+Interaction_DEGs_ONLY (7 genes)
+
+```{r}
+Treatment_DEGs_ONLY
+Interaction_DEGs_ONLY
+```
+
+
+## This is a great place to extract these genes for GO and KEGG enrichment analysis.
+
+
+Special DEG plots :)
+
+```{r}
+for (i in Treatment_DEGs_ONLY) {print(Factor_ggmodelPlot(results,
+            geneName = i,
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            title = "Gene significant only by Treatment",
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3))}
+
+for (i in Interaction_DEGs_ONLY) {print(Factor_ggmodelPlot(results,
+            geneName = i,
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            title = "Gene significant only by Interaction",
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3))}
+```
 
