@@ -245,6 +245,8 @@ predict = data.frame(results@predict) #estimated means based on fitted model wit
 kable(predict) %>%
   kable_styling() %>%
   scroll_box(width = "100%", height = "400px")
+
+write.csv(predict, "model_expression_prediction_allgenes.csv") #save stats file as csv for downstream analysis
 ```
 
 ## Model Plots
@@ -263,6 +265,7 @@ formPlot(results,geneName = "Pocillopora_acuta_HIv2___RNAseq.g14176.t1",x1var = 
 plotColours <- c("skyblue","mediumseagreen")
 modColours <- c("dodgerblue3","seagreen4")
 ```
+
 
 ### most significant gene by Treatment:Origin:
 ```{r}
@@ -490,11 +493,21 @@ DEGs[Interaction_DEGs_ONLY,22:28]
 ```
 
 #Gene lists to look into for enrichment/dive into annotations of the small gene sets:
-Origin_DEGs (847 genes)
-Treatment_DEGs (19 genes)
-Interaction_DEGs(37 genes)
-Treatment_DEGs_ONLY (3 genes)
-Interaction_DEGs_ONLY (7 genes)
+
+- Origin_DEGs (847 genes)
+- Treatment_DEGs (19 genes)
+- Interaction_DEGs(37 genes)
+- Treatment_DEGs_ONLY (3 genes)
+- Interaction_DEGs_ONLY (7 genes)
+
+```{r}
+write.csv(Origin_DEGs, "DEGs/Origin_DEGs.csv") #save this as csv for downstream analysis
+write.csv(Treatment_DEGs, "DEGs/Treatment_DEGs.csv") #save this as csv for downstream analysis
+write.csv(Interaction_DEGs, "DEGs/Interaction_DEGs.csv") #save this as csv for downstream analysis
+write.csv(Treatment_DEGs_ONLY, "DEGs/Treatment_DEGs_ONLY.csv") #save this as csv for downstream analysis
+write.csv(Interaction_DEGs_ONLY, "DEGs/Interaction_DEGs_ONLY.csv") #save this as csv for downstream analysis
+```
+
 
 ```{r}
 Treatment_DEGs_ONLY

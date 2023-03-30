@@ -1,6 +1,4 @@
 ---
-title: "Frontloading"
-author: "Zoe Dellaert"
 date: "3/30/2023"
 output: html_document
 ---
@@ -22,9 +20,10 @@ sessionInfo() #list of packages after library-ing these packages
 ```
 
 From glmmSeq, I saved the following output:
-"signif_genes_rawcts.csv" #save this as csv for downstream analysis
-"signif_genes_cts.csv" #save this as csv for downstream analysis
-"signif_genes_normcts.csv" #save this as csv for downstream analysis
+
+- "signif_genes_rawcts.csv" #save this as csv for downstream analysis
+- "signif_genes_cts.csv" #save this as csv for downstream analysis
+- "signif_genes_normcts.csv" #save this as csv for downstream analysis
 
 I am going to start by using the normalized counts data frame, we can change this if needed. Most of the analysis uses the first 29 columns, which is the same for all 3 csvs.
 
@@ -34,17 +33,35 @@ DEGs <- read.csv(file="signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dpl
 rownames(DEGs) <- DEGs$Gene
 ```
 
+Lets also pull in our metadata
+
+```{r}
+coldata <- read.csv("../../../RAnalysis/Data/RNA Submission Sample List metadata.csv") #read in metadata file
+coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
+coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+
+coldata$Origin <- factor(coldata$Origin) #set variables to factors
+coldata$Colony <- factor(coldata$Colony) #set variables to factors
+coldata$Treatment <- factor(coldata$Treatment) #set variables to factors
+
+coldata <- coldata %>% filter(Coral_ID != c("RF16A","RF16C")) #removed outlier rows from metadata
+head(coldata)
+```
+
 For frontloading analysis, I am interested in any genes that are constituitively higher expressed in the corals from the "Flat" origin, since these are exposed to a variable CO2 regime in this habitat under normal conditions. What are the genes that these corals express at baseline levels at a higher expression level compared to corals in the Slope habitat?
 
 ```{r}
-#List of genes that are upregulated in the Flat origin (negative OriginFC) in the Stable treatment
+#List of genes that are unregulated in the Flat origin (negative OriginFC) in the Stable treatment
 Origin_DEGs_upFlat_Stable <- DEGs %>%  dplyr::filter(Origin < 0.05) %>% 
     dplyr::filter(Stable_OriginFC < 0) %>%
     mutate(Stable_OriginFC = abs(Stable_OriginFC))
 
 nrow(Origin_DEGs_upFlat_Stable) # 483 total genes! 
 
-#List of genes that are upregulated in the Flat origin (negative OriginFC) in the Variable treatment
+#List of genes that are unregulated in the Flat origin (negative OriginFC) in the Variable treatment
 Origin_DEGs_upFlat_Variable <- DEGs %>%  dplyr::filter(Origin < 0.05) %>%
     dplyr::filter(Variable_OriginFC < 0) %>%
     mutate(Variable_OriginFC = abs(Variable_OriginFC))
@@ -56,7 +73,7 @@ nrow(Origin_DEGs_upFlat_Variable) # 486 total genes!
 #what are the differences here?
 length(which(Origin_DEGs_upFlat_Variable[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"])) #count overlapping genes
 
-extra_variable <- Origin_DEGs_upFlat_Variable[-which(Origin_DEGs_upFlat_Variable[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"]),"Gene"] #this code checks all of the 486 genes that are upregulated in Flat in the Variable Treatment against all of those in the Stable Treatment (483). It confirms that the 480 of the genes are overlapping between both treatments, so it is good to know that these are not completely different sets of genes. However, 6 genes are extra in the Variable treatment that were not upregulated in Flat in the Stable treatment
+extra_variable <- Origin_DEGs_upFlat_Variable[-which(Origin_DEGs_upFlat_Variable[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"]),"Gene"] #this code checks all of the 486 genes that are unregulated in Flat in the Variable Treatment against all of those in the Stable Treatment (483). It confirms that the 480 of the genes are overlapping between both treatments, so it is good to know that these are not completely different sets of genes. However, 6 genes are extra in the Variable treatment that were not unregulated in Flat in the Stable treatment
 
 #Lets interrogate these genes a little further by looking at the adjusted p-values and fold change for each gene
 
@@ -74,7 +91,7 @@ abs(DEGs[extra_variable,"Stable_OriginFC"]) > abs(DEGs[extra_variable,"Variable_
 #what about the overlap in the other direction?
 length(which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"])) #count overlapping genes
 
-extra_stable <- Origin_DEGs_upFlat_Stable[-which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]),"Gene"] #this code checks all of the 483 genes that are upregulated in Flat in the Stable Treatment against all of those in the Variable Treatment (486). It confirms that the 480 of the genes are overlapping between both treatments, so it is good to know that these are not completely different sets of genes. However, 3 genes are extra in the Stable treatment that were not upregulated in Flat in the Variable treatment
+extra_stable <- Origin_DEGs_upFlat_Stable[-which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]),"Gene"] #this code checks all of the 483 genes that are unregulated in Flat in the Stable Treatment against all of those in the Variable Treatment (486). It confirms that the 480 of the genes are overlapping between both treatments, so it is good to know that these are not completely different sets of genes. However, 3 genes are extra in the Stable treatment that were not unregulated in Flat in the Variable treatment
 
 #Lets interrogate these genes a little further by looking at the adjusted p-values and fold change for each gene
 
@@ -88,10 +105,10 @@ abs(DEGs[extra_stable,"Stable_OriginFC"]) > abs(DEGs[extra_stable,"Variable_Orig
 #These 3 genes had a negative fold change in the Stable treatment but not the Variable treatment. This means that these genes were unregulated in the Flat origin in the Stable treatment but not in the Variable treatment
 ```
 
-For frontloading analysis, I am going to start by looking at the 480 genes that were upregulated in Flat in both Stable and Variable Treatments
+For frontloading analysis, I am going to start by looking at the 480 genes that were unregulated in Flat in both Stable and Variable Treatments
 
 ```{r}
-#List of genes that are upregulated in the Flat origin (negative OriginFC) in the Stable treatment
+#List of genes that are unregulated in the Flat origin (negative OriginFC) in the Stable treatment
 Origin_DEGs_upFlat_both <- DEGs %>%  dplyr::filter(Origin < 0.05) %>% 
     dplyr::filter(Stable_OriginFC < 0 & Variable_OriginFC < 0) %>% mutate(Stable_OriginFC = abs(Stable_OriginFC)) %>% mutate(Variable_OriginFC = abs(Variable_OriginFC))
 
@@ -99,19 +116,52 @@ nrow(Origin_DEGs_upFlat_both) #count how many genes this is
 
 length(Origin_DEGs_upFlat_both[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]) #confirm these are the same 480 overlapping genes from above
 length(Origin_DEGs_upFlat_both[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"]) #confirm these are the same 480 overlapping genes from above
-
 ```
 
-Now we have a set of 480 genes, that regardless of treatment were significantly upregulated in the Flat Origin.
+Now we have a set of 480 genes, that regardless of treatment were significantly unregulated in the Flat Origin.
 
-
-## Do we want to remove the q_val significance filter? And just look at all genes that are upregulated in Flat regardless of significance? That's what we had discussed but I am going to continue on this path for now
+## Do we want to remove the q_val significance filter? And just look at all genes that are unregulated in Flat regardless of significance? That's what we had discussed but I am going to continue on this path for now
 
 ```{r}
+melted <- Origin_DEGs_upFlat_both %>%
+            dplyr::select(c('Gene',coldata$Coral_ID)) %>%  #keep only the columns with the gene name and normalized count per sample
+            reshape2::melt(id.var = 'Gene') %>% #melt by Gene so it is in long form with one observation of a gene-sample pair and its normalized count per row, 22080 rows for 480 genes * 46 samples
+            dplyr::rename(Coral_ID = variable) %>% dplyr::rename(norm_count = value)
 
+melted_merge <- merge(melted, coldata, by = 'Coral_ID') %>% 
+                        dplyr::group_by(Gene, Origin, Treatment) %>%  #should  I only group by origin here or by treatment and origin?
+                        dplyr::select(!'Coral_ID') %>% 
+                        dplyr::summarise(meanExp = mean(norm_count))
+
+#this gives us a mean expression value per condition, which we already had through glmmSeq  (predData) 
+
+#should  I only group by origin here or by treatment and origin?
+
+# melted_merge_org <- melted_merge %>% 
+#                         dplyr::group_by(Gene, Origin) %>% 
+#                         dplyr::summarise(meanExp = mean(meanExp))
 ```
 
+Let's see if the means calculated here match with what glmmSeq predicted
 
+```{r}
+glmmSeq_predict <- read.csv(file="model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+
+glmmSeq_predict_DEGs <- glmmSeq_predict[glmmSeq_predict[,"Gene"] %in% Origin_DEGs_upFlat_both[,"Gene"],]
+
+glmmSeq_predict_DEGs_melt  <- glmmSeq_predict_DEGs %>% dplyr::select(!contains("LCI_")) %>% dplyr::select(!contains("UCI_")) %>% #drop the confidence interval columns for now 
+                              reshape2::melt(id.var = 'Gene') #melt by Gene so it is in long form with one observation of a condition pair per row, 1920 rows for 480 genes * 4 conditions
+```
+
+They are close but not exactly the same #s. Let's stick with the glmmSeq values.
+
+-----
+
+
+We can also redo the analysis with the manually calculated mean values.
+
+
+----- 
 
 Want to come back to the differences in Fold Change direction by treatment. Interesting that the absolute value was always largest in the stable treatment but the direction changed. This suggests that the expression of the genes converges in the Variable treatment, creating a smaller fold change between Slope and Flat origins. For this small set of 9 genes, ______. 
 
