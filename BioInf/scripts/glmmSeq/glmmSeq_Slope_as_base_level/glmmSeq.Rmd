@@ -213,11 +213,18 @@ rm(glmmLRT) #remove this large object, it will not be used again (and you can al
 results@modelData #show model data, basically the different conditions tested
 ```
 
+### Q values
+
+```{r}
+results <- glmmQvals(results) # adds a matrix to the results object containing Q-vals
+```
+
+
 Model fit statistics, w/ p-value ordered by Origin:Treatment:
 ```{r}
 stats <- summary(results)  #save the summary table from the model fit results
 
-kable(stats[order(stats[, 'P_Treatment:Origin']), ]) %>%
+kable(stats[order(stats[, 'Treatment:Origin']), ]) %>%
   kable_styling() %>%
   scroll_box(width = "100%", height = "400px") #View stats table as a scrollable markdown table
 

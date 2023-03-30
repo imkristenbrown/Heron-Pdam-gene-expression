@@ -1,0 +1,32 @@
+---
+title: "Frontloading"
+author: "Zoe Dellaert"
+date: "3/30/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is a Rmd file analyzing our raw count data by the glmmSeq package as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html) and [manual](https://cran.r-project.org/web/packages/glmmSeq/glmmSeq.pdf).
+
+```{r}
+sessionInfo() #provides list of loaded packages and version of R. I still have version 4.1 for now.
+```
+
+```{r cars}
+library(dplyr)
+library(reshape2)
+sessionInfo() #list of packages after library-ing these packages
+```
+
+From glmmSeq, I saved the following output:
+"signif_genes_rawcts.csv" #save this as csv for downstream analysis
+"signif_genes_cts.csv" #save this as csv for downstream analysis
+"signif_genes_normcts.csv" #save this as csv for downstream analysis
+
+```{r}
+DEGs <- read.csv(file="signif_genes_normcts.csv", sep=',', header=TRUE) 
+```
+
