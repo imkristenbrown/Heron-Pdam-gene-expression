@@ -27,6 +27,35 @@ From glmmSeq, I saved the following output:
 "signif_genes_normcts.csv" #save this as csv for downstream analysis
 
 ```{r}
-DEGs <- read.csv(file="signif_genes_normcts.csv", sep=',', header=TRUE) 
+DEGs <- read.csv(file="signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+
+rownames(DEGs) <- DEGs$Gene
+  
+#List of genes that are upregulated in the Flat origin (negative OriginFC) in the Stable treatment
+Origin_DEGs_upFlat_Stable <- DEGs %>%  dplyr::filter(Origin < 0.05) %>% 
+    dplyr::filter(Stable_OriginFC < 0) %>%
+    mutate(Stable_OriginFC = abs(Stable_OriginFC))
+
+nrow(Origin_DEGs_upFlat_Stable) # 483 total genes! 
+
+#List of genes that are upregulated in the Flat origin (negative OriginFC) in the Variable treatment
+Origin_DEGs_upFlat_Variable <- DEGs %>%  dplyr::filter(Origin < 0.05) %>%
+    dplyr::filter(Variable_OriginFC < 0) %>%
+    mutate(Variable_OriginFC = abs(Variable_OriginFC))
+
+nrow(Origin_DEGs_upFlat_Variable) # 486 total genes! 
+
+#what are the differences here?
+Origin_DEGs_upFlat_Stable[-which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]),"Gene"] #this code checks all of the 483 genes that are upregulated in Flat in the Stable Treatment against all of those in the Variable Treatment. It confirms that the 483 genes in the Stable Treatment are all also represented in the Variable treatment, so it is good to know that these are not different sets of genes. However, 3 genes are extra in the Variable treatment that were not upregulated in Flat in the Stable treatment
+
+
+#while the majority of these genes were the same, 3 genes "Pocillopora_acuta_HIv2___RNAseq.g7761.t1" , "Pocillopora_acuta_HIv2___RNAseq.g5107.t1a" , and "Pocillopora_acuta_HIv2___RNAseq.g13143.t1" had a negative fold change in the Variable treatment but not the stable treatment. This means that these three genes were upregulated in the Flat origin in the Variable treatment but not in the Stable treatment
+
+#Lets interrogate these genes a little further by looking at the p-values and fold change for each gene
+
+DEGs["Pocillopora_acuta_HIv2___RNAseq.g7761.t1",20:28]
+DEGs["Pocillopora_acuta_HIv2___RNAseq.g5107.t1a",20:28]
+DEGs["Pocillopora_acuta_HIv2___RNAseq.g13143.t1",20:28]
+
 ```
 
