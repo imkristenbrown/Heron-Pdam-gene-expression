@@ -32,7 +32,7 @@ I am going to start by using the normalized counts data frame, we can change thi
 ```{r DEGs by variable list}
 DEGs <- read.csv(file="signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
-rownames(DEGs) <- DEGs$Gene
+#rownames(DEGs) <- DEGs$Gene
 ```
 
 Lets also pull in our metadata
@@ -298,6 +298,7 @@ frontloaded_genes <- FlatUP_READY %>%
   dplyr::select('Gene') 
 ```
 
+
 So this is a different way of calculating "fold change" : lets take the y axis as example:
 
 Also using the gene with the highest yall as an example to demonstrate the differences in our methods
@@ -385,13 +386,69 @@ This is basically the same as the fold change plot we made with glmmseq, but all
 So! This is the yellow dots in the bottom left quadrant in the glmmSeq fcplot
 
 ```{r}
-Origin_DEGs_upFlat_both %>% mutate(across(Stable_OriginFC:Variable_OriginFC, ~ .* -1)) %>% #dplyr::filter(yall < 6) %>% 
+Origin_DEGs_upFlat_both %>% mutate(across(Stable_OriginFC:Variable_OriginFC, ~ .* -1)) %>% 
         ggplot(aes(x=Stable_OriginFC, y=Variable_OriginFC)) +
         geom_point() +
         theme_classic() 
 ```
 
+
+What if I just log transform xall_2 and yall? This basically does the same as P2_glmmFC_allgenes but a little different...
+```{r}
+FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% 
+        ggplot(aes(x=xall_2, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes, log2 transform Sam foldchange (x2)") 
+
+P2_glmmFC_allgenes
+```
+
+
+Why is it different?
+
+```{r}
+#let's look at the log transformed yall (plotted above)
+head(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(Gene,yall))
+
+#and compare to the lg2fc plotted in P2_glmmFC_allgenes
+head(Origin_DEGs_upFlat_both %>% select(Gene,Stable_OriginFC) %>% arrange(Gene))
+
+#So odd that these numbers are not the exact same. Need to look into why
+
+#How close are they? How many of the FCs are the same if we round to one decimal point?
+sum(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),1)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),1))
+
+#How close are they? How many of the FCs are the same if we round to no decimal points?
+sum(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0))
+
+#so for the most part, 454/480 genes have roughly the same Log2FC calculated by both methods.
+
+#lets look into why these might be different: list the L2FC from the Origin_DEGs_upFlat_both (Log 2-Log2) the genes that did not have the same L2FC in both datasets after rounding
+(Origin_DEGs_upFlat_both%>% arrange(Gene))[which(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0)),] %>% select(Gene,Stable_OriginFC)
+
+#what is the maximum L2FC in this list? #the ones that aren't rounding the same are ones with Stable_OriginFC < 6
+max((Origin_DEGs_upFlat_both%>% arrange(Gene))[which(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0)),] %>% select(Stable_OriginFC))
+
+#what are the L2FC for these in the FlatUP_READY dataset (Log2(Flat/Slope)) : list the L2FC from the genes that did not have the same L2FC in both datasets after rounding
+FlatUP_READY[which(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0)),] %>% select(Gene,yall)
+
+log2(FlatUP_READY[which(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0)),] %>% select(yall))
+```
+
+Most likely this is because the log - log calculation has a +1 term in it: "log2(predData[, "y_Stable_Slope"]+1) - log2(predData[, "y_Stable_Flat"]+1)" , so the values are a little bit shifted.
+
+So the values are ~roughly the same but not exactly . I am really not sure why!!!!!
+
+
 -----
+
+
 
 
 We can also redo the analysis with the manually calculated mean values.

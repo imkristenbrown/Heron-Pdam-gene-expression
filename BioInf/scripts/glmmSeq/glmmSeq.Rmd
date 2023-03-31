@@ -415,6 +415,50 @@ rownames(stats_wFC) <- stats_wFC[,1] #set row names from first column
 stats_wFC <- stats_wFC[,-1] #remove first column
 ```
 
+
+## Alt Fold Change Plots: division fold change, no log2
+```{r}
+source(file = "ALT_FCPlot.R")
+
+head(plotData)
+
+ALT_plotData <- data.frame(
+    Stable_OriginFC =    (predData[, "y_Stable_Slope"]  /predData[, "y_Stable_Flat"  ]),
+    Variable_OriginFC  = (predData[, "y_Variable_Slope"]/predData[, "y_Variable_Flat"]))
+
+ALT_plotData$maxGroupFC <- ifelse(abs(ALT_plotData$Stable_OriginFC) > abs(ALT_plotData$Variable_OriginFC), "Stable", "Variable")
+
+rownames(ALT_plotData) <- rownames(predData)
+
+ALT_fcPlot(results, x1var = "Origin", x2var = "Treatment", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
+## Alt Fold Change Plots: division fold change, with log2
+```{r}
+source(file = "ALT_LogFCPlot.R")
+
+head(plotData)
+
+ALT_Log_plotData <- data.frame(
+    Stable_OriginFC =    log2(predData[, "y_Stable_Slope"]  /predData[, "y_Stable_Flat"  ]),
+    Variable_OriginFC  = log2(predData[, "y_Variable_Slope"]/predData[, "y_Variable_Flat"]))
+
+ALT_Log_plotData$maxGroupFC <- ifelse(abs(ALT_plotData$Stable_OriginFC) > abs(ALT_plotData$Variable_OriginFC), "Stable", "Variable")
+
+rownames(ALT_Log_plotData) <- rownames(predData)
+
+#worth noting that this changes a small few (26) of the Max Fold Change (so ones where the absolute value of fold change was largest in Stable now the absolute valye is largest in Variable or vice versa) 
+which((ifelse(abs(plotData$Stable_OriginFC) > abs(plotData$Variable_OriginFC), "Stable", "Variable")) != (ifelse(abs(ALT_Log_plotData$Stable_OriginFC) > abs(ALT_Log_plotData$Variable_OriginFC), "Stable", "Variable")))
+
+plotData[which((ifelse(abs(plotData$Stable_OriginFC) > abs(plotData$Variable_OriginFC), "Stable", "Variable")) != (ifelse(abs(ALT_Log_plotData$Stable_OriginFC) > abs(ALT_Log_plotData$Variable_OriginFC), "Stable", "Variable"))),]
+
+ALT_Log_plotData[which((ifelse(abs(plotData$Stable_OriginFC) > abs(plotData$Variable_OriginFC), "Stable", "Variable")) != (ifelse(abs(ALT_Log_plotData$Stable_OriginFC) > abs(ALT_Log_plotData$Variable_OriginFC), "Stable", "Variable"))),]
+
+ALT_LogfcPlot(results, x1var = "Origin", x2var = "Treatment", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
 ## Downstream DEG list
 
 For downstream use, I am saving the "stats_wFC" dataframe (containing significance and FC of each gene and model fit)
