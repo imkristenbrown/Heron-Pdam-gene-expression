@@ -423,7 +423,7 @@ Average mapping rate: 72.48%
 1. Download *P. acuta* gff3 from andromeda (or directly from [Rutgers](http://cyanophora.rutgers.edu/Pocillopora_acuta/))
 
 ```
-scp  -r zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes.gff3 /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf
+scp  -r zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/references/Pocillopora_acuta_HIv2.genes.gff3 /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/data
 ```
 
 2. In R on your computer, use [this script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/scripts/fix_gff_format.Rmd), modified from [Dr. Ariana Huffmyer](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/fix_gff_format.Rmd) to correct the Pacuta GFF3 file. 
@@ -431,7 +431,7 @@ scp  -r zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/referen
 3. Upload fixed *P. acuta* gff3 to andromeda
 
 ```
-scp /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/Pocillopora_acuta_HIv2.genes_fixed.gff3.gz zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/references/
+scp /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/data/Pocillopora_acuta_HIv2.genes_fixed.gff3.gz zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/references/
 ```
 
 4. Unzip fixed gff3 file in andromeda

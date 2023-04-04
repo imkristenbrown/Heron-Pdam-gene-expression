@@ -549,7 +549,7 @@ Whole dataset:
 For frontloading analysis, I am going to start by looking at the 480 genes that were unregulated in Flat in both Stable and Variable Treatments
 
 ```{r}
-DEGs
+head(DEGs)
 
 nrow(DEGs) #count how many genes this is
 ```
