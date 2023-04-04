@@ -226,7 +226,7 @@ kable(stats[order(stats[, 'Treatment:Origin']), ]) %>%
   scroll_box(width = "100%", height = "400px") #View stats table as a scrollable markdown table
 
 
-write.csv(stats, "signif_genes.csv") #save stats file as csv for downstream analysis
+write.csv(stats, "../../output/signif_genes.csv") #save stats file as csv for downstream analysis
 ```
 
 Summary stats for a specific gene. (basically a pretty way of looking at one row of the stats table via "stats["Pocillopora_acuta_HIv2___TS.g25814.t1",]")
@@ -244,7 +244,7 @@ kable(predict) %>%
   kable_styling() %>%
   scroll_box(width = "100%", height = "400px")
 
-write.csv(predict, "model_expression_prediction_allgenes.csv") #save stats file as csv for downstream analysis
+write.csv(predict, "../../output/model_expression_prediction_allgenes.csv") #save stats file as csv for downstream analysis
 ```
 
 ## Model Plots
@@ -479,9 +479,9 @@ head(stats_cts_merge_rawcts)
 head(stats_cts_merge_cts)
 head(stats_cts_merge_norm)
 
-write.csv(stats_cts_merge_rawcts, "signif_genes_rawcts.csv") #save this as csv for downstream analysis
-write.csv(stats_cts_merge_cts, "signif_genes_cts.csv") #save this as csv for downstream analysis
-write.csv(stats_cts_merge_norm, "signif_genes_normcts.csv") #save this as csv for downstream analysis
+write.csv(stats_cts_merge_rawcts, "../../output/signif_genes_rawcts.csv") #save this as csv for downstream analysis
+write.csv(stats_cts_merge_cts, "../../output/signif_genes_cts.csv") #save this as csv for downstream analysis
+write.csv(stats_cts_merge_norm, "../../output/signif_genes_normcts.csv") #save this as csv for downstream analysis
 ```
 
 ```{r DEGs by variable list}
@@ -543,11 +543,11 @@ DEGs[Interaction_DEGs_ONLY,22:28]
 - Interaction_DEGs_ONLY (7 genes)
 
 ```{r}
-write.csv(Origin_DEGs, "DEGs/Origin_DEGs.csv") #save this as csv for downstream analysis
-write.csv(Treatment_DEGs, "DEGs/Treatment_DEGs.csv") #save this as csv for downstream analysis
-write.csv(Interaction_DEGs, "DEGs/Interaction_DEGs.csv") #save this as csv for downstream analysis
-write.csv(Treatment_DEGs_ONLY, "DEGs/Treatment_DEGs_ONLY.csv") #save this as csv for downstream analysis
-write.csv(Interaction_DEGs_ONLY, "DEGs/Interaction_DEGs_ONLY.csv") #save this as csv for downstream analysis
+write.csv(Origin_DEGs, "../../output/DEGs/Origin_DEGs.csv") #save this as csv for downstream analysis
+write.csv(Treatment_DEGs, "../../output/DEGs/Treatment_DEGs.csv") #save this as csv for downstream analysis
+write.csv(Interaction_DEGs, "../../output/DEGs/Interaction_DEGs.csv") #save this as csv for downstream analysis
+write.csv(Treatment_DEGs_ONLY, "../../output/DEGs/Treatment_DEGs_ONLY.csv") #save this as csv for downstream analysis
+write.csv(Interaction_DEGs_ONLY, "../../output/DEGs/Interaction_DEGs_ONLY.csv") #save this as csv for downstream analysis
 ```
 
 

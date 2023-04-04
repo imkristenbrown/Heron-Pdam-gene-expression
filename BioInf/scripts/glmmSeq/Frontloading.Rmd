@@ -30,7 +30,7 @@ From glmmSeq, I saved the following output:
 I am going to start by using the normalized counts data frame, we can change this if needed. Most of the analysis uses the first 29 columns, which is the same for all 3 csvs.
 
 ```{r DEGs by variable list}
-DEGs <- read.csv(file="signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+DEGs <- read.csv(file="../../output/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 #rownames(DEGs) <- DEGs$Gene
 ```
@@ -149,7 +149,7 @@ melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
 Let's see if the means calculated here match with what glmmSeq predicted
 
 ```{r}
-glmmSeq_predict <- read.csv(file="model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+glmmSeq_predict <- read.csv(file="../../output/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
 
 glmmSeq_predict_DEGs <- glmmSeq_predict[glmmSeq_predict[,"Gene"] %in% Origin_DEGs_upFlat_both[,"Gene"],]
 
@@ -582,7 +582,7 @@ melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
 Let's see if the means calculated here match with what glmmSeq predicted
 
 ```{r}
-glmmSeq_predict <- read.csv(file="model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+glmmSeq_predict <- read.csv(file="../../output/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
 
 READY <- glmmSeq_predict %>%
     dplyr::select(!contains("LCI_")) %>% #drop the confidence interval columns for now 
@@ -713,7 +713,7 @@ melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
 Let's see if the means calculated here match with what glmmSeq predicted
 
 ```{r}
-glmmSeq_predict <- read.csv(file="model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+glmmSeq_predict <- read.csv(file="../../output/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
 
 glmmSeq_predict_DEGs <- glmmSeq_predict[glmmSeq_predict[,"Gene"] %in% DEGs[,"Gene"],]
 

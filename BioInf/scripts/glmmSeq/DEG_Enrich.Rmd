@@ -32,7 +32,7 @@ sessionInfo() #list of packages after library-ing these packages
 ```
 
 ```{r}
-DEGs <- read.csv(file="signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+DEGs <- read.csv(file="../../output/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 #NOTE! This is not a file only with differentially expressed genes, this contains all of the genes in our dataset but also contains p-value information and fold change information to help determine which genes are signficant DEGs based on our model in glmmSeq
 
@@ -112,13 +112,13 @@ Order geneInfo0 by significance of Origin, q_Origin (adjusted p value)
 ```{r}
 geneInfo <- geneInfo0[order(geneInfo0[, 'q_Origin']), ]
 
-write.csv(geneInfo, file = "geneInfo.csv") #gene info for reference/supplement
+write.csv(geneInfo, file = "../../output/geneInfo.csv") #gene info for reference/supplement
 ```
 
 
 ## Now onto Enrichment!
 ```{r}
-#geneInfo<-read.csv("geneInfo.csv")
+#geneInfo<-read.csv("../../output/geneInfo.csv")
 
 dim(geneInfo)
 
@@ -181,7 +181,7 @@ pwf <- nullp(gene.vector, ID.vector, bias.data = LENGTH.vector)
 
 ```{r}
 #run goseq using Wallenius method for all categories of GO terms 
-GO.wall <- goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO.wall <- goseq(pwf, ID.vector, gene2cat=GO.terms, method="Wallenius", use_genes_without_cat=TRUE)
 
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 
@@ -190,13 +190,13 @@ colnames(GO)[1] <- "GOterm"
 #adjust p-values 
 GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
 
+#Write file of results 
+write.csv(GO, "../../output/GOSeq/GOseq_DEG_Origin.csv")
+
 #Filtering for p < 0.05
 GO_05 <- GO %>%
         dplyr::filter(bh_adjust<0.05) %>%
         dplyr::arrange(., ontology, bh_adjust)
-    
-#Write file of results 
-write.csv(GO_05, "GOseq_DEG_Origin_over_represented.csv")
 ```
 
 ```{r}
@@ -251,7 +251,9 @@ for (category in ontologies) {
     axis.title.x = element_blank(),
     axis.title.y = element_blank())
   
-ggsave(filename=paste0("GOSeq/OriginDEGs", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
+  print(GO.plot)
+  
+ggsave(filename=paste0("../../output/GOSeq/OriginDEGs", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
 }
 ```
 
