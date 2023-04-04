@@ -1,2 +1,4 @@
-BioInf/.DS_Store
-BioInf/trimmed_qc/.DS_Store
+.DS_Store
+BioInf/data/Pocillopora_acuta_HIv2.genes_fixed.gff3
+.Rhistory
+.RData
