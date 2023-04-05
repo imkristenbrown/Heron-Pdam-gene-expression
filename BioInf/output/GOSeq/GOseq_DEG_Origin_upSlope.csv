@@ -1,4 +1,4 @@
-"","category","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust"
+"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust"
 "19","GO:0000122",0,1,10,10,"negative regulation of transcription by RNA polymerase II","BP",0
 "26","GO:0000166",0,1,10,10,"nucleotide binding","MF",0
 "28","GO:0000184",0,1,10,10,"nuclear-transcribed mRNA catabolic process, nonsense-mediated decay","BP",0

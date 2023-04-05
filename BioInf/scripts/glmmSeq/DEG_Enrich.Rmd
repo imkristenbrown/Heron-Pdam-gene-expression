@@ -207,7 +207,7 @@ GO_001 <- GO %>%
 
 Plotting!
 
-```{r}
+```{r, eval = FALSE}
 ontologies<-c("BP", "CC", "MF")
 
 for (category in ontologies) {
@@ -401,7 +401,7 @@ GO.wall_upSlope <- goseq(pwf_upSlope, ID.vector_upSlope, gene2cat=GO.terms_upSlo
 
 GO_upSlope <- GO.wall_upSlope[order(GO.wall_upSlope$over_represented_pvalue),]
 
-colnames(GO)[1] <- "GOterm"
+colnames(GO_upSlope)[1] <- "GOterm"
     
 #adjust p-values 
 GO_upSlope$bh_adjust <-  p.adjust(GO_upSlope$over_represented_pvalue, method="BH") #add adjusted p-values
@@ -467,7 +467,7 @@ for (category in ontologies) {
     axis.title.x = element_blank(),
     axis.title.y = element_blank())
   
-  print(GO.plot)
+  print(GO.plot_upslope)
   
 ggsave(filename=paste0("../../output/GOSeq/OriginDEGs_upslope_P05", "_", category, ".png"), plot=GO.plot_upslope, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
 }
@@ -476,6 +476,122 @@ ggsave(filename=paste0("../../output/GOSeq/OriginDEGs_upslope_P05", "_", categor
 
 ### What about the direction of FC: Genes significant by Origin and upregulated in Flat origin (negative FC) for both treatments (we should also look into the ones that are positive in one treatment but not the other)
 
+```{r}
+### Generate vector with names of all genes 
+ALL.vector <- c(geneInfo$gene_id)
 
-(we should also look into the ones that are positive in one treatment but not the other)
+### Generate length vector for all genes
+LENGTH.vector <- as.integer(geneInfo$Length)
+
+### Generate vector with names of the 847 significant DEGs by Origin
+ID.vector_upFlat <- geneInfo %>%
+  filter(q_Origin < 0.05) %>%
+  filter(Stable_OriginFC < 0 & Variable_OriginFC < 0) %>%
+  pull(gene_id)
+
+##Get a list of GO Terms for the 847 significant DEGs by Origin
+GO.terms_upFlat <- geneInfo %>%
+  filter(q_Origin < 0.05) %>%
+  filter(Stable_OriginFC < 0 & Variable_OriginFC < 0) %>%
+  dplyr::select(gene_id, Annotation.GO.ID)
+
+dim(GO.terms_upFlat) #480 genes are upregulated in the Flat Origin in both treatments and significant by Origin
+
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms_upFlat$Annotation.GO.ID), ";")
+split2 <- data.frame(v1 = rep.int(GO.terms_upFlat$gene, sapply(split, length)), v2 = unlist(split))
+colnames(split2) <- c("gene", "Annotation.GO.ID")
+GO.terms_upFlat <- split2
+
+##Construct list of genes with 1 for genes in that are significant for Origin and upregulated in Flat and 0 for those that are not
+
+gene.vector_upFlat = as.integer(ALL.vector %in% ID.vector_upFlat) 
+
+names(gene.vector_upFlat) <- ALL.vector #set names
+
+#weight gene vector by bias for length of gene
+pwf_upFlat <- nullp(gene.vector_upFlat, ID.vector_upFlat, bias.data = LENGTH.vector) 
+```
+
+```{r}
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall_upFlat <- goseq(pwf_upFlat, ID.vector_upFlat, gene2cat=GO.terms_upFlat, method="Wallenius", use_genes_without_cat=TRUE)
+
+GO_upFlat <- GO.wall_upFlat[order(GO.wall_upFlat$over_represented_pvalue),]
+
+colnames(GO_upFlat)[1] <- "GOterm"
+    
+#adjust p-values 
+GO_upFlat$bh_adjust <-  p.adjust(GO_upFlat$over_represented_pvalue, method="BH") #add adjusted p-values
+
+#Write file of results 
+write.csv(GO_upFlat, "../../output/GOSeq/GOseq_DEG_Origin_upFlat.csv")
+
+#Filtering for p < 0.05
+GO_upFlat_05 <- GO_upFlat %>%
+        dplyr::filter(bh_adjust<0.05) %>%
+        dplyr::arrange(., ontology, bh_adjust)
+
+#Filtering for p < 0.05
+GO_upFlat_001 <- GO_upFlat %>%
+        dplyr::filter(bh_adjust<0.001) %>%
+        dplyr::arrange(., ontology, bh_adjust)
+```
+
+Plotting!
+
+```{r}
+ontologies<-c("BP", "CC", "MF")
+
+for (category in ontologies) {
+    
+    go_results <- GO_upFlat_05
+    
+    go_results<-go_results%>%
+      filter(ontology==category)%>%
+      filter(bh_adjust != "NA") %>%
+      filter(numInCat>10)%>%
+      arrange(., bh_adjust)
+    
+      #Reduce/collapse GO term set with the rrvgo package 
+      simMatrix <- calculateSimMatrix(go_results$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont=category,
+                                method="Rel")
+    #calculate similarity 
+    scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
+    reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+    
+    #keep only the goterms from the reduced list
+    go_results<-go_results%>%
+      filter(GOterm %in% reducedTerms$go)
+    
+    #add in parent terms to list of go terms 
+    go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+   
+    #plot significantly enriched GO terms by Slim Category faceted by slim term 
+  GO.plot_upFlat <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
+    geom_point(aes(size=bh_adjust)) + 
+    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
+    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+    strip.text.y = element_text(angle=0, size = 10),
+    strip.text.x = element_text(size = 20),
+    axis.text = element_text(size = 8),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+  
+  print(GO.plot_upFlat)
+  
+ggsave(filename=paste0("../../output/GOSeq/OriginDEGs_upFlat_P05", "_", category, ".png"), plot=GO.plot_upFlat, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
+}
+```
+
+
+
+### (we should also look into the ones that are positive in one treatment but not the other)
 
