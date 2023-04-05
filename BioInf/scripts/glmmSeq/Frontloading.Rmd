@@ -1,0 +1,791 @@
+---
+title: "Frontloading Analysis after glmmSeq"
+author: "Zoe Dellaert"
+date: "3/30/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is a Rmd file analyzing our raw count data by the glmmSeq package as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html) and [manual](https://cran.r-project.org/web/packages/glmmSeq/glmmSeq.pdf).
+
+```{r}
+sessionInfo() #provides list of loaded packages and version of R. I still have version 4.1 for now.
+```
+
+```{r cars}
+library(dplyr)
+library(reshape2)
+sessionInfo() #list of packages after library-ing these packages
+```
+
+From glmmSeq, I saved the following output:
+
+- "signif_genes_rawcts.csv" #save this as csv for downstream analysis
+- "signif_genes_cts.csv" #save this as csv for downstream analysis
+- "signif_genes_normcts.csv" #save this as csv for downstream analysis
+
+I am going to start by using the normalized counts data frame, we can change this if needed. Most of the analysis uses the first 29 columns, which is the same for all 3 csvs.
+
+```{r DEGs by variable list}
+DEGs <- read.csv(file="../../output/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+
+rownames(DEGs) <- DEGs$Gene
+```
+
+Lets also pull in our metadata
+
+```{r}
+coldata <- read.csv("../../../RAnalysis/Data/RNA Submission Sample List metadata.csv") #read in metadata file
+coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
+coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+
+coldata$Origin <- factor(coldata$Origin) #set variables to factors
+coldata$Colony <- factor(coldata$Colony) #set variables to factors
+coldata$Treatment <- factor(coldata$Treatment) #set variables to factors
+
+coldata <- coldata %>% filter(Coral_ID != c("RF16A","RF16C")) #removed outlier rows from metadata
+head(coldata)
+```
+
+For frontloading analysis, I am interested in any genes that are constituitively higher expressed in the corals from the "Flat" origin, since these are exposed to a variable CO2 regime in this habitat under normal conditions. What are the genes that these corals express at baseline levels at a higher expression level compared to corals in the Slope habitat?
+
+```{r}
+#List of genes that are unregulated in the Flat origin (negative OriginFC) in the Stable treatment
+Origin_DEGs_upFlat_Stable <- DEGs %>%  dplyr::filter(Origin < 0.05) %>% 
+    dplyr::filter(Stable_OriginFC < 0) %>%
+    mutate(Stable_OriginFC = abs(Stable_OriginFC))
+
+nrow(Origin_DEGs_upFlat_Stable) # 483 total genes! 
+
+#List of genes that are unregulated in the Flat origin (negative OriginFC) in the Variable treatment
+Origin_DEGs_upFlat_Variable <- DEGs %>%  dplyr::filter(Origin < 0.05) %>%
+    dplyr::filter(Variable_OriginFC < 0) %>%
+    mutate(Variable_OriginFC = abs(Variable_OriginFC))
+
+nrow(Origin_DEGs_upFlat_Variable) # 486 total genes! 
+```
+
+``` {r digging into FC direction between Stable and Variable, up in Variable}
+#what are the differences here?
+length(which(Origin_DEGs_upFlat_Variable[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"])) #count overlapping genes
+
+extra_variable <- Origin_DEGs_upFlat_Variable[-which(Origin_DEGs_upFlat_Variable[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"]),"Gene"] #this code checks all of the 486 genes that are unregulated in Flat in the Variable Treatment against all of those in the Stable Treatment (483). It confirms that the 480 of the genes are overlapping between both treatments, so it is good to know that these are not completely different sets of genes. However, 6 genes are extra in the Variable treatment that were not unregulated in Flat in the Stable treatment
+
+#Lets interrogate these genes a little further by looking at the adjusted p-values and fold change for each gene
+
+DEGs[extra_variable,23:29]
+
+#This confirms that while the Stable_OriginFC is positive, the Variable_OriginFC is negative
+
+abs(DEGs[extra_variable,"Stable_OriginFC"]) > abs(DEGs[extra_variable,"Variable_OriginFC"])
+#Interestingly, in all 6 cases, the absolute value of Stable_OriginFC is larger than the absolute value of Variable_OriginFC.
+
+#These 6 genes had a negative fold change in the Variable treatment but not the stable treatment. This means that these genes were unregulated in the Flat origin in the Variable treatment but not in the Stable treatment
+```
+
+```{r digging into FC direction between Stable and Variable, up in Stable}
+#what about the overlap in the other direction?
+length(which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"])) #count overlapping genes
+
+extra_stable <- Origin_DEGs_upFlat_Stable[-which(Origin_DEGs_upFlat_Stable[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]),"Gene"] #this code checks all of the 483 genes that are unregulated in Flat in the Stable Treatment against all of those in the Variable Treatment (486). It confirms that the 480 of the genes are overlapping between both treatments, so it is good to know that these are not completely different sets of genes. However, 3 genes are extra in the Stable treatment that were not unregulated in Flat in the Variable treatment
+
+#Lets interrogate these genes a little further by looking at the adjusted p-values and fold change for each gene
+
+DEGs[extra_stable,23:29]
+
+#This confirms that while the Stable_OriginFC is negative, the Variable_OriginFC is positive (opposite pattern from above)
+
+abs(DEGs[extra_stable,"Stable_OriginFC"]) > abs(DEGs[extra_stable,"Variable_OriginFC"])
+#Interestingly, in all 3 cases again, the absolute value of Stable_OriginFC is larger than the absolute value of Variable_OriginFC.
+
+#These 3 genes had a negative fold change in the Stable treatment but not the Variable treatment. This means that these genes were unregulated in the Flat origin in the Stable treatment but not in the Variable treatment
+```
+
+For frontloading analysis, I am going to start by looking at the 480 genes that were unregulated in Flat in both Stable and Variable Treatments
+
+```{r}
+#List of genes that are unregulated in the Flat origin (negative OriginFC) in the Stable treatment
+Origin_DEGs_upFlat_both <- DEGs %>%  dplyr::filter(Origin < 0.05) %>% 
+    dplyr::filter(Stable_OriginFC < 0 & Variable_OriginFC < 0) %>% mutate(Stable_OriginFC = abs(Stable_OriginFC)) %>% mutate(Variable_OriginFC = abs(Variable_OriginFC))
+
+nrow(Origin_DEGs_upFlat_both) #count how many genes this is
+
+length(Origin_DEGs_upFlat_both[,"Gene"] %in% Origin_DEGs_upFlat_Variable[,"Gene"]) #confirm these are the same 480 overlapping genes from above
+length(Origin_DEGs_upFlat_both[,"Gene"] %in% Origin_DEGs_upFlat_Stable[,"Gene"]) #confirm these are the same 480 overlapping genes from above
+```
+
+Now we have a set of 480 genes, that regardless of treatment were significantly unregulated in the Flat Origin.
+
+## Do we want to remove the q_val significance filter? And just look at all genes that are unregulated in Flat regardless of significance? That's what we had discussed but I am going to continue on this path for now
+
+```{r}
+melted <- Origin_DEGs_upFlat_both %>%
+            dplyr::select(c('Gene',coldata$Coral_ID)) %>%  #keep only the columns with the gene name and normalized count per sample
+            reshape2::melt(id.var = 'Gene') %>% #melt by Gene so it is in long form with one observation of a gene-sample pair and its normalized count per row, 22080 rows for 480 genes * 46 samples
+            dplyr::rename(Coral_ID = variable) %>% dplyr::rename(norm_count = value)
+
+melted_merge <- merge(melted, coldata, by = 'Coral_ID') %>% 
+                        dplyr::group_by(Gene, Origin, Treatment) %>%  #should  I only group by origin here or by treatment and origin?
+                        dplyr::select(!'Coral_ID') %>% 
+                        dplyr::summarise(meanExp = mean(norm_count))
+
+#this gives us a mean expression value per condition, which we already had through glmmSeq  (predData) 
+
+#should  I only group by origin here or by treatment and origin?
+
+# melted_merge_org <- melted_merge %>% 
+#                         dplyr::group_by(Gene, Origin) %>% 
+#                         dplyr::summarise(meanExp = mean(meanExp))
+
+melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
+```
+
+Let's see if the means calculated here match with what glmmSeq predicted
+
+```{r}
+glmmSeq_predict <- read.csv(file="../../output/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+
+glmmSeq_predict_DEGs <- glmmSeq_predict[glmmSeq_predict[,"Gene"] %in% Origin_DEGs_upFlat_both[,"Gene"],]
+
+glmmSeq_predict_DEGs_melt  <- glmmSeq_predict_DEGs %>% dplyr::select(!contains("LCI_")) %>% dplyr::select(!contains("UCI_")) %>% #drop the confidence interval columns for now 
+     reshape2::melt(id.var = 'Gene') %>%#melt by Gene so it is in long form with one observation of a condition pair per row, 1920 rows for 480 genes * 4 conditions
+     dplyr::rename(Condition = variable) %>% dplyr::rename(meanExp = value)
+```
+
+They are close but not exactly the same #s. Let's stick with the glmmSeq values.
+
+```{r}
+FlatUP_READY2 <- dcast(glmmSeq_predict_DEGs_melt, Gene ~ Condition)
+
+#I guess that means I could have just done
+
+FlatUP_READY <- glmmSeq_predict_DEGs %>%
+    dplyr::select(!contains("LCI_")) %>% #drop the confidence interval columns for now 
+    dplyr::select(!contains("UCI_")) %>% #drop the confidence interval columns for now 
+    dplyr::arrange(Gene) # sort by gene name
+```
+
+```{r}
+# we have our final dataset ready to rock! 'FlatUP_READY' :-) 
+# lets calculate the x and y axis of the frontloading figure following Barshis et al. 2013 criteria 
+
+# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
+# [ (MM/MA) / (AM/AA) ]
+
+#for our purposes, conditioned = Flat and naive = Slope, Ambient = Stable, and Moderate = Variable
+
+
+# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
+# [ (Variable_Flat/Stable_Flat) / (Variable_Slope/Stable_Slope) ]
+# like a ratio of a ratio.. the values <1 will indicate genes that are lower response to stress than the naive animals (opposite for values >1)
+
+# lets calculate it 
+
+colnames(FlatUP_READY)
+
+xall_1 <- ( (FlatUP_READY$y_Variable_Flat / FlatUP_READY$y_Stable_Flat) / (FlatUP_READY$y_Variable_Slope / FlatUP_READY$y_Stable_Slope) ) # call y_Stable_Flat as the control for the y_Variable_Flat ratio
+
+xall_2 <- ( (FlatUP_READY$y_Variable_Flat / FlatUP_READY$y_Stable_Slope) / (FlatUP_READY$y_Variable_Slope / FlatUP_READY$y_Stable_Slope) ) # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+xall_3 <- (FlatUP_READY$y_Variable_Flat / FlatUP_READY$y_Variable_Slope)  # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+# Xall 2 and Xall3 are the exact same ratios.
+
+FlatUP_READY$xall_1 <- xall_1
+FlatUP_READY$xall_2 <- xall_2
+FlatUP_READY$xall_3 <- xall_3
+
+# Y Axis - this is simply the conditioned control over the naive control 
+# ( MA / AA ) 
+
+# lets calculate it 
+yall <- (FlatUP_READY$y_Stable_Flat / FlatUP_READY$y_Stable_Slope)
+
+FlatUP_READY$yall <- yall
+
+```
+
+
+```{r}
+# lets plot it! 
+library(ggplot2)
+
+P_allgenes <- FlatUP_READY %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,max(yall) + 1), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = max(yall) + 1, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P_allgenes
+
+P <- FlatUP_READY %>% dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,6), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 6, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P
+```
+We need to interrogate the super high y values. These are genes whose raw counts were 0 in certain treatments so the fold change is being divided by 0/a very small # depending on the normalization applied
+
+
+What about the xall_2 ratio?
+
+```{r}
+# lets plot it! 
+library(ggplot2)
+
+P2_allgenes <- FlatUP_READY %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_2, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,max(yall) + 1), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = max(yall) + 1, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P2_allgenes
+
+P2 <- FlatUP_READY %>% dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_2, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,6), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 6, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P2
+```
+
+```{r}
+# call genes with x axis vaulue < 1
+frontloaded_genes <- FlatUP_READY %>% 
+  dplyr::filter(xall_1 < 1) %>% 
+  dplyr::filter(yall > 1) %>% 
+  dplyr::select('Gene') 
+```
+
+
+So this is a different way of calculating "fold change" : lets take the y axis as example:
+
+Also using the gene with the highest yall as an example to demonstrate the differences in our methods
+
+```{r}
+#yall <- (FlatUP_READY$y_Stable_Flat / FlatUP_READY$y_Stable_Slope)
+
+#fold change calculated for frontloading analysis, which is mean expression in flat divided by mean expression in slope (both in stable treatment)
+
+(FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Flat)%>% unlist)/(FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Slope)%>% unlist)
+
+#aka
+#FlatUP_READY$yall
+
+#The equivalent of this in our glmmseq method:
+#fold change calculated for glmmSeq: log 2 of each mean expression subtracted from one another
+DEGs %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% dplyr::select(contains("FC"))
+
+#Stable_OriginFC = log2(predData[, "y_Stable_Slope"]+1) - log2(predData[, "y_Stable_Flat"]+1)
+
+log2((FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Slope)%>% unlist) + 1) - log2( (FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Flat)%>% unlist) +1)
+
+```
+
+Here, the dividing method of fold change gets us a value of 208.7273, but the log2 subtraction method gives 4.589812.
+
+```{r}
+#xall_3 <- (FlatUP_READY$y_Variable_Flat / FlatUP_READY$y_Variable_Slope)  # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+#xall_3 (same as xall_2) fold change calculated for frontloading analysis, which is mean expression in flat divided by mean expression in slope (both in variable treatment)
+
+(FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Flat)%>% unlist)/(FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Slope)%>% unlist)
+
+#aka
+#FlatUP_READY$xall_3
+
+#The equivalent of this in our glmmseq method:
+#fold change calculated for glmmSeq: log 2 of each mean expression subtracted from one another
+DEGs %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% dplyr::select(contains("FC"))
+
+#Variable_OriginFC = log2(predData[, "y_Variable_Slope"]+1) - log2(predData[, "y_Variable_Flat"]+1)
+
+log2((FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Slope)%>% unlist) + 1) - log2( (FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Flat)%>% unlist) +1)
+
+```
+
+What would the graph look like if we used the fold changes from glmmSeq?
+
+Since we are looking at genes that are higher in Flat, I will take negative of the fold change calculated above:
+
+```{r}
+-(log2((FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Slope)%>% unlist) + 1) - log2( (FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Stable_Flat)%>% unlist) +1))
+
+-(log2((FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Slope)%>% unlist) + 1) - log2( (FlatUP_READY %>% dplyr::filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g3509.t1") %>% select(y_Variable_Flat)%>% unlist) +1))
+```
+
+If I use a list of all Flat-up genes (like we have throughout this script), then I can just take the absolute value, as we have already done in the object "Origin_DEGs_upFlat_both"
+
+In this object, the columns "Stable_OriginFC" and "Variable_OriginFC" give us the yall ratio and the xall_3 (same as x_all2) ratio
+
+Stable_OriginFC = yall
+Variable_OriginFC = xall_3
+```{r}
+head(Origin_DEGs_upFlat_both %>% dplyr::select(contains("FC")))
+
+P2_glmmFC_allgenes <- Origin_DEGs_upFlat_both %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=Variable_OriginFC, y=Stable_OriginFC)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes")# + 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,max(yall) + 1), expand = c(0, 0)) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = max(Stable_OriginFC) + 1, alpha = .2) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P2_glmmFC_allgenes
+```
+
+This is basically the same as the fold change plot we made with glmmseq, but all the fold changes will be inverse (negative) because here we took the absolute value of them all and only looked at fold changes that were originally negative (higher in Flat), and also we filtered for significance with q_Origin < 0.05:
+
+So! This is the yellow dots in the bottom left quadrant in the glmmSeq fcplot
+
+```{r}
+Origin_DEGs_upFlat_both %>% mutate(across(Stable_OriginFC:Variable_OriginFC, ~ .* -1)) %>% 
+        ggplot(aes(x=Stable_OriginFC, y=Variable_OriginFC)) +
+        geom_point() +
+        theme_classic() 
+```
+
+
+What if I just log transform xall_2 and yall? This basically does the same as P2_glmmFC_allgenes but a little different...
+```{r}
+FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% 
+        ggplot(aes(x=xall_2, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes, log2 transform Sam foldchange (x2)") 
+
+P2_glmmFC_allgenes
+```
+
+
+Why is it different?
+
+```{r}
+#let's look at the log transformed yall (plotted above)
+head(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(Gene,yall))
+
+#and compare to the lg2fc plotted in P2_glmmFC_allgenes
+head(Origin_DEGs_upFlat_both %>% select(Gene,Stable_OriginFC) %>% arrange(Gene))
+
+#So odd that these numbers are not the exact same. Need to look into why
+
+#How close are they? How many of the FCs are the same if we round to one decimal point?
+sum(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),1)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),1))
+
+#How close are they? How many of the FCs are the same if we round to no decimal points?
+sum(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0))
+
+#so for the most part, 454/480 genes have roughly the same Log2FC calculated by both methods.
+
+#lets look into why these might be different: list the L2FC from the Origin_DEGs_upFlat_both (Log 2-Log2) the genes that did not have the same L2FC in both datasets after rounding
+(Origin_DEGs_upFlat_both%>% arrange(Gene))[which(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0)),] %>% select(Gene,Stable_OriginFC)
+
+#what is the maximum L2FC in this list? #the ones that aren't rounding the same are ones with Stable_OriginFC < 6
+max((Origin_DEGs_upFlat_both%>% arrange(Gene))[which(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0)),] %>% select(Stable_OriginFC))
+
+#what are the L2FC for these in the FlatUP_READY dataset (Log2(Flat/Slope)) : list the L2FC from the genes that did not have the same L2FC in both datasets after rounding
+FlatUP_READY[which(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0)),] %>% select(Gene,yall)
+
+log2(FlatUP_READY[which(round(FlatUP_READY %>% mutate(across(xall_2:yall, ~ log2(.))) %>% select(yall),0)  != round(Origin_DEGs_upFlat_both  %>% arrange(Gene) %>% select(Stable_OriginFC),0)),] %>% select(yall))
+```
+
+Most likely this is because the log - log calculation has a +1 term in it: "log2(predData[, "y_Stable_Slope"]+1) - log2(predData[, "y_Stable_Flat"]+1)" , so the values are a little bit shifted.
+
+So the values are ~roughly the same but not exactly . I am really not sure why!!!!!
+
+
+-----
+
+
+
+
+We can also redo the analysis with the manually calculated mean values.
+
+```{r}
+# we have our final dataset ready to rock! 'melted_merge_READY' :-) 
+# lets calculate the x and y axis of the frontloading figure following Barshis et al. 2013 criteria 
+
+# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
+# [ (MM/MA) / (AM/AA) ]
+
+#for our purposes, conditioned = Flat and naive = Slope, Ambient = Stable, and Moderate = Variable
+
+
+# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
+# [ (Variable_Flat/Stable_Flat) / (Variable_Slope/Stable_Slope) ]
+# like a ratio of a ratio.. the values <1 will indicate genes that are lower response to stress than the naive animals (opposite for values >1)
+
+# lets calculate it 
+
+colnames(melted_merge_READY)
+
+xall_1 <- ( (melted_merge_READY$Flat_Variable / melted_merge_READY$Flat_Stable) / (melted_merge_READY$Slope_Variable / melted_merge_READY$Slope_Stable) ) # call Flat_Stable as the control for the Flat_Variable ratio
+xall_2 <- ( (melted_merge_READY$Flat_Variable / melted_merge_READY$Slope_Stable) / (melted_merge_READY$Slope_Variable / melted_merge_READY$Slope_Stable) ) # call Slope_Stable as the control for the Flat_Variable ratio
+xall_3 <- (melted_merge_READY$Flat_Variable / melted_merge_READY$Slope_Variable)  # call Slope_Stable as the control for the Flat_Variable ratio
+
+melted_merge_READY$xall_1 <- xall_1
+melted_merge_READY$xall_2 <- xall_2
+melted_merge_READY$xall_3 <- xall_3
+
+# Y Axis - this is simply the conditioned control over the naive control 
+# ( MA / AA ) 
+
+# lets calculate it 
+yall <- (melted_merge_READY$Flat_Stable / melted_merge_READY$Slope_Stable)
+
+melted_merge_READY$yall <- yall
+
+```
+
+
+```{r}
+P_manual_allgenes <- melted_merge_READY %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,max(yall) + 1), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = max(yall) + 10, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P_manual_allgenes
+
+P_manual <- melted_merge_READY %>% dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,6), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 6, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P_manual
+```
+
+```{r}
+# call genes with x axis vaulue < 1
+frontloaded_genes_manual <- melted_merge_READY %>% 
+  dplyr::filter(xall_1 < 1) %>% 
+  dplyr::filter(yall > 1) %>% 
+  dplyr::select('Gene') 
+```
+
+
+----- 
+
+Want to come back to the differences in Fold Change direction by treatment. Interesting that the absolute value was always largest in the stable treatment but the direction changed. This suggests that the expression of the genes converges in the Variable treatment, creating a smaller fold change between Slope and Flat origins. For this small set of 9 genes, ______. 
+
+What is happening biologically?
+
+In all 9 genes, they were classified as q_Origin:Treatment < 0.05 (biggest FC in Stable) . They all also were significant by adjusted p-value by Origin (that's how we filtered the list to get these in the first place). None were significant by Treatment alone.
+
+
+------
+
+## Whole dataset: All 9011 genes
+
+```{r}
+head(DEGs)
+
+nrow(DEGs) #count how many genes this is
+```
+
+
+```{r}
+melted <- DEGs %>% dplyr::select(c('Gene',coldata$Coral_ID)) %>%  #keep only the columns with the gene name and normalized count per sample
+            reshape2::melt(id.var = 'Gene') %>% #melt by Gene so it is in long form with one observation of a gene-sample pair and its normalized count per row, 414506 rows for 9011 genes * 46 samples
+            dplyr::rename(Coral_ID = variable) %>% dplyr::rename(norm_count = value)
+
+melted_merge <- merge(melted, coldata, by = 'Coral_ID') %>% 
+                        dplyr::group_by(Gene, Origin, Treatment) %>%  #should  I only group by origin here or by treatment and origin?
+                        dplyr::select(!'Coral_ID') %>% 
+                        dplyr::summarise(meanExp = mean(norm_count))
+
+#this gives us a mean expression value per condition, which we already had through glmmSeq  (predData) 
+
+#should  I only group by origin here or by treatment and origin?
+
+# melted_merge_org <- melted_merge %>% 
+#                         dplyr::group_by(Gene, Origin) %>% 
+#                         dplyr::summarise(meanExp = mean(meanExp))
+
+melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
+```
+
+Let's see if the means calculated here match with what glmmSeq predicted
+
+```{r}
+glmmSeq_predict <- read.csv(file="../../output/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+
+READY <- glmmSeq_predict %>%
+    dplyr::select(!contains("LCI_")) %>% #drop the confidence interval columns for now 
+    dplyr::select(!contains("UCI_")) %>% #drop the confidence interval columns for now 
+    dplyr::arrange(Gene) # sort by gene name
+```
+
+They are close but not exactly the same #s. Let's stick with the glmmSeq values.
+
+```{r}
+# we have our final dataset ready to rock! 'READY' :-) 
+# lets calculate the x and y axis of the frontloading figure following Barshis et al. 2013 criteria 
+
+# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
+# [ (MM/MA) / (AM/AA) ]
+
+#for our purposes, conditioned = Flat and naive = Slope, Ambient = Stable, and Moderate = Variable
+
+
+# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
+# [ (Variable_Flat/Stable_Flat) / (Variable_Slope/Stable_Slope) ]
+# like a ratio of a ratio.. the values <1 will indicate genes that are lower response to stress than the naive animals (opposite for values >1)
+
+# lets calculate it 
+
+colnames(READY)
+
+xall_1 <- ( (READY$y_Variable_Flat / READY$y_Stable_Flat) / (READY$y_Variable_Slope / READY$y_Stable_Slope) ) # call y_Stable_Flat as the control for the y_Variable_Flat ratio
+
+xall_2 <- ( (READY$y_Variable_Flat / READY$y_Stable_Slope) / (READY$y_Variable_Slope / READY$y_Stable_Slope) ) # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+xall_3 <- (READY$y_Variable_Flat / READY$y_Variable_Slope)  # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+# Xall 2 and Xall3 are the exact same ratios.
+
+READY$xall_1 <- xall_1
+READY$xall_2 <- xall_2
+READY$xall_3 <- xall_3
+
+# Y Axis - this is simply the conditioned control over the naive control 
+# ( MA / AA ) 
+
+# lets calculate it 
+yall <- (READY$y_Stable_Flat / READY$y_Stable_Slope)
+
+READY$yall <- yall
+
+```
+
+
+```{r}
+# lets plot it! 
+library(ggplot2)
+
+P_allgenes <- READY %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes")# + 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,max(yall) + 1), expand = c(0, 0)) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = max(yall) + 1, alpha = .2) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P_allgenes
+
+P <- READY %>% dplyr::filter(yall < 6) %>% dplyr::filter(xall_1 < 6) %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") #+ 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,6), expand = c(0, 0)) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 6, alpha = .2) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P
+```
+
+
+-------
+
+## Whole dataset but only origin significant (847 genes)
+
+```{r}
+DEGs <- DEGs %>% dplyr::filter(Origin < 0.05)
+
+nrow(DEGs) #count how many genes this is
+```
+
+```{r}
+melted <- DEGs  %>% dplyr::select(c('Gene',coldata$Coral_ID)) %>%  #keep only the columns with the gene name and normalized count per sample
+            reshape2::melt(id.var = 'Gene') %>% #melt by Gene so it is in long form with one observation of a gene-sample pair and its normalized count per row, 414506 rows for 9011 genes * 46 samples
+            dplyr::rename(Coral_ID = variable) %>% dplyr::rename(norm_count = value)
+
+melted_merge <- merge(melted, coldata, by = 'Coral_ID') %>% 
+                        dplyr::group_by(Gene, Origin, Treatment) %>%  #should  I only group by origin here or by treatment and origin?
+                        dplyr::select(!'Coral_ID') %>% 
+                        dplyr::summarise(meanExp = mean(norm_count))
+
+#this gives us a mean expression value per condition, which we already had through glmmSeq  (predData) 
+
+#should  I only group by origin here or by treatment and origin?
+
+# melted_merge_org <- melted_merge %>% 
+#                         dplyr::group_by(Gene, Origin) %>% 
+#                         dplyr::summarise(meanExp = mean(meanExp))
+
+melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
+```
+
+Let's see if the means calculated here match with what glmmSeq predicted
+
+```{r}
+glmmSeq_predict <- read.csv(file="../../output/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+
+glmmSeq_predict_DEGs <- glmmSeq_predict[glmmSeq_predict[,"Gene"] %in% DEGs[,"Gene"],]
+
+READY <- glmmSeq_predict_DEGs %>% 
+    dplyr::select(!contains("LCI_")) %>% #drop the confidence interval columns for now 
+    dplyr::select(!contains("UCI_")) %>% #drop the confidence interval columns for now 
+    dplyr::arrange(Gene) # sort by gene name
+```
+
+They are close but not exactly the same #s. Let's stick with the glmmSeq values.
+
+```{r}
+# we have our final dataset ready to rock! 'READY' :-) 
+# lets calculate the x and y axis of the frontloading figure following Barshis et al. 2013 criteria 
+
+# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
+# [ (MM/MA) / (AM/AA) ]
+
+#for our purposes, conditioned = Flat and naive = Slope, Ambient = Stable, and Moderate = Variable
+
+
+# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
+# [ (Variable_Flat/Stable_Flat) / (Variable_Slope/Stable_Slope) ]
+# like a ratio of a ratio.. the values <1 will indicate genes that are lower response to stress than the naive animals (opposite for values >1)
+
+# lets calculate it 
+
+colnames(READY)
+
+xall_1 <- ( (READY$y_Variable_Flat / READY$y_Stable_Flat) / (READY$y_Variable_Slope / READY$y_Stable_Slope) ) # call y_Stable_Flat as the control for the y_Variable_Flat ratio
+
+xall_2 <- ( (READY$y_Variable_Flat / READY$y_Stable_Slope) / (READY$y_Variable_Slope / READY$y_Stable_Slope) ) # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+xall_3 <- (READY$y_Variable_Flat / READY$y_Variable_Slope)  # call y_Stable_Slope as the control for the y_Variable_Flat ratio
+
+# Xall 2 and Xall3 are the exact same ratios.
+
+READY$xall_1 <- xall_1
+READY$xall_2 <- xall_2
+READY$xall_3 <- xall_3
+
+# Y Axis - this is simply the conditioned control over the naive control 
+# ( MA / AA ) 
+
+# lets calculate it 
+yall <- (READY$y_Stable_Flat / READY$y_Stable_Slope)
+
+READY$yall <- yall
+
+```
+
+
+```{r}
+# lets plot it! 
+library(ggplot2)
+
+P_allgenes <- READY %>% #dplyr::filter(yall < 6) %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes")# + 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,max(yall) + 1), expand = c(0, 0)) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = max(yall) + 1, alpha = .2) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P_allgenes
+
+P <- READY %>% dplyr::filter(yall < 6) %>% dplyr::filter(xall_1 < 6) %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        geom_point() +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") #+ 
+        #scale_x_continuous(expand = c(0, 0)) + scale_y_continuous(limits = c(0,6), expand = c(0, 0)) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 6, alpha = .2) + 
+        #annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P
+```
