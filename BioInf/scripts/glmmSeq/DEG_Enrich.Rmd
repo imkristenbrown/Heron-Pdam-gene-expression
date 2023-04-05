@@ -207,7 +207,7 @@ GO_001 <- GO %>%
 
 Plotting!
 
-```{r, eval = FALSE}
+```{r}
 ontologies<-c("BP", "CC", "MF")
 
 for (category in ontologies) {

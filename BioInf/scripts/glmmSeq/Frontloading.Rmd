@@ -32,7 +32,7 @@ I am going to start by using the normalized counts data frame, we can change thi
 ```{r DEGs by variable list}
 DEGs <- read.csv(file="../../output/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
-#rownames(DEGs) <- DEGs$Gene
+rownames(DEGs) <- DEGs$Gene
 ```
 
 Lets also pull in our metadata
@@ -544,9 +544,7 @@ In all 9 genes, they were classified as q_Origin:Treatment < 0.05 (biggest FC in
 
 ------
 
-Whole dataset:
-
-For frontloading analysis, I am going to start by looking at the 480 genes that were unregulated in Flat in both Stable and Variable Treatments
+## Whole dataset: All 9011 genes
 
 ```{r}
 head(DEGs)
@@ -554,9 +552,6 @@ head(DEGs)
 nrow(DEGs) #count how many genes this is
 ```
 
-Now we have a set of 480 genes, that regardless of treatment were significantly unregulated in the Flat Origin.
-
-## Do we want to remove the q_val significance filter? And just look at all genes that are unregulated in Flat regardless of significance? That's what we had discussed but I am going to continue on this path for now
 
 ```{r}
 melted <- DEGs %>% dplyr::select(c('Gene',coldata$Coral_ID)) %>%  #keep only the columns with the gene name and normalized count per sample
@@ -673,21 +668,13 @@ P
 
 -------
 
-Whole dataset but only origin significant
-
-Whole dataset:
-
-For frontloading analysis, I am going to start by looking at the 480 genes that were unregulated in Flat in both Stable and Variable Treatments
+## Whole dataset but only origin significant (847 genes)
 
 ```{r}
 DEGs <- DEGs %>% dplyr::filter(Origin < 0.05)
 
 nrow(DEGs) #count how many genes this is
 ```
-
-Now we have a set of 480 genes, that regardless of treatment were significantly unregulated in the Flat Origin.
-
-## Do we want to remove the q_val significance filter? And just look at all genes that are unregulated in Flat regardless of significance? That's what we had discussed but I am going to continue on this path for now
 
 ```{r}
 melted <- DEGs  %>% dplyr::select(c('Gene',coldata$Coral_ID)) %>%  #keep only the columns with the gene name and normalized count per sample
