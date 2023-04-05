@@ -139,10 +139,8 @@ lengths<-as.data.frame(lengths) #convert to data frame
 geneInfo$Length<-lengths$transcript_lengths[match(geneInfo$gene_id, lengths$seqnames)] #Add in length to geneInfo
 ```
 
-Format GO terms to remove dashes and quotes.  
+Format GO terms to remove dashes and quotes and separate by semicolons (replace , with ;) in  Annotation.GO.ID column
 ```{r}
-#remove dashes, remove quotes from columns and separate by semicolons (replace , with ;) in  Annotation.GO.ID column
-
 geneInfo$Annotation.GO.ID <- gsub(",", ";", geneInfo$Annotation.GO.ID)
 geneInfo$Annotation.GO.ID <- gsub('"', "", geneInfo$Annotation.GO.ID)
 geneInfo$Annotation.GO.ID <- gsub("-", NA, geneInfo$Annotation.GO.ID)
@@ -260,55 +258,6 @@ ggsave(filename=paste0("../../output/GOSeq/OriginDEGs_P05", "_", category, ".png
 }
 ```
 
-```{r}
-for (category in ontologies) {
-    
-    go_results <- GO_001
-    
-    go_results<-go_results%>%
-      filter(ontology==category)%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-    
-      #Reduce/collapse GO term set with the rrvgo package 
-      simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont=category,
-                                method="Rel")
-    #calculate similarity 
-    scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-    reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-    
-    #keep only the goterms from the reduced list
-    go_results<-go_results%>%
-      filter(GOterm %in% reducedTerms$go)
-    
-    #add in parent terms to list of go terms 
-    go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-   
-    #plot significantly enriched GO terms by Slim Category faceted by slim term 
-  GO.plot <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-  
-  print(GO.plot)
-  
-ggsave(filename=paste0("../../output/GOSeq/OriginDEGs_P001", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
-}
-```
-
 ### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
 
 ```{r}
@@ -405,3 +354,128 @@ write.csv(KO, "../../output/GOSeq/GOseq_KEGG_Origin.csv")
 ```
 
 Info about this KEGG term: K17592: SACS; sacsin
+
+
+### What about the direction of FC: Genes significant by Origin and upregulated in Slope origin (positive FC) for both treatments (we should also look into the ones that are positive in one treatment but not the other)
+
+```{r}
+### Generate vector with names of all genes 
+ALL.vector <- c(geneInfo$gene_id)
+
+### Generate length vector for all genes
+LENGTH.vector <- as.integer(geneInfo$Length)
+
+### Generate vector with names of the 847 significant DEGs by Origin
+ID.vector_upSlope <- geneInfo %>%
+  filter(q_Origin < 0.05) %>%
+  filter(Stable_OriginFC > 0 & Variable_OriginFC > 0) %>%
+  pull(gene_id)
+
+##Get a list of GO Terms for the 847 significant DEGs by Origin
+GO.terms_upSlope <- geneInfo %>%
+  filter(q_Origin < 0.05) %>%
+  filter(Stable_OriginFC > 0 & Variable_OriginFC > 0) %>%
+  dplyr::select(gene_id, Annotation.GO.ID)
+
+dim(GO.terms_upSlope) #358 genes are upregulated in the Slope Origin in both treatments and significant by Origin
+
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms_upSlope$Annotation.GO.ID), ";")
+split2 <- data.frame(v1 = rep.int(GO.terms_upSlope$gene, sapply(split, length)), v2 = unlist(split))
+colnames(split2) <- c("gene", "Annotation.GO.ID")
+GO.terms_upSlope <- split2
+
+##Construct list of genes with 1 for genes in that are significant for Origin and upregulated in Slope and 0 for those that are not
+
+gene.vector_upSlope = as.integer(ALL.vector %in% ID.vector_upSlope) 
+
+names(gene.vector_upSlope) <- ALL.vector #set names
+
+#weight gene vector by bias for length of gene
+pwf_upSlope <- nullp(gene.vector_upSlope, ID.vector_upSlope, bias.data = LENGTH.vector) 
+```
+
+```{r}
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall_upSlope <- goseq(pwf_upSlope, ID.vector_upSlope, gene2cat=GO.terms_upSlope, method="Wallenius", use_genes_without_cat=TRUE)
+
+GO_upSlope <- GO.wall_upSlope[order(GO.wall_upSlope$over_represented_pvalue),]
+
+colnames(GO)[1] <- "GOterm"
+    
+#adjust p-values 
+GO_upSlope$bh_adjust <-  p.adjust(GO_upSlope$over_represented_pvalue, method="BH") #add adjusted p-values
+
+#Write file of results 
+write.csv(GO_upSlope, "../../output/GOSeq/GOseq_DEG_Origin_upSlope.csv")
+
+#Filtering for p < 0.05
+GO_upSlope_05 <- GO_upSlope %>%
+        dplyr::filter(bh_adjust<0.05) %>%
+        dplyr::arrange(., ontology, bh_adjust)
+
+#Filtering for p < 0.05
+GO_upSlope_001 <- GO_upSlope %>%
+        dplyr::filter(bh_adjust<0.001) %>%
+        dplyr::arrange(., ontology, bh_adjust)
+```
+
+Plotting!
+
+```{r}
+ontologies<-c("BP", "CC", "MF")
+
+for (category in ontologies) {
+    
+    go_results <- GO_upSlope_05
+    
+    go_results<-go_results%>%
+      filter(ontology==category)%>%
+      filter(bh_adjust != "NA") %>%
+      filter(numInCat>10)%>%
+      arrange(., bh_adjust)
+    
+      #Reduce/collapse GO term set with the rrvgo package 
+      simMatrix <- calculateSimMatrix(go_results$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont=category,
+                                method="Rel")
+    #calculate similarity 
+    scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
+    reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+    
+    #keep only the goterms from the reduced list
+    go_results<-go_results%>%
+      filter(GOterm %in% reducedTerms$go)
+    
+    #add in parent terms to list of go terms 
+    go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+   
+    #plot significantly enriched GO terms by Slim Category faceted by slim term 
+  GO.plot_upslope <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
+    geom_point(aes(size=bh_adjust)) + 
+    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
+    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+    strip.text.y = element_text(angle=0, size = 10),
+    strip.text.x = element_text(size = 20),
+    axis.text = element_text(size = 8),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+  
+  print(GO.plot)
+  
+ggsave(filename=paste0("../../output/GOSeq/OriginDEGs_upslope_P05", "_", category, ".png"), plot=GO.plot_upslope, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
+}
+```
+
+
+### What about the direction of FC: Genes significant by Origin and upregulated in Flat origin (negative FC) for both treatments (we should also look into the ones that are positive in one treatment but not the other)
+
+
+(we should also look into the ones that are positive in one treatment but not the other)
+
