@@ -24,7 +24,8 @@ Factor_ggmodelPlot <- function(object, geneName = NULL, x1var = NULL, x2var = NU
     x2labs <- levels(droplevels(factor(modelData[, x2var])))
   }
   xlim <- range(c(df_long$x, df_model$x), na.rm = TRUE)
-  pval <- object@stats$pvals[geneName, , drop = FALSE]
+  #pval <- object@stats$pvals[geneName, , drop = FALSE] #commented out
+  pval <- object@stats$qvals[geneName, , drop = FALSE] #changed pvals to qvals to plot adjusted p-values
   pval <- formatC(pval, digits = 2)
   lineColours <- rep_len(lineColours, maxX2)
   modelColours <- rep_len(modelColours, maxX2)
