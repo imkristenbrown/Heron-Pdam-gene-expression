@@ -28,6 +28,8 @@ library(goseq)
 library(rtracklayer)
 library(rrvgo)
 library(GO.db)
+library(tidyr)
+library(forcats)
 sessionInfo() #list of packages after library-ing these packages
 ```
 
@@ -307,3 +309,99 @@ ggsave(filename=paste0("../../output/GOSeq/OriginDEGs_P001", "_", category, ".pn
 }
 ```
 
+### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
+
+```{r}
+GO_plot_all <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, numDEInCat)) %>%
+  mutate(term = fct_reorder(term, ontology)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1, aes(colour = ontology)) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()) #Set the plot background #set title attributes
+
+GO_plot_all
+
+ggsave("../../output/GOSeq/OriginDEGs_P001.pdf", GO_plot_all, width = 28, height = 175, units = c("in"), dpi=100, limitsize=FALSE)
+
+#ordered by p-value
+GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
+  mutate(term = fct_reorder(term, ontology)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1, aes(colour = ontology)) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()) #Set the plot background #set title attributes
+
+GO_plot_all_pval
+
+ggsave("../../output/GOSeq/OriginDEGs_P001_orderedpval.pdf", GO_plot_all_pval, width = 28, height = 175, units = c("in"), dpi=100, limitsize=FALSE)
+```
+
+
+### KEGG enrichment
+```{r}
+##Get a list of KEGG Terms for the 847 significant DEGs by Origin
+KO.terms <- geneInfo %>%
+  filter(q_Origin < 0.05) %>%
+  dplyr::select(gene_id, KEGG)
+
+
+#run goseq using Wallenius method for all categories of KEGG terms
+
+KO.wall <-
+  goseq(
+    pwf,
+    ID.vector,
+    gene2cat = KO.terms,
+    test.cats = c("KEGG"),
+    method = "Wallenius",
+    use_genes_without_cat = TRUE
+  )
+
+
+KO <- KO.wall[order(KO.wall$over_represented_pvalue), ]
+colnames(KO)[1] <- "KEGGterm"
+
+#adjust p-values
+KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method = "BH") #add adjusted p-values
+
+#Filtering for p < 0.05
+KO_05 <- KO %>%
+  dplyr::filter(bh_adjust < 0.05) %>%
+  dplyr::arrange(., bh_adjust)
+
+head(KO_05)
+#Write file of results 
+write.csv(KO, "../../output/GOSeq/GOseq_KEGG_Origin.csv")
+```
+
+Info about this KEGG term: K17592: SACS; sacsin
