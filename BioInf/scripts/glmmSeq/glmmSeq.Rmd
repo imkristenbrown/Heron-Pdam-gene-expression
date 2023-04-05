@@ -546,8 +546,8 @@ DEGs[Interaction_DEGs_ONLY,22:28]
 write.csv(Origin_DEGs, "../../output/DEGs/Origin_DEGs.csv") #save this as csv for downstream analysis
 write.csv(Treatment_DEGs, "../../output/DEGs/Treatment_DEGs.csv") #save this as csv for downstream analysis
 write.csv(Interaction_DEGs, "../../output/DEGs/Interaction_DEGs.csv") #save this as csv for downstream analysis
-write.csv(Treatment_DEGs_ONLY, "../../output/DEGs/Treatment_DEGs_ONLY.csv") #save this as csv for downstream analysis
-write.csv(Interaction_DEGs_ONLY, "../../output/DEGs/Interaction_DEGs_ONLY.csv") #save this as csv for downstream analysis
+write.csv(DEGs[Treatment_DEGs_ONLY,], "../../output/DEGs/Treatment_DEGs_ONLY.csv") #save this as csv for downstream analysis
+write.csv(DEGs[Interaction_DEGs_ONLY,], "../../output/DEGs/Interaction_DEGs_ONLY.csv") #save this as csv for downstream analysis
 ```
 
 
