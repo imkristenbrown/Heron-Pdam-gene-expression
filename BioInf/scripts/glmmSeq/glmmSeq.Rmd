@@ -30,6 +30,7 @@ First, download the glmmSeq package. I had to install qvalue using BiocManager a
 Next, load the package 
   
 ```{r}
+library(lme4)
 library(glmmSeq)
 library(dplyr) #load dplyr, which is required to run this tutorial but not included in the vignette
 library(kableExtra) #load kableExtra, which is also required to run this tutorial but not included in the vignette
@@ -178,8 +179,6 @@ cts_filt_outrm_poa %>% filter(row.names(cts_filt_outrm_poa) %in% c('Pocillopora_
 
 ## Hypothesis testing: How much does the interaction factor affect the fit of the model
 
-I am a little lost here.
-
 ```{r, eval=FALSE}
 glmmLRT <- glmmSeq(~ Treatment * Origin + (1 | Colony),
                    reduced = ~ Treatment + Origin + (1 | Colony), #changed * to + to have reduced model without interaction term
@@ -193,16 +192,23 @@ saveRDS(glmmLRT, file = "glmmLRT.rds") #save RDS
 ```
 
 
-```{r, eval=FALSE}
+```{r}
 glmmLRT <- readRDS(file = "glmmLRT.rds") #load in RDS from previous step / previous iteration
 
-summary(glmmLRT, "Pocillopora_acuta_HIv2___TS.g25814.t1") #see example statistics for one example gene
+summary(glmmLRT, "Pocillopora_acuta_HIv2___RNAseq.986_t") #see example statistics for one example gene
 
-summary(results, "Pocillopora_acuta_HIv2___TS.g25814.t1") #see example statistics for one example gene
+LRTstats <- summary(glmmLRT)
+
+head(LRTstats[,13:15]) #view the chi squared values and p values comparing the full and reduced model. P value > 0.05 indicates that the reduced model is just as good as predicting the value of this gene as the full model.
+
+LRTpvals <- unlist(LRTstats[,"P_LRT"])
+
+sum(LRTpvals < 0.05, na.rm=TRUE) #count how many genes had a significant effect of using the full model compared to the reduced model
 
 rm(glmmLRT) #remove this large object, it will not be used again (and you can always reload the saved RDS)
 ```
 
+So, for only 300 of the 9011 genes, the full model performs better than the reduced. Maybe we should use the reduced? Unclear if we want to do so or stick with the same model as the original paper. Worth also testing a reduced model without treatment if that is even possible.
 
 ### Outputs
 ```{r}
