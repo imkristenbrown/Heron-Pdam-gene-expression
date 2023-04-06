@@ -2,9 +2,7 @@
 title: "glmmSeq, with pOverA filtering and outliers removed, factor levels reversed"
 author: "Zoe Dellaert"
 date: "3/29/2023"
-output:
-  html_document: default
-  pdf_document: default
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
@@ -120,21 +118,19 @@ Dispersioni = (variancei - meani)/meani2
 
 Starting with raw counts, so using [DESeq2](http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html), but could also import a normalized gene count matrix (i.e. transcripts per million) and calculate disperson manually as in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html).
 
-```{r, eval=FALSE}
+```{r}
 library(DESeq2) #library in DEseq to use to calculate dispersions
 
 dds_filt_outrm <- DESeqDataSetFromMatrix(countData = cts_filt_outrm_poa,
                               colData = coldata_outrm,
-                              design = ~1) #this is what the glmmseq vignette says, cannot tell if we should put our formula in here yet or just calculate around the intercept.
-
-# dds <- DESeqDataSetFromMatrix(countData = cts_raw,
-#                               colData = coldata,
-#                               design = ~ Treatment * Origin + (1 | Colony)) #ALTERNATIVE, but probably without the "1 | Colony" bit.
+                              design = ~1)
 
 dds_filt_outrm <- DESeq(dds_filt_outrm) #apply DEseq dispersion calculation
 dispersions_filt_outrm <- setNames(dispersions(dds_filt_outrm), rownames(cts_filt_outrm_poa)) #save dispersions as vector for each gene
 
-rm(dds_filt_outrm) #remove large DEseq object, we no longer need it once we have saved the dispersions
+dds_norm_counts <- as.data.frame(counts(dds_filt_outrm, normalized=TRUE)) #save normalized counts from DEseq object for downstream use
+
+rm(dds_filt_outrm) #option to remove large DEseq object, we no longer need it once we have saved the dispersions
 ```
 
 
@@ -224,13 +220,14 @@ Model fit statistics, w/ p-value ordered by Origin:Treatment:
 ```{r}
 stats <- summary(results)  #save the summary table from the model fit results
 
+#using adjusted p-value
 kable(stats[order(stats[, 'Treatment:Origin']), ]) %>%
   kable_styling() %>%
   scroll_box(width = "100%", height = "400px") #View stats table as a scrollable markdown table
 
-write.csv(stats, "signif_genes.csv") #save stats file as csv for downstream analysis
-```
 
+write.csv(stats, "../../../output/Slope_Base/signif_genes.csv") #save stats file as csv for downstream analysis
+```
 
 Summary stats for a specific gene. (basically a pretty way of looking at one row of the stats table via "stats["Pocillopora_acuta_HIv2___TS.g25814.t1",]")
 
@@ -246,13 +243,8 @@ predict = data.frame(results@predict) #estimated means based on fitted model wit
 kable(predict) %>%
   kable_styling() %>%
   scroll_box(width = "100%", height = "400px")
-```
-
-
-### Q values
-
-```{r}
-results <- glmmQvals(results) # adds a matrix to the results object containing Q-vals
+  
+write.csv(predict, "../../../output/Slope_Base/model_expression_prediction_allgenes.csv") #save stats file as csv for downstream analysis
 ```
 
 ## Model Plots
@@ -262,7 +254,7 @@ As written the plotting function from this package does not work when x1var, whi
 I changed the function to allow for discrete values on the X axis:
 
 ```{r}
-source(file = "Factor_ggmodelPlot.R")
+source(file = "../Factor_ggmodelPlot.R")
 
 #I changed their code a lot and need to document all the changes
 
@@ -271,6 +263,7 @@ formPlot(results,geneName = "Pocillopora_acuta_HIv2___RNAseq.g13538.t2",x1var = 
 plotColours <- c("skyblue","mediumseagreen")
 modColours <- c("dodgerblue3","seagreen4")
 ```
+
 
 ### most significant gene by Treatment:Origin:
 ```{r}
@@ -287,10 +280,10 @@ Factor_ggmodelPlot(results,
 
 To make these plots interactive, you can use ggplotly(_plot code_, tooltip="id")
 
-### most significant gene by Treatment:
+### (second) most significant gene by Treatment:
 ```{r}
 Factor_ggmodelPlot(results,
-            geneName = "Pocillopora_acuta_HIv2___RNAseq.g13538.t2",
+            geneName = "Pocillopora_acuta_HIv2___RNAseq.g5899.t2",
             x1var = "Treatment",
             x2var="Origin", addBox = T,
             xlab = "Treatment and Origin",
@@ -303,7 +296,7 @@ Factor_ggmodelPlot(results,
 ### most significant gene by Origin:
 ```{r}
 Factor_ggmodelPlot(results,
-            geneName = "Pocillopora_acuta_HIv2___RNAseq.g16163.t1",
+            geneName = "Pocillopora_acuta_HIv2___RNAseq.g3772.t2",
             x1var = "Treatment",
             x2var="Origin", addBox = T,
             xlab = "Treatment and Origin",
@@ -313,22 +306,11 @@ Factor_ggmodelPlot(results,
             modelSize = 3)
 ```
 
-
-```{r}
-fcPlot(results, x1var = "Origin", x2var = "Treatment", graphics = "plotly",
-       pCutoff = 0.05, useAdjusted = TRUE)
-```
-
-```{r}
-fcPlot(results, x1var = "Treatment", x2var = "Origin", graphics = "plotly",
-       pCutoff = 0.05, useAdjusted = TRUE)
-```
-
 ## MA Plots
 
 Fixed the script for the maplots , just added "scale_y_continuous(limits = c(-4.2,4.2), breaks = seq(-4,4, 2))" to make the scale the same on both plots.
 ```{r}
-source("fixed_ylim_maPlot.R")
+source("../fixed_ylim_maPlot.R")
 maPlots_filt_outrm <- fixed_ylim_maPlot(results,
                   x1var="Treatment",
                   x2var="Origin",
@@ -337,3 +319,270 @@ maPlots_filt_outrm <- fixed_ylim_maPlot(results,
 
 maPlots_filt_outrm$combined
 ```
+
+## Fold change plots
+
+```{r}
+fcPlot(results, x1var = "Treatment", x2var = "Origin", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
+```{r}
+fcPlot(results, x1var = "Origin", x2var = "Treatment", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
+
+## But what is fold change, really? 
+
+In this plotting script, fold change is defined as:
+
+x = log2(y_Stable_Slope_predData + 1) - log2(y_Stable_Flat_predData + 1)
+y = log2(y_Variable_Slope_predData +1) - log2(y_Variable_Flat_predData +1)
+
+So, for each gene, the predicted mean of expression within a group based on the model fit (pred_Data) is normalized using log 2 and then this is subtracted from another log2-transformed predicted expression for the group to compare with. Lets make a fold change dataframe:
+
+```{r}
+predData <- predict[, 1:nrow(results@modelData)] #from the predicted data "results@predict", save the first four columns representing the predicted expression values per group (basically drop the confidence intervals)
+
+colnames(predData)
+
+#"y_Stable_Flat"    "y_Variable_Flat"  "y_Stable_Slope"   "y_Variable_Slope"
+
+#taking the plotData dataframe straight from the fcPlot function code
+
+    # x1var = "Origin"
+    # x2var = "Treatment"
+
+    # x1Values <- levels(factor(results@modelData[, "Origin"]))[1:2] # "Flat"  "Slope"
+    # x2Values <- levels(factor(results@modelData[, "Treatment"]))[1:2] # "Stable"   "Variable"
+
+    # xCols <- which(modelData[, x2var] == x2Values[1] & modelData[, x1var] %in% x1Values)
+    # yCols <- which(modelData[, x2var] == x2Values[2] & modelData[, x1var] %in% x1Values)
+ 
+    # xCols <- which(results@modelData[, "Treatment"] == "Stable"   & results@modelData[, "Origin"] %in% c("Flat","Slope")) # c(1,3) aka "y_Stable_Flat" and "y_Stable_Slope"
+    # yCols <- which(results@modelData[, "Treatment"] == "Variable" & results@modelData[, "Origin"] %in% c("Flat","Slope")) # c(2,4) aka "y_Variable_Flat" and "y_Variable_Slope"
+  
+  
+plotData <- data.frame(
+    Stable_OriginFC = log2(predData[, "y_Stable_Slope"]+1) - log2(predData[, "y_Stable_Flat"]+1),
+    Variable_OriginFC  = log2(predData[, "y_Variable_Slope"]+1) - log2(predData[, "y_Variable_Flat"]+1))
+    
+plotData$maxGroupFC <- ifelse(abs(plotData$Stable_OriginFC) > abs(plotData$Variable_OriginFC), "Stable", "Variable")
+
+rownames(plotData) <- rownames(predData)
+```
+
+So, in this data frame, Stable_OriginFC is the log2 fold change comparing Slope vs. Flat origin within the stable treatment and Variable_OriginFC is the log2fold change comparingSlope vs. Flat origin within the variable treatment
+
+```{r significance classification, broken down by fold change}
+#Once again, all of this code is straight from the glmmSeq source code.
+
+pCutoff <- 0.05
+
+  # Set up the colour code
+  colLevels <- c('Not Significant', paste0("q_", "Origin", ' < ', pCutoff),
+                 paste0("q_", "Origin", ":", "Treatment", " < ", pCutoff,
+                        " (biggest FC in ", "Variable", ")"),
+                 paste0("q_", "Origin", ":", "Treatment", " < ", pCutoff,
+                        " (biggest FC in ", "Stable", ")"))
+  
+  plotData$col <- colLevels[1] #set all genes as 'Not Significant'
+  
+  plotData$col[stats[, "Origin"] < pCutoff & ! is.na(stats[, "Origin"])] <- colLevels[2] #set all genes whose q_values (adjusted p-values) for "Origin" are less than 0.05 as "q_Origin < 0.05"
+
+  plotData$col[stats[, "Treatment:Origin"] < pCutoff & !is.na(stats[, "Treatment"])] <- colLevels[3] #set all genes whose q_values (adjusted p-values) for the interaction "Treatment:Origin" are less than  0.05 as "q_Origin:Treatment < 0.05 (biggest FC in Variable)"
+
+  plotData$col[plotData$col == colLevels[3] & plotData$maxGroupFC == "Stable"] <- colLevels[4] #for all of those that we just set as "q_Origin:Treatment < 0.05 (biggest FC in Variable)", change those whose maxGroupFC was Stable to "q_Origin:Treatment < 0.05 (biggest FC in Stable)"
+
+  plotData$col[is.na(plotData$col)] <- 'Not Significant' #if any NAs were introduced, set those genes to Not significant
+   
+  plotData$col <- factor(plotData$col, levels = colLevels) #turn this new significance column into a factor
+
+print(table(plotData$col))
+
+#reminder that this signifcant list does not include a signficicance test by treatment alone, so any genes listed as "Not Significant" could still be significant but only by Treatment 
+```
+
+Now we can take these calculated fold changes and bring them into downstream analyses.
+
+
+```{r}
+stats_wFC <- merge(as.data.frame(stats), plotData, by="row.names", sort=FALSE)
+
+rownames(stats_wFC) <- stats_wFC[,1] #set row names from first column
+
+stats_wFC <- stats_wFC[,-1] #remove first column
+```
+
+
+## Alt Fold Change Plots: division fold change, no log2
+```{r}
+source(file = "../ALT_FCPlot.R")
+
+head(plotData)
+
+ALT_plotData <- data.frame(
+    Stable_OriginFC =    (predData[, "y_Stable_Slope"]  /predData[, "y_Stable_Flat"  ]),
+    Variable_OriginFC  = (predData[, "y_Variable_Slope"]/predData[, "y_Variable_Flat"]))
+
+ALT_plotData$maxGroupFC <- ifelse(abs(ALT_plotData$Stable_OriginFC) > abs(ALT_plotData$Variable_OriginFC), "Stable", "Variable")
+
+rownames(ALT_plotData) <- rownames(predData)
+
+ALT_fcPlot(results, x1var = "Origin", x2var = "Treatment", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
+## Alt Fold Change Plots: division fold change, with log2
+```{r}
+source(file = "../ALT_LogFCPlot.R")
+
+head(plotData)
+
+ALT_Log_plotData <- data.frame(
+    Stable_OriginFC =    log2(predData[, "y_Stable_Slope"]  /predData[, "y_Stable_Flat"  ]),
+    Variable_OriginFC  = log2(predData[, "y_Variable_Slope"]/predData[, "y_Variable_Flat"]))
+
+ALT_Log_plotData$maxGroupFC <- ifelse(abs(ALT_plotData$Stable_OriginFC) > abs(ALT_plotData$Variable_OriginFC), "Stable", "Variable")
+
+rownames(ALT_Log_plotData) <- rownames(predData)
+
+#worth noting that this changes a small few (26) of the Max Fold Change (so ones where the absolute value of fold change was largest in Stable now the absolute valye is largest in Variable or vice versa) 
+which((ifelse(abs(plotData$Stable_OriginFC) > abs(plotData$Variable_OriginFC), "Stable", "Variable")) != (ifelse(abs(ALT_Log_plotData$Stable_OriginFC) > abs(ALT_Log_plotData$Variable_OriginFC), "Stable", "Variable")))
+
+plotData[which((ifelse(abs(plotData$Stable_OriginFC) > abs(plotData$Variable_OriginFC), "Stable", "Variable")) != (ifelse(abs(ALT_Log_plotData$Stable_OriginFC) > abs(ALT_Log_plotData$Variable_OriginFC), "Stable", "Variable"))),]
+
+ALT_Log_plotData[which((ifelse(abs(plotData$Stable_OriginFC) > abs(plotData$Variable_OriginFC), "Stable", "Variable")) != (ifelse(abs(ALT_Log_plotData$Stable_OriginFC) > abs(ALT_Log_plotData$Variable_OriginFC), "Stable", "Variable"))),]
+
+ALT_LogfcPlot(results, x1var = "Origin", x2var = "Treatment", graphics = "plotly",
+       pCutoff = 0.05, useAdjusted = TRUE)
+```
+
+## Downstream DEG list
+
+For downstream use, I am saving the "stats_wFC" dataframe (containing significance and FC of each gene and model fit)
+```{r}
+stats_cts_merge_rawcts <- merge(stats_wFC, cts_filt_outrm_poa, by="row.names", sort=FALSE) ## Merge statistics (P-value info for each gene) with raw count data after pOverA filtering
+
+names(stats_cts_merge_rawcts)[1] <- "Gene" #set first column column name to "Gene"
+
+stats_cts_merge_cts <- merge(stats_wFC, as.data.frame(results@countdata), by="row.names", sort=FALSE) ## Merge statistics (P-value info for each gene) with count data from the glmmseq results object, which is the exact same as the raw count data (after pOverA filtering, cts_filt_outrm_poa) but the 0s have been replaced with 0.125 which will be useful for any future log-transforms
+
+names(stats_cts_merge_cts)[1] <- "Gene" #set first column column name to "Gene"
+ 
+stats_cts_merge_norm <- merge(stats_wFC, dds_norm_counts, by="row.names", sort=FALSE) ## Merge statistics (P-value info for each gene) with normalized count data from the DEseq2 object. This one does still have the 0s as 0s.
+
+names(stats_cts_merge_norm)[1] <- "Gene" #set first column column name to "Gene"
+ 
+head(stats_cts_merge_rawcts)
+head(stats_cts_merge_cts)
+head(stats_cts_merge_norm)
+
+write.csv(stats_cts_merge_rawcts, "../../../output/Slope_Base/signif_genes_rawcts.csv") #save this as csv for downstream analysis
+write.csv(stats_cts_merge_cts, "../../../output/Slope_Base/signif_genes_cts.csv") #save this as csv for downstream analysis
+write.csv(stats_cts_merge_norm, "../../../output/Slope_Base/signif_genes_normcts.csv") #save this as csv for downstream analysis
+```
+
+```{r DEGs by variable list}
+DEGs <- stats_wFC
+
+DEGs$Gene <- rownames(DEGs)
+
+Origin_DEGs <- DEGs %>%  dplyr::filter(Origin < 0.05) 
+Treatment_DEGs <- DEGs %>%  dplyr::filter(Treatment < 0.05) 
+Interaction_DEGs <- DEGs %>%  dplyr::filter(`Treatment:Origin` < 0.05) 
+
+nrow(Origin_DEGs)
+
+nrow(Treatment_DEGs)
+
+#lets make a list of genes that are significant only by treatment
+sum(Treatment_DEGs[,"Gene"] %in% Origin_DEGs[,"Gene"]) #how many of these genes are also significant by Origin? 11
+
+#let's list the 7 genes that are significant by treatment but not by Origin
+
+Treatment_DEGs_notOrigin <- Treatment_DEGs[-which(Treatment_DEGs[,"Gene"] %in% Origin_DEGs[,"Gene"]),"Gene"]
+DEGs[Treatment_DEGs_notOrigin,22:28]
+
+sum(Treatment_DEGs_notOrigin %in% Interaction_DEGs[,"Gene"]) #how many of these genes are also significant by Interaction? 3
+
+# 3 of those are also significant by the interaction term! Let's look more into the 4 that are not significant by Origin or Interaction
+
+Treatment_DEGs_ONLY <- Treatment_DEGs_notOrigin[-which(Treatment_DEGs_notOrigin %in% Interaction_DEGs[,"Gene"])]
+
+DEGs[Treatment_DEGs_ONLY,22:28]
+
+#lets make a list of genes that are significant only by interaction
+nrow(Interaction_DEGs)
+
+sum(Interaction_DEGs[,"Gene"] %in% Origin_DEGs[,"Gene"]) #how many of these genes are also significant by Origin? 25
+
+#let's list the 5 genes that are significant by interaction but not by Origin
+
+Interaction_DEGs_notOrigin <- Interaction_DEGs[-which(Interaction_DEGs[,"Gene"] %in% Origin_DEGs[,"Gene"]),"Gene"]
+DEGs[Interaction_DEGs_notOrigin,22:28]
+
+#Are any of these not significant by treatment?
+
+sum(Interaction_DEGs_notOrigin %in% Treatment_DEGs[,"Gene"]) #how many of these genes are also significant by Treatment? 3
+
+# 3 of those are also significant by the treatment! Let's look more into the 2 that are not significant by Origin or Treatment
+
+Interaction_DEGs_ONLY <- Interaction_DEGs_notOrigin[-which(Interaction_DEGs_notOrigin %in% Treatment_DEGs[,"Gene"])]
+
+DEGs[Interaction_DEGs_ONLY,22:28]
+```
+
+#Gene lists to look into for enrichment/dive into annotations of the small gene sets:
+
+- Origin_DEGs (840 genes)
+- Treatment_DEGs (18 genes)
+- Interaction_DEGs(30 genes)
+- Treatment_DEGs_ONLY (4 genes)
+- Interaction_DEGs_ONLY (2 genes)
+
+```{r}
+write.csv(Origin_DEGs, "../../../output/Slope_Base/DEGs/Origin_DEGs.csv") #save this as csv for downstream analysis
+write.csv(Treatment_DEGs, "../../../output/Slope_Base/DEGs/Treatment_DEGs.csv") #save this as csv for downstream analysis
+write.csv(Interaction_DEGs, "../../../output/Slope_Base/DEGs/Interaction_DEGs.csv") #save this as csv for downstream analysis
+write.csv(DEGs[Treatment_DEGs_ONLY,], "../../../output/Slope_Base/DEGs/Treatment_DEGs_ONLY.csv") #save this as csv for downstream analysis
+write.csv(DEGs[Interaction_DEGs_ONLY,], "../../../output/Slope_Base/DEGs/Interaction_DEGs_ONLY.csv") #save this as csv for downstream analysis
+```
+
+
+```{r}
+Treatment_DEGs_ONLY
+Interaction_DEGs_ONLY
+```
+
+
+## This is a great place to extract these genes for GO and KEGG enrichment analysis.
+
+
+Special DEG plots :)
+
+```{r}
+for (i in Treatment_DEGs_ONLY) {print(Factor_ggmodelPlot(results,
+            geneName = i,
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            title = "Gene significant only by Treatment",
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3))}
+
+for (i in Interaction_DEGs_ONLY) {print(Factor_ggmodelPlot(results,
+            geneName = i,
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            title = "Gene significant only by Interaction",
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3))}
+```
+
