@@ -184,7 +184,7 @@ I am a little lost here.
 glmmLRT <- glmmSeq(~ Treatment * Origin + (1 | Colony),
                    reduced = ~ Treatment + Origin + (1 | Colony), #changed * to + to have reduced model without interaction term
                    countdata = cts_filt_outrm_poa,
-                   metadata = coldata,
+                   metadata = coldata_outrm,
                    dispersion = dispersions_filt_outrm, verbose = FALSE)
 
 #this fitting takes a while, so I save it as an RDS and load this in when needed instead of re-running everytime (unless something upstream of here changes)
