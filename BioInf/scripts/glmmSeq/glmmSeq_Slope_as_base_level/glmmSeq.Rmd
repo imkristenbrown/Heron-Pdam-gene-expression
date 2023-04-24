@@ -1,5 +1,5 @@
 ---
-title: "glmmSeq, with pOverA filtering and outliers removed, factor levels reversed"
+title: "glmmSeq, with pOverA filtering and outliers removed, Slope as Base Level"
 author: "Zoe Dellaert"
 date: "3/29/2023"
 output: html_document
@@ -18,18 +18,17 @@ sessionInfo() #provides list of loaded packages and version of R. I still have v
 First, download the glmmSeq package. I had to install qvalue using BiocManager as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html)
 
 ```{r install packages, eval=FALSE}
-#if (!requireNamespace("BiocManager", quietly = TRUE))
-    #install.packages("BiocManager")
-    #BiocManager::install("qvalue"))
-
-#install.packages("glmmSeq") #from CRAN
+BiocManager::install("qvalue", force = TRUE)
+install.packages("rlang")
+install.packages("glmmSeq") #from CRAN
 #devtools::install_github("myles-lewis/glmmSeq") # from github
-#install.packages("plotly")
+install.packages("plotly")
 ```
 
 Next, load the package 
   
 ```{r}
+library(lme4)
 library(glmmSeq)
 library(dplyr) #load dplyr, which is required to run this tutorial but not included in the vignette
 library(kableExtra) #load kableExtra, which is also required to run this tutorial but not included in the vignette
@@ -101,7 +100,7 @@ sum(cts_filt_outrm_poa) #count number of genes left
 cts_filt_outrm_poa <- cts_filt_outrm[cts_filt_outrm_poa,] #keep only rows that passed filter
 ```
 
-After removing outliers, there are now 9012 genes in the filtered dataset.
+After removing outliers, there are now 9011 genes in the filtered dataset.
 
 Data sanity checks:
 ```{r}
@@ -178,13 +177,11 @@ cts_filt_outrm_poa %>% filter(row.names(cts_filt_outrm_poa) %in% c('Pocillopora_
 
 ## Hypothesis testing: How much does the interaction factor affect the fit of the model
 
-I am a little lost here.
-
 ```{r, eval=FALSE}
 glmmLRT <- glmmSeq(~ Treatment * Origin + (1 | Colony),
                    reduced = ~ Treatment + Origin + (1 | Colony), #changed * to + to have reduced model without interaction term
                    countdata = cts_filt_outrm_poa,
-                   metadata = coldata,
+                   metadata = coldata_outrm,
                    dispersion = dispersions_filt_outrm, verbose = FALSE)
 
 #this fitting takes a while, so I save it as an RDS and load this in when needed instead of re-running everytime (unless something upstream of here changes)
@@ -193,15 +190,23 @@ saveRDS(glmmLRT, file = "glmmLRT.rds") #save RDS
 ```
 
 
-```{r, eval=FALSE}
+```{r}
 glmmLRT <- readRDS(file = "glmmLRT.rds") #load in RDS from previous step / previous iteration
 
-summary(glmmLRT, "Pocillopora_acuta_HIv2___TS.g25814.t1") #see example statistics for one example gene
+summary(glmmLRT, "Pocillopora_acuta_HIv2___RNAseq.986_t") #see example statistics for one example gene
 
-summary(results, "Pocillopora_acuta_HIv2___TS.g25814.t1") #see example statistics for one example gene
+LRTstats <- summary(glmmLRT)
+
+head(LRTstats[,13:15]) #view the chi squared values and p values comparing the full and reduced model. P value > 0.05 indicates that the reduced model is just as good as predicting the value of this gene as the full model.
+
+LRTpvals <- unlist(LRTstats[,"P_LRT"])
+
+sum(LRTpvals < 0.05, na.rm=TRUE) #count how many genes had a significant effect of using the full model compared to the reduced model
 
 rm(glmmLRT) #remove this large object, it will not be used again (and you can always reload the saved RDS)
 ```
+
+So, for only 300 of the 9011 genes, the full model performs better than the reduced. Maybe we should use the reduced? Unclear if we want to do so or stick with the same model as the original paper. Worth also testing a reduced model without treatment if that is even possible.
 
 
 ### Outputs
@@ -258,7 +263,7 @@ source(file = "../Factor_ggmodelPlot.R")
 
 #I changed their code a lot and need to document all the changes
 
-formPlot(results,geneName = "Pocillopora_acuta_HIv2___RNAseq.g13538.t2",x1var = "Treatment",x2var="Origin",x2shift=NULL) #the plotting code is based of off these matrices, made using their function "formPlot"
+formPlot(results,geneName = "Pocillopora_acuta_HIv2___RNAseq.g14176.t1",x1var = "Treatment",x2var="Origin",x2shift=NULL) #the plotting code is based of off these matrices, made using their function "formPlot"
 
 plotColours <- c("skyblue","mediumseagreen")
 modColours <- c("dodgerblue3","seagreen4")
