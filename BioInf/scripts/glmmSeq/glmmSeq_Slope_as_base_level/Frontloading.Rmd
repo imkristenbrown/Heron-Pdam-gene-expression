@@ -183,6 +183,8 @@ length(P_frontloaded)
 
 ```{r}
 P_frontloaded_genes <- DEGs[which(DEGs$Gene %in% P_frontloaded),]
+
+write.csv(P_frontloaded_genes, "../../../output/Slope_Base/frontloaded_genes.csv") #save this as csv for downstream analysis
 ```
 
 These will then go into enrichment.

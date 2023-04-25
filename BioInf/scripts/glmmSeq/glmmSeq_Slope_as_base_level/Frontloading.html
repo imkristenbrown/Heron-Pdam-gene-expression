@@ -365,10 +365,14 @@ P</code></pre>
 <hr />
 <p>We need to interrogate the super high values: resulting from dividing by “zeros” (0.00001)</p>
 <p>Subsetting out “frontloaded” genes</p>
-<p>2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.</p>
 <pre class="r"><code>P_frontloaded &lt;- READY %&gt;% dplyr::filter(yall &gt; 1) %&gt;% dplyr::filter(xall_1 &lt; 1) %&gt;% select(Gene) %&gt;% unlist
 
-P_frontloaded_genes &lt;- DEGs[which(DEGs$Gene %in% P_frontloaded),]</code></pre>
+length(P_frontloaded)</code></pre>
+<pre><code>## [1] 2631</code></pre>
+<p>2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.</p>
+<pre class="r"><code>P_frontloaded_genes &lt;- DEGs[which(DEGs$Gene %in% P_frontloaded),]
+
+write.csv(P_frontloaded_genes, &quot;../../../output/Slope_Base/frontloaded_genes.csv&quot;) #save this as csv for downstream analysis</code></pre>
 <p>These will then go into enrichment.</p>
 </div>
 
