@@ -174,17 +174,26 @@ We need to interrogate the super high values: resulting from dividing by "zeros"
 Subsetting out "frontloaded" genes
 
 ```{r}
-P_frontloaded <- READY %>% dplyr::filter(yall > 1) %>% dplyr::filter(xall_1 < 1) %>% select(Gene) %>% unlist
+#P_frontloaded <- READY %>% dplyr::filter(yall > 1) %>% dplyr::filter(xall_1 < 1) %>% select(Gene) %>% unlist
 
-length(P_frontloaded)
+#length(P_frontloaded)
+
+P_frontloaded <- READY %>% dplyr::filter(yall > 1) %>% dplyr::filter(xall_1 < 1) 
+
+dim(P_frontloaded)
+
+P_frontloaded$Gene
 ```
 
 2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
 
 ```{r}
-P_frontloaded_genes <- DEGs[which(DEGs$Gene %in% P_frontloaded),]
+P_frontloaded_genes <- DEGs[which(DEGs$Gene %in% P_frontloaded$Gene),]
 
+P_frontloaded_genes <- full_join(P_frontloaded_genes,P_frontloaded)
 write.csv(P_frontloaded_genes, "../../../output/Slope_Base/frontloaded_genes.csv") #save this as csv for downstream analysis
 ```
 
 These will then go into enrichment.
+
+
