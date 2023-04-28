@@ -182,7 +182,7 @@ gene.vector = as.integer(ALL.vector %in% ID.vector)
 names(gene.vector) <- ALL.vector #set names
 
 #weight gene vector by bias for length of gene
-pwf <- nullp(gene.vector, ID.vector, bias.data = LENGTH.vector) 
+pwf <- nullp(gene.vector, ID.vector, bias.data = LENGTH.vector)
 ```
 
 ```{r}
@@ -209,7 +209,6 @@ GO_001 <- GO %>%
         dplyr::filter(bh_adjust<0.001) %>%
         dplyr::arrange(., ontology, bh_adjust)
 ```
-
 
 Plotting!
 
@@ -271,7 +270,7 @@ GO_plot_all <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, 
   mutate(term = fct_reorder(term, ontology)) %>%
   ggplot( aes(x=term, y=numDEInCat) ) +
   geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
-  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  #geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
   geom_point(size=1, aes(colour = ontology)) +
   coord_flip() +
   ylim(0,305) +
@@ -291,14 +290,14 @@ GO_plot_all <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, 
 
 GO_plot_all
 
-ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001.pdf", GO_plot_all, width = 28, height = 175, units = c("in"), dpi=100, limitsize=FALSE)
+ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001.pdf", GO_plot_all, width = 40, height = 500, units = c("in"), dpi=100, limitsize=FALSE)
 
 #ordered by p-value
 GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
   mutate(term = fct_reorder(term, ontology)) %>%
   ggplot( aes(x=term, y=numDEInCat) ) +
   geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
-  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  #geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
   geom_point(size=1, aes(colour = ontology)) +
   coord_flip() +
   ylim(0,305) +
@@ -318,7 +317,7 @@ GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(t
 
 GO_plot_all_pval
 
-ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001_orderedpval.pdf", GO_plot_all_pval, width = 28, height = 175, units = c("in"), dpi=100, limitsize=FALSE)
+ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001_orderedpval.pdf", GO_plot_all_pval, width = 40, height = 500, units = c("in"), dpi=100, limitsize=FALSE)
 ```
 
 
