@@ -126,7 +126,6 @@ READY$xall_3 <- xall_3
 yall <- (READY$y_Stable_Flat / READY$y_Stable_Slope)
 
 READY$yall <- yall
-
 ```
 
 
@@ -134,9 +133,14 @@ READY$yall <- yall
 # lets plot it! 
 library(ggplot2)
 
+
+READY$color <- rep('gray', nrow(READY))
+#These are "frontloaded, need a different color:
+READY$color[READY$yall > 1 & READY$xall_1 < 1] <- 'black'
+
 P_allgenes <- READY %>% #dplyr::filter(yall < 6) %>% 
         ggplot(aes(x=xall_1, y=yall)) +
-        geom_point() +
+        geom_point(colour = READY$color) +
         theme_classic() + 
         stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
@@ -149,9 +153,11 @@ P_allgenes <- READY %>% #dplyr::filter(yall < 6) %>%
 
 P_allgenes
 
-P <- READY %>% dplyr::filter(yall > 1) %>% dplyr::filter(xall_1 < 6) %>% 
+READY_cutoff <- READY %>% dplyr::filter(yall < 6) %>% dplyr::filter(xall_1 < 6)
+
+P <- READY_cutoff %>% 
         ggplot(aes(x=xall_1, y=yall)) +
-        geom_point() +
+        geom_point(colour = READY_cutoff$color) +
         theme_classic() + 
         stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
@@ -174,15 +180,11 @@ We need to interrogate the super high values: resulting from dividing by "zeros"
 Subsetting out "frontloaded" genes
 
 ```{r}
-#P_frontloaded <- READY %>% dplyr::filter(yall > 1) %>% dplyr::filter(xall_1 < 1) %>% select(Gene) %>% unlist
-
-#length(P_frontloaded)
-
 P_frontloaded <- READY %>% dplyr::filter(yall > 1) %>% dplyr::filter(xall_1 < 1) 
 
 dim(P_frontloaded)
 
-P_frontloaded$Gene
+head(P_frontloaded$Gene)
 ```
 
 2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
