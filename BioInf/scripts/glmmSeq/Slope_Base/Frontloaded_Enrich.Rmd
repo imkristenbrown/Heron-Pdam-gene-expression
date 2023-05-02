@@ -182,12 +182,12 @@ gene.vector = as.integer(ALL.vector %in% ID.vector)
 names(gene.vector) <- ALL.vector #set names
 
 #weight gene vector by bias for length of gene
-pwf <- nullp(gene.vector, ID.vector, bias.data = LENGTH.vector)
+pwf <- nullp(gene.vector, bias.data = LENGTH.vector)
 ```
 
 ```{r}
 #run goseq using Wallenius method for all categories of GO terms 
-GO.wall <- goseq(pwf, ID.vector, gene2cat=GO.terms, method="Wallenius", use_genes_without_cat=TRUE)
+GO.wall <- goseq(pwf, gene2cat=GO.terms, method="Wallenius", use_genes_without_cat=TRUE)
 
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 
@@ -207,6 +207,16 @@ GO_05 <- GO %>%
 #Filtering for p < 0.05
 GO_001 <- GO %>%
         dplyr::filter(bh_adjust<0.001) %>%
+        dplyr::arrange(., ontology, bh_adjust)
+
+#Filtering for p < 0.05
+GO_052 <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, bh_adjust)
+
+#Filtering for p < 0.05
+GO_0012 <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.001) %>%
         dplyr::arrange(., ontology, bh_adjust)
 ```
 
@@ -345,17 +355,153 @@ KO <- KO.wall[order(KO.wall$over_represented_pvalue), ]
 colnames(KO)[1] <- "KEGGterm"
 
 #adjust p-values
-KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method = "BH") #add adjusted p-values
+#KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method = "BH") #add adjusted p-values
 
 #Filtering for p < 0.05
 KO_05 <- KO %>%
-  dplyr::filter(bh_adjust < 0.05) %>%
-  dplyr::arrange(., bh_adjust)
+  dplyr::filter(over_represented_pvalue < 0.05) %>%
+  dplyr::arrange(., over_represented_pvalue)
 
 head(KO_05)
 #Write file of results 
 write.csv(KO, "../../../output/Slope_Base/Frontloaded_GOSeq/KEGG_Frontloaded.csv")
 ```
 
-No Kegg enriched terms
+If using non-adjusted p-value, we get 6 significant KEGG terms:
 
+
+## Alt pipeline? Using all GO terms from all 9011 genes as input (instead of testing enrichment of GO terms from a list of frontloaded GO terms???????)
+
+```{r}
+#GO.terms_alt
+
+##Get a list of GO Terms for ALL 9011 genes
+GO.terms_alt <- geneInfo %>%
+  #filter(gene_id %in% FRONTs$Gene) %>%
+  dplyr::select(gene_id, Annotation.GO.ID)
+
+##Format to have one goterm per row with gene ID repeated
+split_alt <- strsplit(as.character(GO.terms_alt$Annotation.GO.ID), ";")
+split2_alt <- data.frame(v1 = rep.int(GO.terms_alt$gene, sapply(split_alt, length)), v2 = unlist(split_alt))
+colnames(split2_alt) <- c("gene", "Annotation.GO.ID")
+GO.terms_alt <- split2_alt
+
+goseq_res <- goseq(pwf, gene2cat = GO.terms_alt, method="Wallenius", use_genes_without_cat=TRUE)
+
+#GO.wall <-   goseq(pwf, gene2cat = GO.terms,     method="Wallenius", use_genes_without_cat=TRUE)
+
+head(goseq_res)
+
+#adjusting the p-values here makes all of them p=1 ?????
+
+GO <- goseq_res[order(goseq_res$over_represented_pvalue),]
+
+colnames(GO)[1] <- "GOterm"
+    
+#adjust p-values 
+GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
+#Write file of results 
+write.csv(GO, "../../../output/Slope_Base/Frontloaded_GOSeq/GOseq_Frontloaded_ALT.csv")
+
+#Filtering for p < 0.05
+GO_05_ALT <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
+
+#Filtering for p < 0.05
+GO_001_ALT <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.001) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
+```
+
+Plotting!
+
+```{r}
+ontologies<-c("BP", "CC", "MF")
+
+for (category in ontologies) {
+    
+    go_results <- GO_05_ALT
+    
+    go_results<-go_results%>%
+      filter(ontology==category)%>%
+      filter(over_represented_pvalue != "NA") %>%
+      filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+    
+      #Reduce/collapse GO term set with the rrvgo package 
+      simMatrix <- calculateSimMatrix(go_results$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont=category,
+                                method="Rel")
+    #calculate similarity 
+    scores <- setNames(-log(go_results$over_represented_pvalue), go_results$GOterm)
+    reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+    
+    #keep only the goterms from the reduced list
+    go_results<-go_results%>%
+      filter(GOterm %in% reducedTerms$go)
+    
+    #add in parent terms to list of go terms 
+    go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+   
+    #plot significantly enriched GO terms by Slim Category faceted by slim term 
+  GO.plot <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
+    geom_point(aes(size=over_represented_pvalue)) + 
+    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
+    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+    strip.text.y = element_text(angle=0, size = 10),
+    strip.text.x = element_text(size = 20),
+    axis.text = element_text(size = 8),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+  
+  print(GO.plot)
+  
+ggsave(filename=paste0("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05_ALT", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
+}
+```
+
+### KEGG enrichment
+```{r}
+##Get a list of KEGG Terms for all genes
+KO.terms <- geneInfo %>%
+  #filter(gene_id %in% FRONTs$Gene) %>%
+  dplyr::select(gene_id, KEGG)
+
+#run goseq using Wallenius method for all categories of KEGG terms
+KO.wall <-
+  goseq(
+    pwf,
+    ID.vector,
+    gene2cat = KO.terms,
+    test.cats = c("KEGG"),
+    method = "Wallenius",
+    use_genes_without_cat = TRUE
+  )
+
+
+KO <- KO.wall[order(KO.wall$over_represented_pvalue), ]
+colnames(KO)[1] <- "KEGGterm"
+
+#adjust p-values
+#KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method = "BH") #add adjusted p-values
+
+#Filtering for p < 0.05
+KO_05 <- KO %>%
+  dplyr::filter(over_represented_pvalue < 0.05) %>%
+  dplyr::arrange(., over_represented_pvalue)
+
+head(KO_05)
+#Write file of results 
+write.csv(KO, "../../../output/Slope_Base/Frontloaded_GOSeq/KEGG_Frontloaded_ALT.csv")
+```
+If using non-adjusted p-value, we get one significant KEGG term:
+K17341 (HMCN)
+hemicentin,	Age-related macular degeneration
