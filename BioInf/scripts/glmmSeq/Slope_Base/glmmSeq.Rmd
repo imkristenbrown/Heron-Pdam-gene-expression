@@ -23,6 +23,8 @@ install.packages("rlang")
 install.packages("glmmSeq") #from CRAN
 #devtools::install_github("myles-lewis/glmmSeq") # from github
 install.packages("plotly")
+BiocManager::install("genefilter")
+BiocManager::install("DESeq2")
 ```
 
 Next, load the package 

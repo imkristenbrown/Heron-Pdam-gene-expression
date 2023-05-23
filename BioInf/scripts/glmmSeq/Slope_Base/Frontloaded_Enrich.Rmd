@@ -20,6 +20,7 @@ if ("rtracklayer" %in% rownames(installed.packages()) == 'FALSE') BiocManager::i
 if ("goseq" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install('goseq') 
 if ("rrvgo" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("rrvgo")
 if ("GO.db" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("GO.db")
+if ("forcats" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("forcats")
 #BiocManager::install("org.Ce.eg.db", force=TRUE) #install if needed
 
 library(dplyr)
