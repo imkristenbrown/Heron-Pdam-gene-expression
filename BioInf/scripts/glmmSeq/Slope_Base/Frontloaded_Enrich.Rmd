@@ -166,9 +166,8 @@ ID.vector <- geneInfo %>%
   filter(gene_id %in% FRONTs$Gene) %>%
   pull(gene_id)
 
-##Get a list of GO Terms for the 2631 frontloaded genes
+##Get a list of GO Terms for all 9011 genes
 GO.terms <- geneInfo %>%
-  filter(gene_id %in% FRONTs$Gene) %>%
   dplyr::select(gene_id, Annotation.GO.ID)
 
 ##Format to have one goterm per row with gene ID repeated
@@ -194,31 +193,18 @@ GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 
 colnames(GO)[1] <- "GOterm"
     
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-
 #Write file of results 
 write.csv(GO, "../../../output/Slope_Base/Frontloaded_GOSeq/GOseq_Frontloaded.csv")
 
 #Filtering for p < 0.05
 GO_05 <- GO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 
 #Filtering for p < 0.05
 GO_001 <- GO %>%
-        dplyr::filter(bh_adjust<0.001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-
-#Filtering for p < 0.05
-GO_052 <- GO %>%
-        dplyr::filter(over_represented_pvalue<0.05) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-
-#Filtering for p < 0.05
-GO_0012 <- GO %>%
         dplyr::filter(over_represented_pvalue<0.001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::arrange(., ontology, over_represented_pvalue)
 ```
 
 Plotting!
@@ -229,201 +215,6 @@ ontologies<-c("BP", "CC", "MF")
 for (category in ontologies) {
     
     go_results <- GO_05
-    
-    go_results<-go_results%>%
-      filter(ontology==category)%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-    
-      #Reduce/collapse GO term set with the rrvgo package 
-      simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont=category,
-                                method="Rel")
-    #calculate similarity 
-    scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-    reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-    
-    #keep only the goterms from the reduced list
-    go_results<-go_results%>%
-      filter(GOterm %in% reducedTerms$go)
-    
-    #add in parent terms to list of go terms 
-    go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-   
-    #plot significantly enriched GO terms by Slim Category faceted by slim term 
-  GO.plot <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-  
-  print(GO.plot)
-  
-ggsave(filename=paste0("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
-}
-```
-
-### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
-
-```{r}
-GO_plot_all <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, numDEInCat)) %>%
-  mutate(term = fct_reorder(term, ontology)) %>%
-  ggplot( aes(x=term, y=numDEInCat) ) +
-  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
-  #geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
-  geom_point(size=1, aes(colour = ontology)) +
-  coord_flip() +
-  ylim(0,305) +
-  theme(
-    panel.grid.minor.y = element_blank(),
-    panel.grid.major.y = element_blank(),
-    legend.position="bottom"
-  ) +
-  xlab("") +
-  ylab("") +
-  theme_bw() + #Set background color 
-  theme(panel.border = element_blank(), # Set border
-        panel.grid.major = element_blank(), #Set major gridlines
-        panel.grid.minor = element_blank(), #Set minor gridlines
-        axis.line = element_line(colour = "black"), #Set axes color
-        plot.background=element_blank()) #Set the plot background #set title attributes
-
-GO_plot_all
-
-ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001.pdf", GO_plot_all, width = 40, height = 500, units = c("in"), dpi=100, limitsize=FALSE)
-
-#ordered by p-value
-GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
-  mutate(term = fct_reorder(term, ontology)) %>%
-  ggplot( aes(x=term, y=numDEInCat) ) +
-  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
-  #geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
-  geom_point(size=1, aes(colour = ontology)) +
-  coord_flip() +
-  ylim(0,305) +
-  theme(
-    panel.grid.minor.y = element_blank(),
-    panel.grid.major.y = element_blank(),
-    legend.position="bottom"
-  ) +
-  xlab("") +
-  ylab("") +
-  theme_bw() + #Set background color 
-  theme(panel.border = element_blank(), # Set border
-        panel.grid.major = element_blank(), #Set major gridlines
-        panel.grid.minor = element_blank(), #Set minor gridlines
-        axis.line = element_line(colour = "black"), #Set axes color
-        plot.background=element_blank()) #Set the plot background #set title attributes
-
-GO_plot_all_pval
-
-ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001_orderedpval.pdf", GO_plot_all_pval, width = 40, height = 500, units = c("in"), dpi=100, limitsize=FALSE)
-```
-
-
-### KEGG enrichment
-```{r}
-##Get a list of KEGG Terms for the 2631 frontloaded genes
-KO.terms <- geneInfo %>%
-  filter(gene_id %in% FRONTs$Gene) %>%
-  dplyr::select(gene_id, KEGG)
-
-
-#run goseq using Wallenius method for all categories of KEGG terms
-KO.wall <-
-  goseq(
-    pwf,
-    ID.vector,
-    gene2cat = KO.terms,
-    test.cats = c("KEGG"),
-    method = "Wallenius",
-    use_genes_without_cat = TRUE
-  )
-
-
-KO <- KO.wall[order(KO.wall$over_represented_pvalue), ]
-colnames(KO)[1] <- "KEGGterm"
-
-#adjust p-values
-#KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method = "BH") #add adjusted p-values
-
-#Filtering for p < 0.05
-KO_05 <- KO %>%
-  dplyr::filter(over_represented_pvalue < 0.05) %>%
-  dplyr::arrange(., over_represented_pvalue)
-
-head(KO_05)
-#Write file of results 
-write.csv(KO, "../../../output/Slope_Base/Frontloaded_GOSeq/KEGG_Frontloaded.csv")
-```
-
-If using non-adjusted p-value, we get 6 significant KEGG terms:
-
-
-## Alt pipeline? Using all GO terms from all 9011 genes as input (instead of testing enrichment of GO terms from a list of frontloaded GO terms???????)
-
-```{r}
-#GO.terms_alt
-
-##Get a list of GO Terms for ALL 9011 genes
-GO.terms_alt <- geneInfo %>%
-  #filter(gene_id %in% FRONTs$Gene) %>%
-  dplyr::select(gene_id, Annotation.GO.ID)
-
-##Format to have one goterm per row with gene ID repeated
-split_alt <- strsplit(as.character(GO.terms_alt$Annotation.GO.ID), ";")
-split2_alt <- data.frame(v1 = rep.int(GO.terms_alt$gene, sapply(split_alt, length)), v2 = unlist(split_alt))
-colnames(split2_alt) <- c("gene", "Annotation.GO.ID")
-GO.terms_alt <- split2_alt
-
-goseq_res <- goseq(pwf, gene2cat = GO.terms_alt, method="Wallenius", use_genes_without_cat=TRUE)
-
-#GO.wall <-   goseq(pwf, gene2cat = GO.terms,     method="Wallenius", use_genes_without_cat=TRUE)
-
-head(goseq_res)
-
-#adjusting the p-values here makes all of them p=1 ?????
-
-GO <- goseq_res[order(goseq_res$over_represented_pvalue),]
-
-colnames(GO)[1] <- "GOterm"
-    
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-
-#Write file of results 
-write.csv(GO, "../../../output/Slope_Base/Frontloaded_GOSeq/GOseq_Frontloaded_ALT.csv")
-
-#Filtering for p < 0.05
-GO_05_ALT <- GO %>%
-        dplyr::filter(over_represented_pvalue<0.05) %>%
-        dplyr::arrange(., ontology, over_represented_pvalue)
-
-#Filtering for p < 0.05
-GO_001_ALT <- GO %>%
-        dplyr::filter(over_represented_pvalue<0.001) %>%
-        dplyr::arrange(., ontology, over_represented_pvalue)
-```
-
-Plotting!
-
-```{r}
-ontologies<-c("BP", "CC", "MF")
-
-for (category in ontologies) {
-    
-    go_results <- GO_05_ALT
     
     go_results<-go_results%>%
       filter(ontology==category)%>%
@@ -465,16 +256,131 @@ for (category in ontologies) {
   
   print(GO.plot)
   
-ggsave(filename=paste0("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05_ALT", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
+ggsave(filename=paste0("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
 }
 ```
 
+### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
+
+```{r}
+GO_plot_all <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, numDEInCat)) %>%
+  mutate(term = fct_reorder(term, ontology)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  #geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1, aes(colour = ontology)) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()) #Set the plot background #set title attributes
+
+GO_plot_all
+
+ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05.pdf", GO_plot_all, width = 40, height = 100, units = c("in"), dpi=100, limitsize=FALSE)
+
+#ordered by p-value
+GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
+  mutate(term = fct_reorder(term, ontology)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  #geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1, aes(colour = ontology)) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()) #Set the plot background #set title attributes
+
+GO_plot_all_pval
+
+ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05_orderedpval.pdf", GO_plot_all_pval, width = 40, height = 100, units = c("in"), dpi=100, limitsize=FALSE)
+```
+
+### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
+
+```{r}
+GO_plot_all <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, numDEInCat)) %>%
+  mutate(term = fct_reorder(term, ontology)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1, aes(colour = ontology)) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()) #Set the plot background #set title attributes
+
+GO_plot_all
+
+ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001.pdf", GO_plot_all)
+
+#ordered by p-value
+GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
+  mutate(term = fct_reorder(term, ontology)) %>%
+  ggplot( aes(x=term, y=numDEInCat) ) +
+  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
+  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
+  geom_point(size=1, aes(colour = ontology)) +
+  coord_flip() +
+  ylim(0,305) +
+  theme(
+    panel.grid.minor.y = element_blank(),
+    panel.grid.major.y = element_blank(),
+    legend.position="bottom"
+  ) +
+  xlab("") +
+  ylab("") +
+  theme_bw() + #Set background color 
+  theme(panel.border = element_blank(), # Set border
+        panel.grid.major = element_blank(), #Set major gridlines
+        panel.grid.minor = element_blank(), #Set minor gridlines
+        axis.line = element_line(colour = "black"), #Set axes color
+        plot.background=element_blank()) #Set the plot background #set title attributes
+
+GO_plot_all_pval
+
+ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001_orderedpval.pdf", GO_plot_all_pval)
+```
+
+
 ### KEGG enrichment
 ```{r}
-##Get a list of KEGG Terms for all genes
+##Get a list of KEGG Terms for all 9011 genes
 KO.terms <- geneInfo %>%
-  #filter(gene_id %in% FRONTs$Gene) %>%
   dplyr::select(gene_id, KEGG)
+
 
 #run goseq using Wallenius method for all categories of KEGG terms
 KO.wall <-
@@ -501,8 +407,9 @@ KO_05 <- KO %>%
 
 head(KO_05)
 #Write file of results 
-write.csv(KO, "../../../output/Slope_Base/Frontloaded_GOSeq/KEGG_Frontloaded_ALT.csv")
+write.csv(KO, "../../../output/Slope_Base/Frontloaded_GOSeq/KEGG_Frontloaded.csv")
 ```
+
 If using non-adjusted p-value, we get one significant KEGG term:
 K17341 (HMCN)
 hemicentin,	Age-related macular degeneration
