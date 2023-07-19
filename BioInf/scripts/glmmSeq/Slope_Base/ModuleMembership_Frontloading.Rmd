@@ -1,0 +1,49 @@
+---
+title: "Comparing Frontloaded Genes to WGCNA Module Membership - are there"
+author: "Zoe Dellaert"
+date: "7/19/2023"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+This is a Rmd file analyzing our raw count data by the glmmSeq package as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html) and [manual](https://cran.r-project.org/web/packages/glmmSeq/glmmSeq.pdf).
+
+```{r}
+sessionInfo() #provides list of loaded packages and version of R. I still have version 4.1 for now.
+```
+
+```{r cars}
+library(dplyr)
+library(reshape2)
+library
+sessionInfo() #list of packages after library-ing these packages
+```
+
+2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
+
+```{r}
+frontloaded_genes <- read.csv("../../../output/Slope_Base/frontloaded_genes.csv") %>% select(-"X")
+
+WGCNA_ModuleMembership <- read.csv("../../../output/WGCNA/WGCNA_ModuleMembership.csv") %>% rename("Gene" = X)
+
+```
+
+```{r}
+frontloaded_modules <- left_join(frontloaded_genes, WGCNA_ModuleMembership) %>% group_by(moduleColor) %>% summarize(col_n = n()) %>% arrange(desc(col_n))
+```
+
+```{r}
+modules <- WGCNA_ModuleMembership %>% group_by(moduleColor) %>% summarize(total_col_n = n()) %>% arrange(desc(total_col_n))
+```
+
+```{r}
+proportions <- left_join(modules, frontloaded_modules) %>% mutate(prop = col_n/total_col_n)
+
+proportions
+
+proportions %>% arrange(desc(prop))
+```
+
