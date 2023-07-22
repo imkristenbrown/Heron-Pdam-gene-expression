@@ -28,10 +28,11 @@ sessionInfo() #list of packages after library-ing these packages
 frontloaded_genes <- read.csv("../../../output/Slope_Base/frontloaded_genes.csv") %>% select(-"X")
 
 WGCNA_ModuleMembership <- read.csv("../../../output/WGCNA/WGCNA_ModuleMembership.csv") %>% rename("Gene" = X)
-
 ```
 
 ```{r}
+frontloaded_modules_full <- left_join(frontloaded_genes, WGCNA_ModuleMembership)
+
 frontloaded_modules <- left_join(frontloaded_genes, WGCNA_ModuleMembership) %>% group_by(moduleColor) %>% summarize(col_n = n()) %>% arrange(desc(col_n))
 ```
 
@@ -46,4 +47,54 @@ proportions
 
 proportions %>% arrange(desc(prop))
 ```
+
+
+Lets also pull in our metadata
+
+```{r}
+coldata <- read.csv("../../../../RAnalysis/Data/RNA Submission Sample List metadata.csv") #read in metadata file
+coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
+coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+
+coldata$Origin <- factor(coldata$Origin) #set variables to factors
+coldata$Colony <- factor(coldata$Colony) #set variables to factors
+coldata$Treatment <- factor(coldata$Treatment) #set variables to factors
+
+coldata <- coldata %>% filter(Coral_ID != c("RF16A","RF16C")) #removed outlier rows from metadata
+head(coldata)
+```
+
+
+```{r}
+by_gene <- frontloaded_modules_full %>% select(c(30:75,87))
+
+avgs_module <- by_gene %>% tidyr::pivot_longer(cols = 1:46, names_to = "Coral_ID", values_to = "Gene_value") %>% group_by(moduleColor,Coral_ID) %>% summarise(Module_avg = mean(Gene_value))
+
+avgs_module <- merge(coldata, avgs_module, by = 'Coral_ID')
+```
+
+
+```{r}
+library(reshape2)
+library(ggplot2)
+
+png("../../../output/Slope_Base/frontloaded_by_module.png", 1000, 1000, pointsize=10)
+ggplot(avgs_module, aes(x=Treatment, y=Module_avg, fill = factor(Origin), shape=Origin)) +
+  geom_boxplot(aes(middle = mean(Module_avg)), position=position_dodge(0.8), outlier.size = 0, alpha = 0.5) + 
+  stat_summary(fun.y = mean, color = "black", position = position_dodge(0.75),
+               geom = "point", shape = 19, size = 3,
+               show.legend = FALSE) +
+  ylab("ModuleEigengene") +
+  #ylim(-0.1,0.1) +
+  scale_color_manual(values=c("#56B4E9","#D55E00")) +
+  geom_hline(yintercept=0, linetype='dotted', col = 'black', size = 1)+
+  theme_classic() +
+  #theme(legend.position = "none") +
+  facet_wrap(~moduleColor)
+dev.off()
+```
+
 
