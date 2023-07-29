@@ -28,6 +28,8 @@ sessionInfo() #list of packages after library-ing these packages
 frontloaded_genes <- read.csv("../../../output/Slope_Base/frontloaded_genes.csv") %>% select(-"X")
 
 WGCNA_ModuleMembership <- read.csv("../../../output/WGCNA/WGCNA_ModuleMembership.csv") %>% rename("Gene" = X)
+
+WGCNA_ModuleEigengenes <- read.csv("../../../output/WGCNA/WGCNA_ModuleEigengenes.csv") %>% rename("Coral_ID" = X)
 ```
 
 ```{r}
@@ -97,4 +99,34 @@ ggplot(avgs_module, aes(x=Treatment, y=Module_avg, fill = factor(Origin), shape=
 dev.off()
 ```
 
+```{r}
+library(reshape2)
+library(ggplot2)
+
+MEs_table <- WGCNA_ModuleEigengenes  # new table for plotting 
+MEsPlotting <- merge(coldata, MEs_table, by = 'Coral_ID') # merge
+MEsPlotting <- MEsPlotting %>% select(-"Colony") # ommit the Colony data to just plot the module colors 
+
+#reorder columns to match the order on the WGCNA module plot
+desired_order <- c("Coral_ID" , "Origin", "Treatment","MEblack", "MEred" , "MEsalmon" , "MEturquoise","MEmidnightblue", "MEgrey60","MEmagenta", "MEgreen" ,  "MEpurple" ,"MEtan", "MElightcyan" , "MEbrown" , "MEcyan" , "MEgreenyellow",   "MEpink" ,"MEblue" ) 
+
+MEsPlotting <- MEsPlotting %>% select(all_of(desired_order))
+
+MEsPlotting_melt <- melt(MEsPlotting, id=c('Coral_ID', 'Origin', 'Treatment'))
+#plot it
+
+png("../../../output/Slope_Base/frontloaded_by_module_eigengene.png", 1000, 1000, pointsize=10)
+ggplot(MEsPlotting_melt, aes(x=Treatment, y=value, fill = factor(Origin))) +
+  geom_boxplot(aes(middle = mean(value)), position=position_dodge(0.8), outlier.size = 0, alpha = 0.5) + 
+  geom_point(aes(color = Origin), position=position_dodge(0.8), alpha = 0.5) + 
+  ylab("ModuleEigengene") +
+  ylim(-0.5,0.5) +
+  #scale_color_manual(values=c("#D55E00","#56B4E9")) + scale_fill_manual(values=c("#D55E00","#56B4E9")) +
+  geom_hline(yintercept=0, linetype='dashed', col = 'black', size = 0.5)+
+  theme_classic() +
+  theme(legend.position = "none",
+        panel.border = element_rect(color = "black", fill = NA, size = 1)) +  # Add panel border
+  facet_wrap(~variable)
+dev.off()
+```
 
