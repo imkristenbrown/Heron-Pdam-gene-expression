@@ -102,7 +102,7 @@ sum(cts_filt_outrm_poa) #count number of genes left
 cts_filt_outrm_poa <- cts_filt_outrm[cts_filt_outrm_poa,] #keep only rows that passed filter
 ```
 
-After removing outliers, there are now 9011 genes in the filtered dataset.
+After removing outliers, there are now 9012 genes in the filtered dataset.
 
 Data sanity checks:
 ```{r}
@@ -175,7 +175,7 @@ Interrogate that gene's counts to try to understand this error better.
 ```{r}
 cts_filt_outrm_poa %>% filter(row.names(cts_filt_outrm_poa) %in% c('Pocillopora_acuta_HIv2___RNAseq.g5950.t1')) %>% unlist
 ```
-
+This error means that downstream we will work only with 9,011 genes.
 
 ## Hypothesis testing: How much does the interaction factor affect the fit of the model
 

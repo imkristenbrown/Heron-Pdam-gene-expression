@@ -108,6 +108,11 @@ head(kegg)
 Add KEGG annotations to each gene.  
 ```{r}
 geneInfo0$KEGG <- kegg$V2[match(geneInfo0$gene_id, kegg$V1)]
+
+sum(is.na(geneInfo0$KEGG)) #number of genes without KEGG annotation
+
+missing_KEGG <- as.data.frame(genes[which(is.na(geneInfo0$KEGG))]) #dataframe of genes without EggNog annotation
+head(missing_KEGG)
 ```
 
 Order geneInfo0 by significance of Origin, q_Origin (adjusted p value)
@@ -169,6 +174,8 @@ split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = un
 colnames(split2) <- c("gene", "Annotation.GO.ID")
 GO.terms <- split2
 
+dim(GO.terms)
+
 ##Construct list of genes with 1 for genes in that are significant for Origin and 0 for those that are not
 gene.vector = as.integer(ALL.vector %in% ID.vector) #since we ordered geneInfo by q_Origin, this puts a "1" for the first 840 genes, which are the same genes in ID.vector
 
@@ -177,6 +184,23 @@ names(gene.vector) <- ALL.vector #set names
 #weight gene vector by bias for length of gene
 pwf <- nullp(gene.vector, ID.vector, bias.data = LENGTH.vector) 
 ```
+
+```{r}
+#how many go terms from the 840 genes
+
+##Get a list of GO Terms for the 840 DE genes
+GO.terms_DE <- geneInfo %>% filter(q_Origin < 0.05) %>%
+  dplyr::select(gene_id, Annotation.GO.ID)
+
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms_DE$Annotation.GO.ID), ";")
+split2 <- data.frame(v1 = rep.int(GO.terms_DE$gene, sapply(split, length)), v2 = unlist(split))
+colnames(split2) <- c("gene", "Annotation.GO.ID")
+GO.terms_DE <- split2
+
+dim(GO.terms_DE)
+```
+
 
 ```{r}
 #run goseq using Wallenius method for all categories of GO terms 
@@ -198,6 +222,13 @@ GO_05 <- GO %>%
 GO_001 <- GO %>%
         dplyr::filter(over_represented_pvalue<0.001) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
+
+
+dim(GO_05)
+head(GO_05)
+
+dim(GO_001)
+GO_001
 ```
 
 
@@ -395,7 +426,7 @@ KO_05 <- KO %>%
   dplyr::arrange(., over_represented_pvalue)
 
 head(KO_05)
-
+dim(KO_05)
 
 #Write file of results 
 write.csv(KO, "../../../output/Slope_Base/GOSeq/GOseq_KEGG_Origin.csv")

@@ -186,6 +186,23 @@ pwf <- nullp(gene.vector, bias.data = LENGTH.vector)
 ```
 
 ```{r}
+#how many go terms from the 2631 genes
+
+##Get a list of GO Terms for the 2631 frontloaded genes
+GO.terms_front <- geneInfo %>% filter(gene_id %in% FRONTs$Gene) %>%
+  dplyr::select(gene_id, Annotation.GO.ID)
+
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms_front$Annotation.GO.ID), ";")
+split2 <- data.frame(v1 = rep.int(GO.terms_front$gene, sapply(split, length)), v2 = unlist(split))
+colnames(split2) <- c("gene", "Annotation.GO.ID")
+GO.terms_front <- split2
+
+dim(GO.terms_front)
+```
+
+
+```{r}
 #run goseq using Wallenius method for all categories of GO terms 
 GO.wall <- goseq(pwf, gene2cat=GO.terms, method="Wallenius", use_genes_without_cat=TRUE)
 
@@ -205,6 +222,13 @@ GO_05 <- GO %>%
 GO_001 <- GO %>%
         dplyr::filter(over_represented_pvalue<0.001) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
+
+
+dim(GO_05)
+head(GO_05)
+
+dim(GO_001)
+GO_001
 ```
 
 Plotting!
@@ -406,6 +430,8 @@ KO_05 <- KO %>%
   dplyr::arrange(., over_represented_pvalue)
 
 head(KO_05)
+dim(KO_05)
+
 #Write file of results 
 write.csv(KO, "../../../output/Slope_Base/Frontloaded_GOSeq/KEGG_Frontloaded.csv")
 ```
