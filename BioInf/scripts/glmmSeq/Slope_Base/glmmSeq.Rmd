@@ -131,6 +131,14 @@ dispersions_filt_outrm <- setNames(dispersions(dds_filt_outrm), rownames(cts_fil
 
 dds_norm_counts <- as.data.frame(counts(dds_filt_outrm, normalized=TRUE)) #save normalized counts from DEseq object for downstream use
 
+vst <- vst(dds_filt_outrm)
+vst <- assay(vst) # call only the transformed counts
+vst <- as.data.frame(vst)
+vst <- tibble::rownames_to_column(vst, var = "Gene")
+
+write.csv(vst, "../../../output/Slope_Base/vst.csv") #save this as csv for downstream analysis
+
+rm(vst)
 rm(dds_filt_outrm) #option to remove large DEseq object, we no longer need it once we have saved the dispersions
 ```
 

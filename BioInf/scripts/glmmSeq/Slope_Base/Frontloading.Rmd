@@ -67,12 +67,6 @@ melted_merge <- merge(melted, coldata, by = 'Coral_ID') %>%
 
 #this gives us a mean expression value per condition, which we already had through glmmSeq  (predData) 
 
-#should  I only group by origin here or by treatment and origin?
-
-# melted_merge_org <- melted_merge %>% 
-#                         dplyr::group_by(Gene, Origin) %>% 
-#                         dplyr::summarise(meanExp = mean(meanExp))
-
 melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
 ```
 
@@ -260,6 +254,193 @@ sum(P_frontloaded_genes$Origin < 0.05) #231 of the 840 DEGs by origin are in the
 sum(P_frontloaded_genes$Treatment < 0.05) #3 of the 18 DEGs by treatment are in the frontloaded set
 
 sum(P_frontloaded_genes$Treatment.Origin < 0.05) #4 of the 30 DEGs by treatment:origin interaction are in the frontloaded set
+```
+
+
+-------
+
+```{r}
+# Calculate the mean of each column
+
+means <- P_frontloaded %>% summarise(
+                          mean_Stable_Slope = mean(y_Stable_Slope),
+                          mean_Variable_Slope = mean(y_Variable_Slope),
+                          mean_Stable_Flat = mean(y_Stable_Flat),
+                          mean_Variable_Flat = mean(y_Variable_Flat)
+                          )
+  
+# Calculate the standard error of the selected columns
+
+standard_errors <- P_frontloaded %>% summarise(
+                          sd_Stable_Slope = sd(y_Stable_Slope) / sqrt(n()),
+                          sd_Variable_Slope = sd(y_Variable_Slope) / sqrt(n()),
+                          sd_Stable_Flat = sd(y_Stable_Flat) / sqrt(n()),
+                          sd_Variable_Flat = sd(y_Variable_Flat) / sqrt(n())
+                          )
+
+library(reshape2)
+
+# Melt the means and standard errors into a longer format
+melted_means <- melt(means)
+melted_standard_errors <- melt(standard_errors)
+
+
+# Combine the melted data
+combined_data <- cbind(melted_means, melted_standard_errors$value) %>% rename("se" = "melted_standard_errors$value")
+
+combined_data$Origin <- c("Slope", "Slope", "Flat", "Flat")
+combined_data$Treatment <- c("Stable", "Variable", "Stable", "Variable")
+
+# Plot the means as points with error bars
+ggplot(combined_data, aes(x = Treatment, y = value, color = Origin)) +
+  geom_errorbar(aes(ymin = value -  se, ymax = value + se, color = Origin), width = 0.05) +
+  geom_line(aes(group = Origin), color = "darkgrey") +
+   geom_point(size = 3) + 
+  labs(x = "Treatment", y = "glmmSeq Predicted Gene Expression (mean +- SE)") +
+  theme_minimal()
+
+#want to redo this with the vst gene expression at some point
+```
+
+```{r}
+P_frontloaded_bygroup <- P_frontloaded %>% dplyr::select("y_Stable_Slope", "y_Variable_Slope", "y_Stable_Flat", "y_Variable_Flat") %>% pivot_longer(cols = c("y_Stable_Slope", "y_Variable_Slope", "y_Stable_Flat", "y_Variable_Flat"), names_to = "group", values_to = "expression") %>% mutate(group2 = group) %>% separate("group", c("y","Treatment","Origin")) %>% dplyr::select(-c("y"))
+
+P_frontloaded_bygroup
+
+ggplot(P_frontloaded_bygroup, aes(x = Treatment, y = expression, fill= interaction(Origin, Treatment))) +
+  geom_boxplot(position = position_dodge(width = 0.8)) +  # Use position_dodge for grouping
+  stat_summary(
+    fun = mean,       # Calculate mean
+    geom = "point",   # Display as points
+    position = position_dodge(width = 0.8),  # Use position_dodge for grouping
+    size = 3,         # Point size
+    shape = 18,       # Point shape (filled circle)
+    color = "black"   # Point color
+  ) +
+  labs(x = "Treatment", y = "glmmSeq Predicted Gene Expression (mean +- SE)") +
+  theme_minimal()  +  coord_cartesian(ylim = c(0,200))
+```
+
+```{r}
+# Normality test
+shapiro.test(P_frontloaded_bygroup$expression[P_frontloaded_bygroup$group2 == "y_Stable_Slope"])
+shapiro.test(P_frontloaded_bygroup$expression[P_frontloaded_bygroup$group2 == "y_Variable_Slope"])
+shapiro.test(P_frontloaded_bygroup$expression[P_frontloaded_bygroup$group2 == "y_Stable_Flat"])
+shapiro.test(P_frontloaded_bygroup$expression[P_frontloaded_bygroup$group2 == "y_Variable_Flat"])
+
+# Data is not normally distributed
+```
+
+
+```{r}
+# Perform Kruskal-Wallis test
+kruskal_test <- kruskal.test(expression ~ group2, data = P_frontloaded_bygroup)
+
+# Check the Kruskal-Wallis test results
+print(kruskal_test)
+
+
+library(dunn.test)
+
+# Conduct Dunn's post-hoc test
+posthoc_dunn <- dunn.test(P_frontloaded_bygroup$expression, g = P_frontloaded_bygroup$group2, method = "bonferroni")
+
+# Check the post-hoc test results
+print(posthoc_dunn)
+```
+
+
+
+```{r}
+#load in vst normalized gene expression
+
+vst <- read.csv(file="../../../output/Slope_Base/vst.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+```
+
+
+```{r}
+#  reaction norm data config and plotting 
+vst_front  <- vst[which(vst$Gene %in% P_frontloaded$Gene),]
+
+vst_front  <- vst_front %>%  reshape2::melt(id.var = 'Gene') %>% 
+                    dplyr::rename(Coral_ID = variable)
+
+vst_front_Merge <- merge(vst_front, coldata, by = 'Coral_ID') %>% 
+    mutate(group = paste(Treatment, Origin, sep = "_"))
+  
+
+vst_summary <- vst_front_Merge %>%
+  #select(value, Gene, group) %>%
+  group_by(Gene, Treatment, Origin) %>%
+  summarise(mean_val = mean(value),
+            sd_val = sd(value),
+            se_val = sd_val/sqrt(n())) %>%
+  ungroup()
+
+group_summary <- vst_summary %>%
+  group_by(Treatment, Origin) %>%
+  summarise(meanExp = mean(mean_val),
+            sdExp = sd(mean_val),
+            n = n(),
+            se = sdExp/sqrt(n))
+
+# anova
+ANOVA_moderate <- aov(lm(value~as.character(group), data = vst_front_Merge))
+summary(ANOVA_moderate) # as.character(group)      3    355   118.3   196.2 <2e-16 ***
+TukeyHSD(ANOVA_moderate)
+
+#                                     diff         lwr         upr    p adj
+# Stable_Slope-Stable_Flat     -0.14750296 -0.16373730 -0.13126863 0.00e+00
+# Variable_Flat-Stable_Flat    -0.04063634 -0.05721984 -0.02405284 0.00e+00
+# Variable_Slope-Stable_Flat   -0.07025845 -0.08649279 -0.05402411 0.00e+00
+# Variable_Flat-Stable_Slope    0.10686662  0.09063228  0.12310095 0.00e+00
+# Variable_Slope-Stable_Slope   0.07724451  0.06136702  0.09312200 0.00e+00
+# Variable_Slope-Variable_Flat -0.02962211 -0.04585644 -0.01338777 1.64e-05
+
+
+#Chi squre test
+library(lsmeans)
+
+example.glm = glm(value ~ group, data = vst_front_Merge)
+
+lsmeans(example.glm, pairwise ~ group)
+
+# contrast                       estimate      SE     df t.ratio p.value
+#  Stable_Flat - Stable_Slope       0.1475 0.00632 121022  23.342  <.0001
+#  Stable_Flat - Variable_Flat      0.0406 0.00646 121022   6.295  <.0001
+#  Stable_Flat - Variable_Slope     0.0703 0.00632 121022  11.118  <.0001
+#  Stable_Slope - Variable_Flat    -0.1069 0.00632 121022 -16.911  <.0001
+#  Stable_Slope - Variable_Slope   -0.0772 0.00618 121022 -12.498  <.0001
+#  Variable_Flat - Variable_Slope   0.0296 0.00632 121022   4.688  <.0001
+
+
+ggplot(group_summary, aes(x = Treatment, y = meanExp, color = Origin)) +
+  geom_errorbar(aes(ymin = meanExp -  se, ymax = meanExp + se, color = Origin), width = 0.05) +
+  geom_line(aes(group = Origin), color = "darkgrey") +
+   geom_point(size = 3) + 
+  labs(x = "Treatment", y = "VST Mean Gene Expression (mean +- SE)") +
+  theme_minimal()
+
+
+ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group = Origin)) +
+  geom_line(aes(linetype = Origin), size = 0.5) +
+  geom_pointrange(aes(ymin=meanExp-se, ymax=meanExp+se, shape=Origin, fill=Origin)) + 
+                      scale_shape_manual(values=c(1, 16))+
+                      scale_fill_manual(values=c('black','white')) +
+                      theme_classic() +
+  scale_linetype_manual(values = c("Slope" = "solid", "Flat" = "dashed"))  +
+                      labs(y= "mean SE VST expression", 
+                           x = "Treatment",
+                           title = "Mean VST Expression of Frontloaded Genes") + 
+   theme(text = element_text(size=15)) +
+                      scale_y_continuous(limits = c(7.28,7.48), breaks = seq(7.2,7.5, by = .1)) +
+                        annotate(geom="text", x=0.94, y=7.31, label="c", color="black",size=4) +
+                        annotate(geom="text", x=0.94, y=7.46,  label="a", color="black",size=4) +
+                        annotate(geom="text", x=2.06, y=7.39, label="d", color="black",size=4) +
+                        annotate(geom="text", x=2.06, y=7.42,  label="b", color="black",size=4) +
+                        annotate(geom="text", x = 2.1, y = 7.3, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
+
+
 ```
 
 
