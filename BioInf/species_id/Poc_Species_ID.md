@@ -36,3 +36,13 @@ outcome = Pdamicornis species ID for [Brown et al 2022](https://doi.org/10.1098/
 #Pdam Pacuta species tree
 
 ![Tree](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/species_id/pocillopora_pdam_pacuta_tree.png?raw=true)
+
+## 4 new samples added by ZD, [PCR performed 04112023](https://zdellaert.github.io/ZD_Putnam_Lab_Notebook/Barott-and-Brown-Pdam-mtORF-SpeciesID/) and Sanger Sequencing on 04192023 of samples RF16A, RF24B, RS2C, and RS11D
+
+
+Using same protocol, generated consensus sequence for these 4 samples (showed 100% alignment with the Brown et al consensus seqeunce of the other samples) and aligned to the Pdam, Pacuta, Brown et al consensus sequence, and Strand consensus sequence as detailed above.
+
+
+#Pdam Pacuta species tree, with all samples
+
+![Tree](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/species_id/041923%20mtORF/pocillopora_ZD_mtORF_tree.png?raw=true)
