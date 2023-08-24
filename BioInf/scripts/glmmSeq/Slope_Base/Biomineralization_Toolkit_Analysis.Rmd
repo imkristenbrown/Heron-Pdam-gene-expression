@@ -1,11 +1,21 @@
-# BLAST-ing our genes to the Biomineralization Toolkit
+---
+title: "BLAST-ing our genes to the Biomineralization Toolkit"
+author: "Zoe Dellaert"
+date: "8/24/2023"
+output: html_document
+---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# BLAST-ing our genes to the Biomineralization Toolkit
 
 On andromeda
 
 Download protein file from genome
 
-```{bash}
+```{bash eval=FALSE}
 cd /data/putnamlab/zdellaert/Pdam-TagSeq/references
 
 wget http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.genes.pep.faa.gz
@@ -20,19 +30,19 @@ cd blast
 
 On personal computer
 
-```{bash}
+```{bash eval=FALSE}
 scp  /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/data/Biomineralization_Toolkit_FScucchia/Biomineralization_Toolkit_FScucchia.fasta zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/blast/
 Biomineralization_Toolkit_FScucchia.fasta
 ```
 
 On andromeda
 
-```{bash}
+```{bash eval=FALSE}
 nano Biomineralization_blast.sh
 ```
 
 
-```{bash}
+```{bash eval=FALSE}
 #!/bin/bash
 #SBATCH --job-name="Pacuta_TRP_blast"
 #SBATCH -t 240:00:00
@@ -56,7 +66,7 @@ blastp -query Biomineralization_Toolkit_FScucchia.fasta -db Pacuta_prot -out Bio
 ```
 
 
-```{bash}
+```{bash eval=FALSE}
 sbatch Biomineralization_blast.sh
 ```
 
@@ -68,7 +78,7 @@ Warning: [blastp] Query_168 Gene: g13552, N.. : One or more O characters replace
 
 On personal computer:
 
-```{bash}
+```{bash eval=FALSE}
 scp  zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/blast/Biomineralization_blast_results.txt /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/output
 
 scp  zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/blast/Biomineralization_blast_results_tab.txt /Users/zoedellaert/Documents/URI/Heron-Pdam-gene-expression/BioInf/output
@@ -108,9 +118,195 @@ write.csv(merged_data, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output
 ```
 
 
+How many of our 9011 genes are represented in the Biomineralization genes?
+
+```{r}
+DEGs <- read.csv(file="../../../output/Slope_Base/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+
+#NOTE! This is not a file only with differentially expressed genes, this contains all of the genes in our dataset but also contains p-value information and fold change information to help determine which genes are signficant DEGs based on our model in glmmSeq
+
+rownames(DEGs) <- DEGs$Gene
+
+dim(DEGs)
+
+Biomin_genes <- DEGs %>%
+  inner_join(merged_data, by = c("Gene" = "Pocillopora_acuta_best_hit"))
+
+Biomin_genes$definition
+
+length(Biomin_genes$definition)
+
+Biomin_genes_names <- unique(Biomin_genes$Gene)
+
+length(Biomin_genes_names)
+
+Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref) 
 
 
+#Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref, Origin, Treatment, Treatment.Origin) %>% View()
+```
 
+127/172 of the Biomineralization Genes are represented in our dataset of 9011 genes, matching to 65/9011 genes
+
+
+Differentially expressed genes: are any of these Biomineralization genes?
+
+```{r}
+Origin_DEGs <- DEGs %>%  dplyr::filter(Origin < 0.05)
+
+nrow(Origin_DEGs)
+
+Treatment_DEGs <- DEGs %>%  dplyr::filter(Treatment < 0.05)
+
+nrow(Treatment_DEGs)
+
+Interaction_DEGs <- DEGs %>%  dplyr::filter(Treatment.Origin < 0.05)
+
+nrow(Interaction_DEGs)
+```
+
+Setting up for plotting genes, loading in results from glmmseq
+```{r}
+library(glmmSeq)
+
+results <- readRDS(file = "glmmSeq.rds") #load in RDS from previous step / previous iteration
+results <- glmmQvals(results)
+source(file = "../Factor_ggmodelPlot.R")
+
+plotColours <- c("skyblue","mediumseagreen")
+modColours <- c("dodgerblue3","seagreen4")
+```
+
+
+```{r}
+Biomin_Origin_DEGs <- Origin_DEGs %>%
+  inner_join(merged_data, by = c("Gene" = "Pocillopora_acuta_best_hit"))
+
+Biomin_Origin_DEGs$definition
+
+length(Biomin_Origin_DEGs$definition)
+
+Biomin_Origin_DEG_names <- unique(Biomin_Origin_DEGs$Gene)
+
+length(Biomin_Origin_DEG_names)
+
+Biomin_Origin_DEGs %>% select(Gene, `accessionnumber/geneID`, definition, Ref) 
+```
+
+16/172 of the Biomineralization Genes are represented in the Origin DEGS, and these are 10 Pocillopora genes (some of the 10 have matches to multiple Biomineralization Genes) out of the 65 that are matching to Biomineralization Genes (10/65)
+
+Pocillopora_acuta_HIv2___TS.g13222.t1b is a best match for:
+  - Gene:g15294.t1	Annotated: Vitellogenin
+  - P24_g15888	clone g15888 vitellogenin-like protein gene
+  - P26_g1441	clone g1441 vitellogenin-like protein gene
+  - XP_022779720.1	vitellogenin-like [Stylophora pistillata]
+  
+Pocillopora_acuta_HIv2___TS.g12304.t1 is a best match for:
+  - ACE95141.1	carbonic anhydrase [Stylophora pistillata]
+  - EU532164.1	carbonic anhydrase 2
+  - Gene:g29033.t1	Annotated: Carbonic Anhydrase (STPCA2-1)
+  - Gene:g29034.t1	Annotated: CarbonicAnhyrase
+
+
+```{r}
+for (i in Biomin_Origin_DEG_names) {print(Factor_ggmodelPlot(results,
+            geneName = i,
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            title = i,
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3))}
+```
+
+
+```{r}
+Biomin_Treatment_DEGs <- Treatment_DEGs %>%
+  inner_join(merged_data, by = c("Gene" = "Pocillopora_acuta_best_hit"))
+
+Biomin_Treatment_DEGs$definition
+```
+
+0/172 of the Biomineralization Genes are represented in the Treatment DEGS
+
+
+```{r}
+Biomin_Interaction_DEGs <- Interaction_DEGs %>%
+  inner_join(merged_data, by = c("Gene" = "Pocillopora_acuta_best_hit"))
+
+Biomin_Interaction_DEGs$definition
+```
+
+0/172 of the Biomineralization Genes are represented in the Interaction DEGS
+
+
+Frontloaded genes!
+
+```{r}
+FRONTs <- read.csv(file="../../../output/Slope_Base/frontloaded_genes.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+
+Biomin_FRONTs <- FRONTs %>%
+  inner_join(merged_data, by = c("Gene" = "Pocillopora_acuta_best_hit"))
+
+Biomin_FRONTs$definition
+
+length(Biomin_FRONTs$definition)
+
+Biomin_FRONTs_names <- unique(Biomin_FRONTs$Gene)
+
+length(Biomin_FRONTs_names)
+
+Biomin_FRONTs %>% select(Gene, `accessionnumber/geneID`, definition, Ref) 
+```
+
+64/172 of the Biomineralization Genes are represented in the Frontloaded genes
+
+This is 29 genes, some of which are mapping to multiple Biomineralization genes, out of the 65 that are matching to Biomineralization Genes (29/65)
+
+```{r}
+for (i in Biomin_FRONTs_names) {print(Factor_ggmodelPlot(results,
+            geneName = i,
+            x1var = "Treatment",
+            x2var="Origin", addBox = T,
+            xlab = "Treatment and Origin",
+            title = i,
+            colours = plotColours,
+            lineColours = plotColours, 
+            modelColours = modColours,
+            modelSize = 3))}
+```
+
+```{r}
+READY <- read.csv(file="../../../output/Slope_Base/frontloaded_genes_plotting.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+
+
+READY$color <- rep('gray', nrow(READY))
+#These are "frontloaded, need a different color:
+#READY$color[READY$yall > 1 & READY$xall_1 < 1] <- 'black'
+READY$color[READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- 'red'
+
+READY_cutoff <- READY %>% dplyr::filter(yall < 6) %>% dplyr::filter(xall_1 < 6)
+
+P <- READY_cutoff %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        #geom_point(colour = READY_cutoff$color, alpha=0.8) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color != "red"), colour = subset(READY_cutoff$color, READY_cutoff$color != "red"), alpha = 0.8) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "red"), colour = subset(READY_cutoff$color, READY_cutoff$color == "red"), alpha = 0.8) +
+        theme_classic() + 
+        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        scale_x_continuous(limits = c(0,6.1),expand = c(0, 0)) + scale_y_continuous(limits = c(0,6.1), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 6.1, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
+
+P
+```
 
 
 
