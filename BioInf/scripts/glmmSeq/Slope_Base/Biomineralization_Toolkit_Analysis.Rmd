@@ -283,18 +283,18 @@ READY <- read.csv(file="../../../output/Slope_Base/frontloaded_genes_plotting.cs
 
 READY$color <- rep('gray', nrow(READY))
 #These are "frontloaded, need a different color:
-READY$color[READY$yall > 1 & READY$xall_1 < 1] <- 'black'
-READY$color[READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- 'red'
-READY$color[READY$yall > 1 & READY$xall_1 < 1 & READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- 'pink'
+READY$color[READY$yall > 1 & READY$xall_1 < 1] <- 'gray40'
+READY$color[READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- 'green4'
+READY$color[READY$yall > 1 & READY$xall_1 < 1 & READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- 'green'
 
 READY_cutoff <- READY %>% dplyr::filter(yall < 6) %>% dplyr::filter(xall_1 < 6)
 
 P <- READY_cutoff %>% 
         ggplot(aes(x=xall_1, y=yall)) +
         #geom_point(colour = READY_cutoff$color, alpha=0.8) +
-        geom_point(data = subset(READY_cutoff, READY_cutoff$color != "red"), colour = subset(READY_cutoff$color, READY_cutoff$color != "red"), alpha = 0.8) +
-        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "red"), colour = subset(READY_cutoff$color, READY_cutoff$color == "red"), alpha = 0.8) +
-        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "pink"), colour = subset(READY_cutoff$color, READY_cutoff$color == "pink"), alpha = 1) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color != "green4"), colour = subset(READY_cutoff$color, READY_cutoff$color != "green4"), alpha = 0.7) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "green4"), colour = subset(READY_cutoff$color, READY_cutoff$color == "green4"), alpha = 1) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "green"), colour = subset(READY_cutoff$color, READY_cutoff$color == "green"), alpha = 1) +
         theme_classic() + 
         stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
