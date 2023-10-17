@@ -142,7 +142,6 @@ length(Biomin_genes_names)
 
 Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref) 
 
-
 #Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref, Origin, Treatment, Treatment.Origin) %>% View()
 ```
 
@@ -308,6 +307,16 @@ P <- READY_cutoff %>%
 P
 ```
 
+
+Output lists of frontloaded genes with Biomineralization gene info
+
+```{r}
+Biomin_FRONTs_info <- merged_data %>% filter(merged_data$Pocillopora_acuta_best_hit %in% Biomin_FRONTs_names)
+
+
+write.csv(Biomin_FRONTs_info, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomin_frontloaded.csv", row.names = F)
+
+```
 
 
 
