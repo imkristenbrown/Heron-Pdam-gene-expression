@@ -143,6 +143,9 @@ length(Biomin_genes_names)
 Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref) 
 
 #Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref, Origin, Treatment, Treatment.Origin) %>% View()
+
+
+write.csv(Biomin_genes, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomin_blast_Pocillopora_acuta_best_hit_glmmSeq.csv", row.names = F)
 ```
 
 127/172 of the Biomineralization Genes are represented in our dataset of 9011 genes, matching to 65/9011 genes
@@ -318,6 +321,153 @@ Biomin_FRONTs_info <- merged_data %>% filter(merged_data$Pocillopora_acuta_best_
 
 write.csv(Biomin_FRONTs_info, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomin_frontloaded.csv", row.names = F)
 
+```
+
+
+-----
+
+VST reaction norm for just frontloaded biomineralization genes 
+
+```{r}
+#load in vst normalized gene expression
+
+vst <- read.csv(file="../../../output/Slope_Base/vst.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+```
+
+
+Lets also pull in our metadata
+
+```{r}
+coldata <- read.csv("../../../../RAnalysis/Data/RNA Submission Sample List metadata.csv") #read in metadata file
+coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
+coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+
+coldata$Origin <- factor(coldata$Origin) #set variables to factors
+coldata$Colony <- factor(coldata$Colony) #set variables to factors
+coldata$Treatment <- factor(coldata$Treatment) #set variables to factors
+
+coldata <- coldata %>% filter(Coral_ID != c("RF16A","RF16C")) #removed outlier rows from metadata
+head(coldata)
+```
+
+```{r}
+#  reaction norm data config and plotting 
+vst_front  <- vst[which(vst$Gene %in% Biomin_FRONTs_names),]
+
+vst_front  <- vst_front %>%  reshape2::melt(id.var = 'Gene') %>% 
+                    dplyr::rename(Coral_ID = variable)
+
+vst_front_Merge <- merge(vst_front, coldata, by = 'Coral_ID') %>% 
+    mutate(group = paste(Treatment, Origin, sep = "_"))
+  
+
+vst_summary <- vst_front_Merge %>%
+  group_by(Gene, Treatment, Origin, group) %>%
+  summarise(mean_val = mean(value),
+            sd_val = sd(value),
+            se_val = sd_val/sqrt(n())) %>%
+  ungroup()
+
+group_summary <- vst_summary %>%
+  group_by(Treatment, Origin) %>%
+  summarise(meanExp = mean(mean_val),
+            sdExp = sd(mean_val),
+            n = n(),
+            se = sdExp/sqrt(n))
+
+# anova
+ANOVA_moderate <- aov(lm(mean_val~as.character(group), data = vst_summary))
+summary(ANOVA_moderate) # as.character(group)      3    1.4  0.4666   0.154  0.927
+TukeyHSD(ANOVA_moderate)
+
+#                                    diff        lwr       upr     p adj
+#Stable_Slope-Stable_Flat     -0.28439865 -1.4761351 0.9073378 0.9247110
+#Variable_Flat-Stable_Flat    -0.05615529 -1.2478918 1.1355812 0.9993328
+#Variable_Slope-Stable_Flat   -0.17559153 -1.3673280 1.0161449 0.9806102
+#Variable_Flat-Stable_Slope    0.22824336 -0.9634931 1.4199798 0.9590235
+#Variable_Slope-Stable_Slope   0.10880712 -1.0829293 1.3005436 0.9952236
+#Variable_Slope-Variable_Flat -0.11943624 -1.3111727 1.0723002 0.9937106
+
+
+#Chi squre test
+library(lsmeans)
+
+model <- glm(mean_val ~ group, data = vst_summary)
+
+lsmeans_results <- lsmeans(model, pairwise ~ group)
+
+posthoc_results <- pairs(lsmeans_results)
+posthoc_results
+
+ # contrast                       estimate    SE  df t.ratio p.value
+ # Stable_Flat - Stable_Slope       0.2844 0.457 112   0.622  0.9247
+ # Stable_Flat - Variable_Flat      0.0562 0.457 112   0.123  0.9993
+ # Stable_Flat - Variable_Slope     0.1756 0.457 112   0.384  0.9806
+ # Stable_Slope - Variable_Flat    -0.2282 0.457 112  -0.499  0.9590
+ # Stable_Slope - Variable_Slope   -0.1088 0.457 112  -0.238  0.9952
+ # Variable_Flat - Variable_Slope   0.1194 0.457 112   0.261  0.9937
+
+#######
+
+ggplot(group_summary, aes(x = Treatment, y = meanExp, color = Origin)) +
+  geom_errorbar(aes(ymin = meanExp -  se, ymax = meanExp + se, color = Origin), width = 0.05) +
+  geom_line(aes(group = Origin), color = "darkgrey") +
+   geom_point(size = 3) + 
+  labs(x = "Treatment", y = "VST Mean Gene Expression (mean +- SE)") +
+  theme_minimal()
+
+
+ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group = Origin)) +
+  geom_line(aes(linetype = Origin), size = 0.5) +
+  geom_pointrange(aes(ymin=meanExp-se, ymax=meanExp+se, shape=Origin, fill=Origin)) + 
+                      scale_shape_manual(values=c(1, 16))+
+                      scale_fill_manual(values=c('black','white')) +
+                      theme_classic() +
+  scale_linetype_manual(values = c("Slope" = "solid", "Flat" = "dashed"))  +
+                      labs(y= "mean SE VST expression", 
+                           x = "Treatment",
+                           title = "Mean VST Expression of Frontloaded Biomineralization-Related Genes") + 
+   theme(text = element_text(size=12)) +
+                      #scale_y_continuous(limits = c(7.28,7.48), breaks = seq(7.2,7.5, by = .1)) +
+                        #annotate(geom="text", x=0.94, y=7.31, label="b", color="black",size=4) +
+                        #annotate(geom="text", x=0.94, y=7.46,  label="a", color="black",size=4) +
+                        #annotate(geom="text", x=2.06, y=7.39, label="c", color="black",size=4) +
+                        #annotate(geom="text", x=2.09, y=7.42,  label="a,c", color="black",size=4) +
+                        annotate(geom="text", x = 2.3, y = 7.9, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
+
+```
+
+
+
+```{r}
+# Normality test
+shapiro.test(vst_summary$mean_val[vst_summary$Treatment == "Stable" & vst_summary$Origin == "Slope"])
+shapiro.test(vst_summary$mean_val[vst_summary$Treatment == "Variable" & vst_summary$Origin == "Slope"])
+shapiro.test(vst_summary$mean_val[vst_summary$Treatment == "Stable" & vst_summary$Origin == "Flat"])
+shapiro.test(vst_summary$mean_val[vst_summary$Treatment == "Variable" & vst_summary$Origin == "Flat"])
+
+# Data is not normally distributed
+```
+
+
+```{r}
+# Perform Kruskal-Wallis test
+kruskal_test <- kruskal.test(mean_val ~ group, data = vst_summary)
+
+# Check the Kruskal-Wallis test results
+print(kruskal_test)
+
+
+library(dunn.test)
+
+# Conduct Dunn's post-hoc test
+posthoc_dunn <- dunn.test(vst_summary$mean_val, g = vst_summary$group, method = "bonferroni")
+
+# Check the post-hoc test results
+print(posthoc_dunn)
 ```
 
 
