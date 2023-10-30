@@ -310,6 +310,8 @@ P <- READY_cutoff %>%
         annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
 
 P
+
+ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/Biomin_frontloaded.pdf", plot =P)
 ```
 
 
@@ -420,7 +422,7 @@ ggplot(group_summary, aes(x = Treatment, y = meanExp, color = Origin)) +
   theme_minimal()
 
 
-ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group = Origin)) +
+P2 <- ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group = Origin)) +
   geom_line(aes(linetype = Origin), size = 0.5) +
   geom_pointrange(aes(ymin=meanExp-se, ymax=meanExp+se, shape=Origin, fill=Origin)) + 
                       scale_shape_manual(values=c(1, 16))+
@@ -438,6 +440,7 @@ ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group = Ori
                         #annotate(geom="text", x=2.09, y=7.42,  label="a,c", color="black",size=4) +
                         annotate(geom="text", x = 2.3, y = 7.9, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
 
+ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/VST_Biomin_frontloaded.pdf", plot =P2, width= 7, height = 5)
 ```
 
 
