@@ -287,17 +287,24 @@ READY <- read.csv(file="../../../output/Slope_Base/frontloaded_genes_plotting.cs
 READY$color <- rep('gray', nrow(READY))
 #These are "frontloaded, need a different color:
 READY$color[READY$yall > 1 & READY$xall_1 < 1] <- 'gray40'
-READY$color[READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- 'green4'
-READY$color[READY$yall > 1 & READY$xall_1 < 1 & READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- 'green'
+READY$color[READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- '#4D004B'
+READY$color[READY$yall > 1 & READY$xall_1 < 1 & READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- '#df74ff'
 
 READY_cutoff <- READY %>% dplyr::filter(yall < 6) %>% dplyr::filter(xall_1 < 6)
+
+library(ggrepel)
 
 P <- READY_cutoff %>% 
         ggplot(aes(x=xall_1, y=yall)) +
         #geom_point(colour = READY_cutoff$color, alpha=0.8) +
-        geom_point(data = subset(READY_cutoff, READY_cutoff$color != "green4"), colour = subset(READY_cutoff$color, READY_cutoff$color != "green4"), alpha = 0.7) +
-        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "green4"), colour = subset(READY_cutoff$color, READY_cutoff$color == "green4"), alpha = 1) +
-        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "green"), colour = subset(READY_cutoff$color, READY_cutoff$color == "green"), alpha = 1) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color != "#4D004B"), colour = subset(READY_cutoff$color, READY_cutoff$color != "#4D004B"), alpha = 0.7) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "#4D004B"), colour = subset(READY_cutoff$color, READY_cutoff$color == "#4D004B"), alpha = 1) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "#df74ff"), colour = subset(READY_cutoff$color, READY_cutoff$color == "#df74ff"), alpha = 1) +
+          #geom_text(data = subset(READY_cutoff, READY_cutoff$color == "#df74ff"), hjust=0, vjust=0)+
+            geom_text_repel(data = subset(READY_cutoff, READY_cutoff$color == "#df74ff"), aes(label = Gene),
+                            box.padding   = 0.0, 
+                            point.padding = 0.0,
+                            segment.color = 'grey50', size=3) + 
         theme_classic() + 
         stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
@@ -314,6 +321,70 @@ P
 ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/Biomin_frontloaded.pdf", plot =P)
 ```
 
+Genes to label:
+y > 2
+"Pocillopora_acuta_HIv2___RNAseq.g15280.t1" (SLC4 gamma)
+"Pocillopora_acuta_HIv2___RNAseq.g7402.t1" sodium bicarbonate cotransporter 3-like isoform X2
+"Pocillopora_acuta_HIv2___RNAseq.g16280.t1" CARP1
+"Pocillopora_acuta_HIv2___RNAseq.g13823.t1" mucin4-like protein
+
+```{r}
+READY %>% filter(Gene %in% Biomin_FRONTs_names) %>% filter (yall >2)
+
+# highest frontloaded biomineralization gene has a y value of ~14
+
+READY %>% filter(Gene %in% Biomin_FRONTs_names) %>% filter (yall >2) %>% select(Gene)
+```
+
+Genes to label:
+y > 2
+"Pocillopora_acuta_HIv2___RNAseq.g15280.t1" (SLC4 gamma)
+"Pocillopora_acuta_HIv2___RNAseq.g7402.t1" sodium bicarbonate cotransporter 3-like isoform X2
+"Pocillopora_acuta_HIv2___RNAseq.g16280.t1" CARP1
+"Pocillopora_acuta_HIv2___RNAseq.g13823.t1" mucin4-like protein
+"Pocillopora_acuta_HIv2___RNAseq.g13824.t1" carbonic anhydrase (STPCA2-2)
+"Pocillopora_acuta_HIv2___RNAseq.g28226.t2" von Willebrand factor D and EGF domain-containing protein-like, partial [Stylophora pistillata]
+"Pocillopora_acuta_HIv2___RNAseq.g5013.t1" Cephalotoxin-like protein
+"Pocillopora_acuta_HIv2___TS.g12304.t1" Carbonic Anhydrase (STPCA2-1)
+"Pocillopora_acuta_HIv2___TS.g1545.t1b" Uncharacterized skeletal organic matrix protein-2  (USOMP-2)
+
+```{r}
+genes_biomin  <- c("Pocillopora_acuta_HIv2___RNAseq.g15280.t1","Pocillopora_acuta_HIv2___RNAseq.g7402.t1" , "Pocillopora_acuta_HIv2___RNAseq.g16280.t1","Pocillopora_acuta_HIv2___RNAseq.g13823.t1" ,"Pocillopora_acuta_HIv2___RNAseq.g13824.t1" , "Pocillopora_acuta_HIv2___RNAseq.g28226.t2","Pocillopora_acuta_HIv2___RNAseq.g5013.t1","Pocillopora_acuta_HIv2___TS.g12304.t1","Pocillopora_acuta_HIv2___TS.g1545.t1b")
+
+names_biomin <- c("SLC4 gamma", "sodium bicarbonate cotransporter 3-like isoform X2", "CARP1", "mucin4-like protein", "carbonic anhydrase (STPCA2-2)", "von Willebrand factor D and EGF domain-containing protein-like", "Cephalotoxin-like protein", "Carbonic Anhydrase (STPCA2-1)", "USOMP-2")
+
+label_biomin <- cbind(genes_biomin,names_biomin)
+```
+
+
+Plotting all points < 20
+```{r}
+
+READY_cutoff <- READY %>% dplyr::filter(yall < 20) %>% dplyr::filter(xall_1 < 6)
+
+P <- READY_cutoff %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        #geom_point(colour = READY_cutoff$color, alpha=0.8) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color != "#4D004B"), colour = subset(READY_cutoff$color, READY_cutoff$color != "#4D004B"), alpha = 0.7) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "#4D004B"), colour = subset(READY_cutoff$color, READY_cutoff$color == "#4D004B"), alpha = 1) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "#df74ff"), colour = subset(READY_cutoff$color, READY_cutoff$color == "#df74ff"), alpha = 1) +
+          #geom_text(data = subset(READY_cutoff, READY_cutoff$color == "#df74ff"), hjust=0, vjust=0)+
+        theme_classic() + 
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        scale_x_continuous(limits = c(0,6.1),expand = c(0, 0)) + scale_y_continuous(limits = c(0,15.1), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 15.1, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5) +
+            geom_label_repel(data = subset(READY_cutoff, READY_cutoff$Gene %in% genes_biomin), aes(label = Gene),
+                            segment.color = 'black', size=3, nudge_y = 0.5, nudge_x = 1.5, force = 25)
+
+P
+
+ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/Biomin_frontloaded_labelled.pdf", plot =P, width = 7, height = 4)
+```
 
 Output lists of frontloaded genes with Biomineralization gene info
 
