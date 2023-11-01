@@ -209,7 +209,7 @@ GO.wall <- goseq(pwf, ID.vector, gene2cat=GO.terms, method="Wallenius", use_gene
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 
 colnames(GO)[1] <- "GOterm"
-    
+
 #Write file of results 
 write.csv(GO, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin.csv")
 
@@ -436,6 +436,154 @@ Over-represented KEGG terms, p = 0.05:
 "K01052" "K01539" "K05658" "K05619" "K11789" "K01363" "K13348" "K01345" "K24436" "K17592" "K25493" "K24125" "K12825" "K08059" "K05929" "K19721" "K14480" "K03671" "K06711" "K13443" "K18405"
 
 
+## Part 2: Better graphs
+```{r}
+go_results <- GO_05
+    
+      go_results<-go_results%>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+    
+      #Reduce/collapse GO term set with the rrvgo package 
+      simMatrix <- calculateSimMatrix(go_results$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont="BP",
+                                method="Rel")
+    #calculate similarity 
+    scores <- setNames(-log(go_results$over_represented_pvalue), go_results$GOterm)
+    reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+    
+    #keep only the goterms from the reduced list
+    go_results<-go_results%>%
+      filter(GOterm %in% reducedTerms$go)
+    
+    #add in parent terms to list of go terms 
+    go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+   
+write.csv(go_results, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin_filtered.csv")
+
+    #plot significantly enriched GO terms by Slim Category faceted by slim term 
+GO.plot <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
+    geom_point(aes(size=over_represented_pvalue)) + 
+    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
+    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+    strip.text.y = element_text(angle=0, size = 10),
+    strip.text.x = element_text(size = 20),
+    axis.text = element_text(size = 8),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+  
+  print(GO.plot)
+```
+
+```{r}
+go_results <- GO_05
+    
+      go_results<-go_results%>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+    
+      #Reduce/collapse GO term set with the rrvgo package 
+      simMatrix <- calculateSimMatrix(go_results$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont="BP",
+                                method="Rel")
+    #calculate similarity 
+    scores <- setNames(-log(go_results$over_represented_pvalue), go_results$GOterm)
+    reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+    
+    #keep only the goterms from the reduced list
+    go_results<-go_results%>%
+      filter(GOterm %in% reducedTerms$go)
+    
+    #add in parent terms to list of go terms 
+    go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+   
+write.csv(go_results, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin_filtered_more10.csv")
+
+    #plot significantly enriched GO terms by Slim Category faceted by slim term 
+GO.plot <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
+    geom_point(aes(size=over_represented_pvalue)) + 
+    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
+    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
+    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
+    strip.text.y = element_text(angle=0, size = 10),
+    strip.text.x = element_text(size = 20),
+    axis.text = element_text(size = 8),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank())
+  
+  print(GO.plot)
+```
+
+```{r}
+freq_fig <- ggplot(go_results, aes(y=numInCat,x=reorder(ParentTerm, numInCat)
+                                   #, fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1
+                                   ))+
+  #facet_wrap(~Calcification.direction, nrow = 1)+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=numInCat)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,95))+
+  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
+ #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
+  theme_classic()+
+   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig
+```
+
+```{r}
+freq_fig <- ggplot(go_results, aes(y=numDEInCat,x=reorder(ParentTerm, numDEInCat)
+                                   #, fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1
+                                   ))+
+  #facet_wrap(~Calcification.direction, nrow = 1)+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=numDEInCat)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,20))+
+  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
+ #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
+  theme_classic()+
+   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig
+```
+
+
+## Part 3: Direction of FC
+
 ### What about the direction of FC: Genes significant by Origin and upregulated in Slope origin (positive FC) for both treatments (we should also look into the ones that are positive in one treatment but not the other)
 
 ```{r}
@@ -535,37 +683,6 @@ for (category in ontologies) {
 ggsave(filename=paste0("../../../output/Slope_Base/GOSeq/OriginDEGs_upslope_P05", "_", category, ".png"), plot=GO.plot_upslope, dpi=100, width=12, height=48, units="in", limitsize=FALSE)
 }
 ```
-
-## Part 2: Better graphs
-
-```{r}
-#counts$Direction.of.flat.origin<- factor(counts$Direction.of.flat.origin, levels =c("up","no pattern","down"))
-#counts$Module<- factor(counts$Module, levels=c("Blue","Brown","Greenyellow","Cyan","Pink","Magenta","Lightcyan","Midnight blue","Purple","Turquiose","Red","Black"))
-freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
-  #facet_wrap(~Calcification.direction, nrow = 1)+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
-  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
-  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
-  coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,40))+
-  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
- #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
-  theme_classic()+
-   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
-        panel.background= element_rect(fill=NA, color='black'),
-        legend.title = element_blank(),
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_blank(),
-        strip.text = element_text(size=12))#making the axis title larger 
-freq_fig_up
-```
-
-
-## Part 3: Direction of FC
 
 ### What about the direction of FC: Genes significant by Origin and upregulated in Flat origin (negative FC) for both treatments (we should also look into the ones that are positive in one treatment but not the other)
 
