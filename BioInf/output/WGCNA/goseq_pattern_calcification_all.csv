@@ -1,0 +1,130 @@
+ParentTerm,Calcification direction,Number of terms,Frequency of shared biomin GOterms,Proportion of shared GO terms with biomineralization genes,Percentage of shared GO terms with biomineralization genes
+negative regulation of organelle organization,Up,39,12,0.307692308,30.76923077
+negative regulation of protein modification process,Up,26,11,0.423076923,42.30769231
+anion transport,Up,23,6,0.260869565,26.08695652
+sensory organ morphogenesis,Up,21,3,0.142857143,14.28571429
+cytokine-mediated signaling pathway,Up,20,2,0.1,10
+biological regulation,Up,19,9,0.473684211,47.36842105
+establishment of protein localization to organelle,Up,18,5,0.277777778,27.77777778
+positive regulation of phosphate metabolic process,Up,18,5,0.277777778,27.77777778
+proteasomal protein catabolic process,Up,18,3,0.166666667,16.66666667
+cellular metal ion homeostasis,Up,17,17,1,100
+negative regulation of transcription by RNA polymerase II,Up,17,17,1,100
+post-embryonic animal morphogenesis,Up,17,17,1,100
+regulation of intracellular protein transport,Up,17,5,0.294117647,29.41176471
+regulation of protein kinase activity,Up,16,15,0.9375,93.75
+negative regulation of intracellular signal transduction,Up,15,15,1,100
+sensory perception,Up,14,14,1,100
+transcription by RNA polymerase II,Up,14,1,0.071428571,7.142857143
+programmed cell death,Up,12,5,0.416666667,41.66666667
+meiotic cell cycle process,Up,11,6,0.545454545,54.54545455
+muscle structure development,Up,11,10,0.909090909,90.90909091
+organic acid biosynthetic process,Up,11,7,0.636363636,63.63636364
+ncRNA metabolic process,Up,10,3,0.3,30
+positive regulation of cell development,Up,9,9,1,100
+oogenesis,Up,8,6,0.75,75
+sex differentiation,Up,8,6,0.75,75
+cell-cell signaling,Up,7,7,1,100
+defense response,Up,7,4,0.571428571,57.14285714
+protein ubiquitination,Up,7,4,0.571428571,57.14285714
+regulation of cell migration,Up,7,7,1,100
+cell fate commitment,Up,6,4,0.666666667,66.66666667
+epithelial cell development,Up,6,6,1,100
+metabolic process,Up,6,6,1,100
+nitrogen compound metabolic process,Up,6,5,0.833333333,83.33333333
+regulation of cellular response to stress,Up,6,4,0.666666667,66.66666667
+regulation of immune response,Up,6,1,0.166666667,16.66666667
+chemotaxis,Up,5,5,1,100
+positive regulation of growth,Up,5,5,1,100
+purine ribonucleotide metabolic process,Up,5,5,1,100
+response to other organism,Up,5,2,0.4,40
+actin cytoskeleton organization,Up,4,2,0.5,50
+lipid biosynthetic process,Up,4,2,0.5,50
+response to extracellular stimulus,Up,4,4,1,100
+response to radiation,Up,4,3,0.75,75
+amide biosynthetic process,Up,3,2,0.666666667,66.66666667
+cell population proliferation,Up,3,1,0.333333333,33.33333333
+localization of cell,Up,3,3,1,100
+response to endogenous stimulus,Up,3,3,1,100
+tube development,Up,3,3,1,100
+biological adhesion,Up,2,2,1,100
+brain development,Up,2,2,1,100
+carbohydrate derivative biosynthetic process,Up,2,1,0.5,50
+cell activation,Up,2,0,0,0
+gene expression,Up,2,1,0.5,50
+generation of precursor metabolites and energy,Up,2,0,0,0
+microtubule-based process,Up,2,2,1,100
+proteolysis,Up,2,2,0.5,50
+behavior,Up,1,1,1,100
+carbohydrate metabolic process,Up,1,0,0,0
+cell division,Up,1,1,1,100
+cellular process,Up,1,1,1,100
+developmental maturation,Up,1,1,1,100
+drug metabolic process,Up,1,1,1,100
+import into cell,Up,1,1,1,100
+organic hydroxy compound metabolic process,Up,1,1,1,100
+oxidation-reduction process,Up,1,1,1,100
+sulfur compound metabolic process,Up,1,1,1,100
+aging,Down,12,11,0.916666667,91.66666667
+axon guidance,Down,7,7,1,100
+biological regulation,Down,16,9,0.5625,56.25
+carbohydrate derivative biosynthetic process,Down,2,1,0.5,50
+carbohydrate metabolic process,Down,1,0,0,0
+cation transport,Down,14,14,1,100
+cellular lipid metabolic process,Down,3,1,0.333333333,33.33333333
+cellular process,Down,1,1,1,100
+cellular response to abiotic stimulus,Down,2,0,0,0
+cellular response to external stimulus,Down,5,5,1,100
+cellular response to hormone stimulus,Down,4,4,1,100
+detection of stimulus,Down,6,3,0.5,50
+development of primary sexual characteristics,Down,10,8,0.8,80
+developmental growth,Down,8,6,0.75,75
+DNA repair,Down,8,5,0.625,62.5
+drug metabolic process,Down,1,1,1,100
+embryonic organ development,Down,19,19,1,100
+establishment or maintenance of cell polarity,Down,1,1,1,100
+exocytosis,Down,9,1,0.111111111,11.11111111
+gastrulation,Down,7,7,1,100
+head development,Down,2,2,1,100
+histone modification,Down,39,27,0.692307692,69.23076923
+import into cell,Down,1,1,1,100
+leukocyte activation,Down,2,0,0,0
+locomotory behavior,Down,2,2,1,100
+macromolecule metabolic process,Down,3,3,1,100
+memory,Down,9,5,0.555555556,55.55555556
+metabolic process,Down,6,6,1,100
+morphogenesis of embryonic epithelium,Down,7,7,1,100
+negative regulation of catabolic process,Down,13,12,0.923076923,92.30769231
+negative regulation of cell development,Down,10,10,1,100
+negative regulation of mitotic cell cycle,Down,10,7,0.7,70
+negative regulation of neurogenesis,Down,13,11,0.846153846,84.61538462
+negative regulation of transcription by RNA polymerase II,Down,17,17,1,100
+nucleotide metabolic process,Down,7,7,1,100
+organonitrogen compound metabolic process,Down,6,4,0.666666667,66.66666667
+oxidation-reduction process,Down,1,1,1,100
+positive regulation of cell motility,Down,8,7,0.875,87.5
+positive regulation of defense response,Down,7,4,0.571428571,57.14285714
+positive regulation of immune response,Down,9,1,0.111111111,11.11111111
+positive regulation of kinase activity,Down,20,17,0.85,85
+positive regulation of multi-organism process,Down,10,6,0.6,60
+post-embryonic animal morphogenesis,Down,19,19,1,100
+protein localization to organelle,Down,14,9,0.642857143,64.28571429
+protein modification by small protein conjugation or removal,Down,6,4,0.666666667,66.66666667
+purine ribonucleotide metabolic process,Down,13,7,0.538461538,53.84615385
+regulation of actin cytoskeleton organization,Down,4,2,0.5,50
+regulation of cell population proliferation,Down,4,1,0.25,25
+regulation of cell size,Down,20,18,0.9,90
+regulation of cell-cell adhesion,Down,2,0,0,0
+"regulation of gene expression, epigenetic",Down,27,26,0.962962963,96.2962963
+regulation of ion transport,Down,17,7,0.411764706,41.17647059
+regulation of microtubule-based process,Down,3,2,0.666666667,66.66666667
+regulation of neuron death,Down,13,5,0.384615385,38.46153846
+regulation of peptide secretion,Down,8,0,0,0
+regulation of Ras protein signal transduction,Down,7,6,0.857142857,85.71428571
+response to ionizing radiation,Down,7,5,0.714285714,71.42857143
+response to xenobiotic stimulus,Down,25,19,0.76,76
+ribose phosphate metabolic process,Down,22,12,0.545454545,54.54545455
+rRNA metabolic process,Down,6,1,0.166666667,16.66666667
+transcription by RNA polymerase II,Down,14,1,0.071428571,7.142857143
+transmembrane receptor protein tyrosine kinase signaling pathway,Down,23,21,0.913043478,91.30434783
+tube development,Down,3,3,1,100
