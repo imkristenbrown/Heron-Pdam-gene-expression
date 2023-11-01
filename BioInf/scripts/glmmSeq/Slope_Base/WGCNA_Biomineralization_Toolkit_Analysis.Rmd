@@ -36,18 +36,18 @@ library(rrvgo)
 
 ```{r}
 library(rtracklayer)
-gff<-rtracklayer::import("../../../data/Pocillopora_acuta_HIv2.genes_fixed.gff3")
-gff<-as.data.frame(gff)
+gff <- rtracklayer::import("../../../data/Pocillopora_acuta_HIv2.genes_fixed.gff3")
+gff <- as.data.frame(gff)
 dim(gff) # 478988     9
 names(gff) 
-gff
+#gff
 transcripts <- subset(gff, type == "transcript")
 transcripts_gr <- makeGRangesFromDataFrame(transcripts, keep.extra.columns=TRUE) #extract length information
 transcript_lengths <- width(transcripts_gr) #isolate length of each gene
-seqnames<-transcripts_gr$ID #extract list of gene id 
-lengths<-cbind(seqnames, transcript_lengths)
-lengths<-as.data.frame(lengths) #convert to data frame
-transcripts
+seqnames <- transcripts_gr$ID #extract list of gene id 
+lengths <- cbind(seqnames, transcript_lengths)
+lengths <- as.data.frame(lengths) #convert to data frame
+#transcripts
 ```
 
 ```{r}
@@ -75,7 +75,6 @@ head(geneInfo) # there are 9056 genes in our gene info file
 
 ```{r}
 geneInfo <- merge(gogene, geneInfo, by=c("gene_id"), all=T)
-head(geneInfo)
 ```
 
 ```{r}
@@ -107,12 +106,14 @@ ID.vector <- geneInfo%>%
   filter(moduleColor==c("blue","pink","magenta","lightcyan","purple","brown"))%>%
   #get_rows(.data[[module]]))%>%
   pull(gene_id)
+
 ##Get a list of GO Terms for each module
 GO.terms <- geneInfo%>%
   filter(moduleColor==c("blue","pink","magenta","lightcyan","purple","brown"))%>%
   #filter(get_rows(.data[[module]]))%>%
   dplyr::select(GO.terms,gene_id)
-GO.terms
+
+head(GO.terms)
 ```
 
 ```{r}
@@ -120,7 +121,7 @@ GO.terms
 split <- strsplit(as.character(GO.terms$GO.terms), ",") 
 split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
 colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
+GO.terms <- split2
 ```
 
 
@@ -129,12 +130,12 @@ GO.terms<-split2
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
 #weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+pwf <- nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
 ```
 
 ```{r}
 #run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO.wall <- goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 colnames(GO)[1] <- "GOterm"
 ```
@@ -155,21 +156,22 @@ write.csv(GO, file = "../../../output/WGCNA/goseq_pattern_calcification.csv")
 ```
 
 ```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
+module_vector <- c(levels(geneInfo$moduleColor))
+ontologies <- c("BP", "MF")
 ```
 
 ```{r}
-go_results <-read.csv("../../../output/WGCNA/goseq_pattern_calcification.csv")
+go_results <- read.csv("../../../output/WGCNA/goseq_pattern_calcification.csv")
 head(go_results)
 ```
 
 ```{r}
-go_results<-go_results%>%
+go_results <- go_results%>%
       filter(ontology=="BP")%>%
       filter(bh_adjust != "NA") %>%
       filter(numInCat>10)%>%
       arrange(., bh_adjust)
+
 head(go_results)
 ```
 
@@ -189,15 +191,18 @@ reducedTerms <- reduceSimMatrix(simMatrix,
                                 scores,
                                 threshold=0.7,
                                 orgdb="org.Ce.eg.db")
-reducedTerms
+head(reducedTerms)
 ```
 
 ```{r}
 #keep only the goterms from the reduced list
-go_results<-go_results%>%
+go_results <- go_results%>%
   filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+
+#add in parent terms to list of go terms 
+go_results$ParentTerm <- reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+
+go_results <- go_results %>% mutate(Factor = "Up")
 head(go_results)
 ```
 
@@ -208,7 +213,7 @@ write.csv(go_results, "../../../output/WGCNA/goseq_pattern_calcification_filtere
 
 ```{r}
 #plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_calcification <-  ggplot(go_results, aes(x = ontology, y = term)) + 
+GO.plot_calcification <-  ggplot(go_results, aes(x = ontology, y = term)) + 
     geom_point(aes(size=bh_adjust)) + 
     scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
     facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
@@ -240,12 +245,14 @@ ID.vector <- geneInfo%>%
   filter(moduleColor==c("black","red"))%>%
   #get_rows(.data[[module]]))%>%
   pull(gene_id)
+
 ##Get a list of GO Terms for each module
 GO.terms <- geneInfo%>%
   filter(moduleColor==c("black","red"))%>%
   #filter(get_rows(.data[[module]]))%>%
   dplyr::select(GO.terms,gene_id)
-GO.terms
+
+head(GO.terms)
 ```
 
 ```{r}
@@ -253,21 +260,22 @@ GO.terms
 split <- strsplit(as.character(GO.terms$GO.terms), ",") 
 split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
 colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
+GO.terms <- split2
 ```
 
 
 ```{r}
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
+names(gene.vector) <- ALL.vector#set names
 #weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+pwf <- nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
 ```
 
 ```{r}
 #run goseq using Wallenius method for all categories of GO terms 
 GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 colnames(GO)[1] <- "GOterm"
 ```
@@ -288,16 +296,16 @@ write.csv(GO, file = "../../../output/WGCNA/goseq_pattern_calcification_down.csv
 ```
 
 ```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
+module_vector <- c(levels(geneInfo$moduleColor))
+ontologies <- c("BP", "MF")
 ```
 
 ```{r}
-go_results <-read.csv("../../../output/WGCNA/goseq_pattern_calcification_down.csv")
+go_results <- read.csv("../../../output/WGCNA/goseq_pattern_calcification_down.csv")
 ```
 
 ```{r}
- go_results<-go_results%>%
+go_results<-go_results%>%
       filter(ontology=="BP")%>%
       filter(bh_adjust != "NA") %>%
       filter(numInCat>10)%>%
@@ -330,6 +338,7 @@ go_results<-go_results%>%
   filter(GOterm %in% reducedTerms$go)
  #add in parent terms to list of go terms 
 go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+go_results <- go_results %>% mutate(Factor = "Down")
 head(go_results)
 ```
 
@@ -375,7 +384,7 @@ all_terms<- merge(cal_up_terms,cal_down_terms, by=c("Factor","GOterm","X.1","X",
 all_terms<- merge(all_terms,cal_biomin_terms, by=c("Factor","GOterm","X.1","X","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm"),all=T)
 
 all_terms$GOterm<-as.factor(all_terms$GOterm)
-all_terms
+head(all_terms)
 ```
 
 ```{r}
@@ -385,17 +394,17 @@ all_terms_merged <- all_terms %>%
     ParentTerm = paste(unique(ParentTerm), collapse = ", "),
     Factor = paste(unique(Factor), collapse = ", ")
   )
-all_terms_merged
+head(all_terms_merged)
 ```
 
 ```{r}
-#write.csv(all_terms_merged, "Merged GOterms by factor and ParentTerm.csv")
+write.csv(all_terms_merged, "../../../output/WGCNA/Merged_GOterms_Factor_ParentTerm.csv")
 ```
 
 
 ```{r}
-cal_freq_terms <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_pattern_calcification_all.csv")
-cal_freq_terms
+cal_freq_terms <-read.csv("../../../output/WGCNA/goseq_pattern_calcification_all.csv")
+head(cal_freq_terms)
 ```
 
 ##Frequency >10 GO terms upregulation
@@ -403,7 +412,6 @@ cal_freq_terms
 cal_freq_terms_filtered_up <- cal_freq_terms %>%
   filter(Number.of.terms>=10) %>%
   filter(Calcification.direction=="Up")
-cal_freq_terms_filtered_up
 ```
 ###Figure
 ```{r}
@@ -436,7 +444,6 @@ freq_fig_up
 cal_freq_terms_filtered_down <- cal_freq_terms %>%
   filter(Number.of.terms>=10) %>%
   filter(Calcification.direction=="Down")
-cal_freq_terms_filtered_down
 ```
 
 ###Figure
@@ -472,7 +479,7 @@ compare_figs
 ```{r}
 cal_freq_terms_filtered_up_all <- cal_freq_terms %>%
   filter(Calcification.direction=="Up")
-cal_freq_terms_filtered_up_all
+head(cal_freq_terms_filtered_up_all)
 ```
 ###Figure
 ```{r}
@@ -538,87 +545,69 @@ compare_figs_all
 ```
 
 ```{r}
-biomin_mod <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Biomineralization toolkit with modules.csv")
-biomin_mod
-```
-```{r}
-glmmseq_exp <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/model_expression_prediction_allgenes.csv")
-glmmseq_exp<- plyr::rename(glmmseq_exp, c("Gene"="Pocillopora_acuta_best_hit"))
-glmmseq_exp
+biomin_mod <-read.csv("../../../output/WGCNA/Biomineralization_toolkit_by_module.csv")
+head(biomin_mod)
 ```
 
 ```{r}
-biomin_exp<- merge(biomin_mod, glmmseq_exp, by=c("Pocillopora_acuta_best_hit"), all=T)
-biomin_exp
-```
-```{r}
-biomin_exp <- biomin_exp %>%
-  # recode empty strings "" by NAs
-  na_if("") %>%
-  # remove NAs
-  na.omit
-biomin_exp
+glmmseq_exp <-read.csv("../../../output/Slope_Base/model_expression_prediction_allgenes.csv")
+glmmseq_exp <- plyr::rename(glmmseq_exp, c("X"="Pocillopora_acuta_best_hit"))
 ```
 
 ```{r}
-#write.csv(biomin_exp, "Biomineralization toolkit with glmmseq expression.csv")
+biomin_exp <- merge(biomin_mod, glmmseq_exp, by=c("Pocillopora_acuta_best_hit"), all.x=T)
+```
+
+```{r}
+write.csv(biomin_exp, "../../../output/WGCNA/Biomineralization_toolkit_glmmseq_expression.csv")
 ```
 
 
 ```{r}
-biomin_all <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Biomin_blast_Pocillopora_acuta_best_hit_glmmSeq.csv")
-biomin_all
-```
-
-```{r}
-colnames(biomin_all)
+biomin_all <-read.csv("../../../output/Biomin_blast_Pocillopora_acuta_best_hit_glmmSeq.csv")
+head(biomin_all)
 ```
 
 ```{r}
 library(tidyr)
-biomin_all_filtered_long <- pivot_longer(biomin_all, cols=31:75, names_to = "Colony", values_to = "Expression")
-biomin_all_filtered_long $Colony <- as.factor(biomin_all_filtered_long $Colony)
-biomin_all_filtered_long 
+biomin_all_filtered_long <- pivot_longer(biomin_all, cols=30:75, names_to = "Colony", values_to = "Expression")
+biomin_all_filtered_long$Colony <- as.factor(biomin_all_filtered_long$Colony)
+head(biomin_all_filtered_long)
 ```
+
 ```{r}
 biomin_all_filtered_long  <- biomin_all_filtered_long  %>% 
   separate(Colony, into = c('Origin', 'Colony.number'), sep = 2)
-biomin_all_filtered_long 
-```
 
-```{r}
 library(stringr)
-biomin_all_filtered_long $Colony <- as.numeric(str_extract(biomin_all_filtered_long $Colony.number, "[0-9]+"))
-biomin_all_filtered_long <-biomin_all_filtered_long  %>% 
-   mutate(Treatment = trimws(str_remove(biomin_all_filtered_long $Colony.number, "(\\s+[A-Za-z]+)?[0-9-]+")))
-biomin_all_filtered_long 
-```
+biomin_all_filtered_long$Colony <- as.numeric(str_extract(biomin_all_filtered_long$Colony.number, "[0-9]+"))
+biomin_all_filtered_long <- biomin_all_filtered_long  %>% 
+   mutate(Treatment = trimws(str_remove(biomin_all_filtered_long$Colony.number, "(\\s+[A-Za-z]+)?[0-9-]+")))
 
-```{r}
-biomin_all_filtered_long $Origin <- as.factor(biomin_all_filtered_long $Origin)
-biomin_all_filtered_long $Treatment <- as.factor(biomin_all_filtered_long $Treatment)
-biomin_all_filtered_long 
-```
+biomin_all_filtered_long$Origin <- as.factor(biomin_all_filtered_long$Origin)
+biomin_all_filtered_long$Treatment <- as.factor(biomin_all_filtered_long$Treatment)
 
-```{r}
 biomin_all_filtered_long  <- biomin_all_filtered_long  %>%
   mutate(Treatment2 = ifelse(Treatment == "A" | Treatment == "B", "Variable",
                ifelse(Treatment == "C" | Treatment == "D", "Stable", NA)))
-biomin_all_filtered_long $Treatment2 <- as.factor(biomin_all_filtered_long $Treatment2)
-biomin_all_filtered_long 
+biomin_all_filtered_long$Treatment2 <- as.factor(biomin_all_filtered_long$Treatment2)
+
+head(biomin_all_filtered_long)
 ```
+
 #MEBlue signficant genes
 ##Thioredoxin reductase 1
 ```{r}
-biomin_all_filtered_long_g10093 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g10093.t2")
+biomin_all_filtered_long_g10093 <- biomin_all_filtered_long  %>% filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g10093.t2")
 biomin_all_filtered_long_g10093  
 ```
+
 ```{r}
 library(nlme)
+library(emmeans)
 g10093.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g10093 , na.action=na.exclude)
 car::Anova(g10093.lme, type=3)
-tukey3<- emmeans(g10093.lme, list(pairwise ~ Origin), adjust = "tukey")
+tukey3 <- emmeans(g10093.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
 
@@ -627,6 +616,7 @@ library(Rmisc)
 g10093_sum<-summarySE(biomin_all_filtered_long_g10093 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g10093_sum
 ```
+
 ###Figure
 ```{r}
 pd<- position_dodge(0.2)
@@ -658,6 +648,8 @@ biomin_all_filtered_long_g13824 <- biomin_all_filtered_long  %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g13824.t1")
 biomin_all_filtered_long_g13824  
 ```
+
+
 ```{r}
 library(nlme)
 g13824.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g13824 , na.action=na.exclude)
