@@ -32,38 +32,60 @@ library(data.table)
 library(stringr)
 library(GenomicRanges)
 library(rrvgo)
+```
+
+```{r}
 library(rtracklayer)
-```
-
-
-```{r}
-geneInfo <- read.csv("../../../output/Slope_Base/geneInfo.csv") 
-
-WGCNA_ModuleMembership <- read.csv("../../../output/WGCNA/WGCNA_ModuleMembership.csv") %>% rename(c("X"="gene_id"))  #this file was generated from the WGCNA analyses and contains the modules of interest
-
-geneInfo <- geneInfo %>% left_join(WGCNA_ModuleMembership %>% dplyr::select(gene_id, moduleColor), by = "gene_id")
-```
-
-Get gene length information.  
-```{r}
-#import file
-gff <- rtracklayer::import("../../../data/Pocillopora_acuta_HIv2.genes_fixed.gff3") #if this doesn't work, restart R and try again 
-transcripts <- subset(gff, type == "transcript") #keep only transcripts , not CDS or exons
-transcript_lengths <- width(transcripts) #isolate length of each gene
-seqnames <- transcripts$ID #extract list of gene id 
+gff <- rtracklayer::import("../../../data/Pocillopora_acuta_HIv2.genes_fixed.gff3")
+gff <- as.data.frame(gff)
+dim(gff) # 478988     9
+names(gff) 
+#gff
+transcripts <- subset(gff, type == "transcript")
+transcripts_gr <- makeGRangesFromDataFrame(transcripts, keep.extra.columns=TRUE) #extract length information
+transcript_lengths <- width(transcripts_gr) #isolate length of each gene
+seqnames <- transcripts_gr$ID #extract list of gene id 
 lengths <- cbind(seqnames, transcript_lengths)
 lengths <- as.data.frame(lengths) #convert to data frame
-
-geneInfo$Length<-lengths$transcript_lengths[match(geneInfo$gene_id, lengths$seqnames)] #Add in length to geneInfo
+#transcripts
 ```
-
-Format GO terms to remove dashes and quotes and separate by semicolons (replace , with ;) in  Annotation.GO.ID column
 
 ```{r}
-geneInfo$Annotation.GO.ID <- gsub(",", ";", geneInfo$Annotation.GO.ID)
-geneInfo$Annotation.GO.ID <- gsub('"', "", geneInfo$Annotation.GO.ID)
-geneInfo$Annotation.GO.ID <- gsub("-", NA, geneInfo$Annotation.GO.ID)
+kegg <- read.table("../../../data/Pocillopora_acuta_HIv2.genes.KEGG_results.txt", sep="", quote="", na.strings=c("","NA"), blank.lines.skip = FALSE, header=FALSE)
+
+colnames(kegg) <- c("gene_id", "KEGG_new") 
 ```
+
+
+```{r}
+eggnog<- read.delim("../../../data/Pocillopora_acuta_HIv2.genes.EggNog_results.txt") %>% dplyr::rename("gene_id" = X.query) #this file contains all of the go terms, descriptions, kegg, etc
+```
+
+```{r}
+gogene <- merge(transcripts, eggnog, by=c("gene_id"), all=T)
+gogene <- merge(gogene, kegg, by=c("gene_id"), all=T)
+```
+
+```{r}
+geneInfo <- read.csv("../../../output/WGCNA/WGCNA_ModuleMembership.csv") %>% rename(c("X"="gene_id"))  #this file was generated from the WGCNA analyses and contains the modules of interest
+
+dim(geneInfo)
+head(geneInfo) # there are 9056 genes in our gene info file
+```
+
+```{r}
+geneInfo <- merge(gogene, geneInfo, by=c("gene_id"), all=T)
+```
+
+```{r}
+unique(geneInfo$moduleColor)
+```
+
+```{r}
+geneInfo$Length<-lengths$transcript_lengths[match(geneInfo$gene_id, lengths$seqnames)]
+head(geneInfo)
+```
+
 
 #Calcification - upregulation (GO terms associated with WGCNA modules demonstrating positive expression in net calcification
 ```{r}
@@ -85,43 +107,27 @@ ID.vector <- geneInfo%>%
   #get_rows(.data[[module]]))%>%
   pull(gene_id)
 
-##Get a list of GO Terms for whole dataset
-GO.terms_all <- geneInfo%>%
-  #filter(moduleColor==c("blue","pink","magenta","lightcyan","purple","brown"))%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(gene_id, Annotation.GO.ID)
-
 ##Get a list of GO Terms for each module
 GO.terms <- geneInfo%>%
   filter(moduleColor==c("blue","pink","magenta","lightcyan","purple","brown"))%>%
   #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(gene_id, Annotation.GO.ID)
+  dplyr::select(GO.terms,gene_id)
 
 head(GO.terms)
 ```
 
 ```{r}
 ##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$Annotation.GO.ID), ";")
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split))
-colnames(split2) <- c("gene", "Annotation.GO.ID")
+split <- strsplit(as.character(GO.terms$GO.terms), ",") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
 GO.terms <- split2
-dim(GO.terms)
 ```
 
-
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms_all$Annotation.GO.ID), ";")
-split2 <- data.frame(v1 = rep.int(GO.terms_all$gene, sapply(split, length)), v2 = unlist(split))
-colnames(split2) <- c("gene", "Annotation.GO.ID")
-GO.terms_all <- split2
-dim(GO.terms_all)
-```
 
 ```{r}
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector = as.integer(ALL.vector %in% ID.vector)
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
 #weight gene vector by bias for length of gene 
 pwf <- nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
@@ -244,18 +250,17 @@ ID.vector <- geneInfo%>%
 GO.terms <- geneInfo%>%
   filter(moduleColor==c("black","red"))%>%
   #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(gene_id, Annotation.GO.ID)
+  dplyr::select(GO.terms,gene_id)
 
 head(GO.terms)
 ```
 
 ```{r}
 ##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$Annotation.GO.ID), ";")
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split))
-colnames(split2) <- c("gene", "Annotation.GO.ID")
+split <- strsplit(as.character(GO.terms$GO.terms), ",") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
 GO.terms <- split2
-dim(GO.terms)
 ```
 
 
