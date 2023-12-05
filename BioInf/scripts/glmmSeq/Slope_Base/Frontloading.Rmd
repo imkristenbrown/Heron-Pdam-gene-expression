@@ -288,14 +288,14 @@ vst_front_Merge <- merge(vst_front, coldata, by = 'Coral_ID') %>%
 
 vst_summary <- vst_front_Merge %>%
   group_by(Gene, Treatment, Origin, group) %>%
-  summarise(mean_val = mean(value),
+  dplyr::summarise(mean_val = mean(value),
             sd_val = sd(value),
             se_val = sd_val/sqrt(n())) %>%
   ungroup()
 
 group_summary <- vst_summary %>%
   group_by(Treatment, Origin) %>%
-  summarise(meanExp = mean(mean_val),
+  dplyr::summarise(meanExp = mean(mean_val),
             sdExp = sd(mean_val),
             n = n(),
             se = sdExp/sqrt(n))
@@ -360,6 +360,7 @@ P2 <- ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group
                         annotate(geom="text", x=2.09, y=7.42,  label="a,c", color="black",size=4) +
                         annotate(geom="text", x = 2.1, y = 7.3, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
 
+P2
 ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/VST_frontloaded.pdf", plot =P2, width= 7, height = 5)
 ```
 
@@ -392,3 +393,100 @@ posthoc_dunn <- dunn.test(vst_summary$mean_val, g = vst_summary$group, method = 
 print(posthoc_dunn)
 ```
 
+
+-------
+
+
+Trying below to see what the frontloading inset looks like with the normalized data instead of VST transformed data but it looks similar but has different signfiicant outcomes, way higher variance. We should discuss which is more accurate. 
+
+```{r}
+#load in "normcounts" normalized gene expression
+
+norm <- read.csv(file="../../../output/Slope_Base/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X')) %>% dplyr::select(1, 30:75) 
+```
+
+
+```{r}
+#  reaction norm data config and plotting 
+norm_front  <- norm[which(norm$Gene %in% P_frontloaded$Gene),]
+
+norm_front  <- norm_front %>%  reshape2::melt(id.var = 'Gene') %>% 
+                    dplyr::rename(Coral_ID = variable)
+
+norm_front_Merge <- merge(norm_front, coldata, by = 'Coral_ID') %>% 
+    mutate(group = paste(Treatment, Origin, sep = "_"))
+  
+
+norm_summary <- norm_front_Merge %>%
+  group_by(Gene, Treatment, Origin, group) %>%
+  dplyr::summarise(mean_val = mean(value),
+            sd_val = sd(value),
+            se_val = sd_val/sqrt(n())) %>%
+  ungroup()
+
+group_summary <- norm_summary %>%
+  group_by(Treatment, Origin) %>%
+  dplyr::summarise(meanExp = mean(mean_val),
+            sdExp = sd(mean_val),
+            n = n(),
+            se = sdExp/sqrt(n))
+
+# anova
+ANOVA_moderate <- aov(lm(mean_val~as.character(group), data = norm_summary))
+summary(ANOVA_moderate) # as.character(group)     3 6.714e+05  223799   0.559  0.642 (not significant)
+TukeyHSD(ANOVA_moderate)
+
+#                                     diff         lwr         upr     p adj
+# Stable_Slope-Stable_Flat     -21.372773 -66.20336 23.45782 0.6109330
+# Variable_Flat-Stable_Flat     -5.006823 -49.83741 39.82377 0.9917691
+# Variable_Slope-Stable_Flat    -6.138876 -50.96946 38.69171 0.9850607
+# Variable_Flat-Stable_Slope    16.365950 -28.46464 61.19654 0.7843730
+# Variable_Slope-Stable_Slope   15.233897 -29.59669 60.06449 0.8187870
+# Variable_Slope-Variable_Flat  -1.132053 -45.96264 43.69854 0.9999020
+
+
+#Chi squre test
+library(lsmeans)
+
+model <- glm(mean_val ~ group, data = norm_summary)
+
+lsmeans_results <- lsmeans(model, pairwise ~ group)
+
+posthoc_results <- pairs(lsmeans_results)
+posthoc_results
+
+ # contrast                       estimate     SE    df t.ratio p.value
+ # Stable_Flat - Stable_Slope        21.37 17.4 10520   1.225  0.6109
+ # Stable_Flat - Variable_Flat        5.01 17.4 10520   0.287  0.9918
+ # Stable_Flat - Variable_Slope       6.14 17.4 10520   0.352  0.9851
+ # Stable_Slope - Variable_Flat     -16.37 17.4 10520  -0.938  0.7844
+ # Stable_Slope - Variable_Slope    -15.23 17.4 10520  -0.873  0.8188
+ # Variable_Flat - Variable_Slope     1.13 17.4 10520   0.065  0.9999
+
+#######
+
+ggplot(group_summary, aes(x = Treatment, y = meanExp, color = Origin)) +
+  geom_errorbar(aes(ymin = meanExp -  se, ymax = meanExp + se, color = Origin), width = 0.05) +
+  geom_line(aes(group = Origin), color = "darkgrey") +
+   geom_point(size = 3) + 
+  labs(x = "Treatment", y = "Normalized Mean Gene Expression (mean +- SE)") +
+  theme_minimal()
+
+
+P2 <- ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group = Origin)) +
+  geom_line(aes(linetype = Origin), size = 0.5) +
+  geom_pointrange(aes(ymin=meanExp-se, ymax=meanExp+se, shape=Origin, fill=Origin)) + 
+                      scale_shape_manual(values=c(1, 16))+
+                      scale_fill_manual(values=c('black','white')) +
+                      theme_classic() +
+  scale_linetype_manual(values = c("Slope" = "solid", "Flat" = "dashed"))  +
+                      labs(y= "mean SE Normalized expression", 
+                           x = "Treatment",
+                           title = "Mean Normalized Expression of Frontloaded Genes") + 
+   theme(text = element_text(size=12)) +
+                      scale_y_continuous(limits = c(70,120)) +
+                        annotate(geom="text", x = 2.1, y = 80, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
+
+P2
+ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/NormCounts_frontloaded.pdf", plot =P2, width= 7, height = 5)
+```
