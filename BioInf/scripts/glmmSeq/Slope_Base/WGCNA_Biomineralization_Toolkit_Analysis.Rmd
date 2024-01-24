@@ -37,7 +37,7 @@ library(rtracklayer)
 
 
 ```{r}
-geneInfo <- read.csv("../../../output/Slope_Base/geneInfo.csv") 
+geneInfo <- read.csv("../../../output/glmmseq/geneInfo.csv") 
 
 WGCNA_ModuleMembership <- read.csv("../../../output/WGCNA/WGCNA_ModuleMembership.csv") %>% rename(c("X"="gene_id"))  #this file was generated from the WGCNA analyses and contains the modules of interest
 
@@ -545,7 +545,7 @@ head(biomin_mod)
 ```
 
 ```{r}
-glmmseq_exp <-read.csv("../../../output/Slope_Base/model_expression_prediction_allgenes.csv")
+glmmseq_exp <-read.csv("../../../output/glmmseq/model_expression_prediction_allgenes.csv")
 glmmseq_exp <- plyr::rename(glmmseq_exp, c("X"="Pocillopora_acuta_best_hit"))
 ```
 

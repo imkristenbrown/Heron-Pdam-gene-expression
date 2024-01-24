@@ -38,7 +38,7 @@ sessionInfo() #list of packages after library-ing these packages
 2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
 
 ```{r}
-DEGs <- read.csv(file="../../../output/Slope_Base/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+DEGs <- read.csv(file="../../../output/glmmseq/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 #NOTE! This is not a file only with differentially expressed genes, this contains all of the genes in our dataset but also contains p-value information and fold change information to help determine which genes are signficant DEGs based on our model in glmmSeq
 
@@ -114,13 +114,13 @@ Order geneInfo0 by significance of Origin, q_Origin (adjusted p value)
 ```{r}
 geneInfo <- geneInfo0[order(geneInfo0[, 'q_Origin']), ]
 
-write.csv(geneInfo, file = "../../../output/Slope_Base/geneInfo.csv") #gene info for reference/supplement
+write.csv(geneInfo, file = "../../../output/glmmseq/geneInfo.csv") #gene info for reference/supplement
 ```
 
 
 ## Now onto Enrichment!
 ```{r}
-#geneInfo<-read.csv("../../../output/Slope_Base/geneInfo.csv")
+#geneInfo<-read.csv("../../../output/glmmseq/geneInfo.csv")
 
 dim(geneInfo)
 
@@ -159,7 +159,7 @@ LENGTH.vector <- as.integer(geneInfo$Length)
 #2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
 
 
-FRONTs <- read.csv(file="../../../output/Slope_Base/frontloaded_genes.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+FRONTs <- read.csv(file="../../../output/glmmseq/frontloaded_genes.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 ### Generate vector with names of the 2631 frontloaded genes
 ID.vector <- geneInfo %>%
@@ -211,7 +211,7 @@ GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 colnames(GO)[1] <- "GOterm"
     
 #Write file of results 
-write.csv(GO, "../../../output/Slope_Base/Frontloaded_GOSeq/GOseq_Frontloaded.csv")
+write.csv(GO, "../../../output/glmmseq/Frontloaded_GOSeq/GOseq_Frontloaded.csv")
 
 #Filtering for p < 0.05
 GO_05 <- GO %>%
@@ -280,7 +280,7 @@ for (category in ontologies) {
   
   print(GO.plot)
   
-ggsave(filename=paste0("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
+ggsave(filename=paste0("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P05", "_", category, ".png"), plot=GO.plot, dpi=100, width=12, height=100, units="in", limitsize=FALSE)
 }
 ```
 
@@ -311,7 +311,7 @@ GO_plot_all <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, n
 
 GO_plot_all
 
-ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05.pdf", GO_plot_all, width = 40, height = 100, units = c("in"), dpi=100, limitsize=FALSE)
+ggsave("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P05.pdf", GO_plot_all, width = 40, height = 100, units = c("in"), dpi=100, limitsize=FALSE)
 
 #ordered by p-value
 GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
@@ -338,7 +338,7 @@ GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(te
 
 GO_plot_all_pval
 
-ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P05_orderedpval.pdf", GO_plot_all_pval, width = 40, height = 100, units = c("in"), dpi=100, limitsize=FALSE)
+ggsave("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P05_orderedpval.pdf", GO_plot_all_pval, width = 40, height = 100, units = c("in"), dpi=100, limitsize=FALSE)
 ```
 
 ### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
@@ -368,7 +368,7 @@ GO_plot_all <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, 
 
 GO_plot_all
 
-ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001.pdf", GO_plot_all)
+ggsave("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P001.pdf", GO_plot_all)
 
 #ordered by p-value
 GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
@@ -395,7 +395,7 @@ GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(t
 
 GO_plot_all_pval
 
-ggsave("../../../output/Slope_Base/Frontloaded_GOSeq/FRONTs_P001_orderedpval.pdf", GO_plot_all_pval)
+ggsave("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P001_orderedpval.pdf", GO_plot_all_pval)
 ```
 
 
@@ -433,7 +433,7 @@ head(KO_05)
 dim(KO_05)
 
 #Write file of results 
-write.csv(KO, "../../../output/Slope_Base/Frontloaded_GOSeq/KEGG_Frontloaded.csv")
+write.csv(KO, "../../../output/glmmseq/Frontloaded_GOSeq/KEGG_Frontloaded.csv")
 ```
 
 If using non-adjusted p-value, we get one significant KEGG term:

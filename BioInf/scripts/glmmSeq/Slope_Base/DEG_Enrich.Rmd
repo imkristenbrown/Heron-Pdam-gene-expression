@@ -34,7 +34,7 @@ sessionInfo() #list of packages after library-ing these packages
 ```
 
 ```{r}
-DEGs <- read.csv(file="../../../output/Slope_Base/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+DEGs <- read.csv(file="../../../output/glmmseq/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 #NOTE! This is not a file only with differentially expressed genes, this contains all of the genes in our dataset but also contains p-value information and fold change information to help determine which genes are signficant DEGs based on our model in glmmSeq
 
@@ -119,13 +119,13 @@ Order geneInfo0 by significance of Origin, q_Origin (adjusted p value)
 ```{r}
 geneInfo <- geneInfo0[order(geneInfo0[, 'q_Origin']), ]
 
-write.csv(geneInfo, file = "../../../output/Slope_Base/geneInfo.csv") #gene info for reference/supplement
+write.csv(geneInfo, file = "../../../output/glmmseq/geneInfo.csv") #gene info for reference/supplement
 ```
 
 
 ## Now onto Enrichment!
 ```{r}
-#geneInfo<-read.csv("../../../output/Slope_Base/geneInfo.csv")
+#geneInfo<-read.csv("../../../output/glmmseq/geneInfo.csv")
 
 dim(geneInfo)
 
@@ -211,7 +211,7 @@ GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 colnames(GO)[1] <- "GOterm"
 
 #Write file of results 
-write.csv(GO, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin.csv")
+write.csv(GO, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin.csv")
 
 #Filtering for p < 0.05
 GO_05 <- GO %>%
@@ -281,7 +281,7 @@ for (category in ontologies) {
   
   print(GO.plot)
   
-ggsave(filename=paste0("../../../output/Slope_Base/GOSeq/OriginDEGs_P05", "_", category, ".png"), plot=GO.plot, dpi=300, height=10, units="in", limitsize=FALSE)
+ggsave(filename=paste0("../../../output/glmmseq/GOSeq/OriginDEGs_P05", "_", category, ".png"), plot=GO.plot, dpi=300, height=10, units="in", limitsize=FALSE)
 }
 ```
 
@@ -312,7 +312,7 @@ GO_plot_all <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, 
 
 GO_plot_all
 
-ggsave("../../../output/Slope_Base/GOSeq/OriginDEGs_P001.pdf", GO_plot_all)
+ggsave("../../../output/glmmseq/GOSeq/OriginDEGs_P001.pdf", GO_plot_all)
 
 #ordered by p-value
 GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
@@ -339,7 +339,7 @@ GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(t
 
 GO_plot_all_pval
 
-ggsave("../../../output/Slope_Base/GOSeq/OriginDEGs_P001_orderedpval.pdf", GO_plot_all_pval)
+ggsave("../../../output/glmmseq/GOSeq/OriginDEGs_P001_orderedpval.pdf", GO_plot_all_pval)
 ```
 
 ```{r}
@@ -367,7 +367,7 @@ GO_plot_all <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, n
 
 GO_plot_all
 
-ggsave("../../../output/Slope_Base/GOSeq/OriginDEGs_P05.pdf", GO_plot_all, width = 12, height = 24, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../../output/glmmseq/GOSeq/OriginDEGs_P05.pdf", GO_plot_all, width = 12, height = 24, units = c("in"), dpi=300, limitsize=FALSE)
 
 #ordered by p-value
 GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
@@ -394,7 +394,7 @@ GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(te
 
 GO_plot_all_pval
 
-ggsave("../../../output/Slope_Base/GOSeq/OriginDEGs_P05_orderedpval.pdf", GO_plot_all_pval, width = 12, height = 24, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../../output/glmmseq/GOSeq/OriginDEGs_P05_orderedpval.pdf", GO_plot_all_pval, width = 12, height = 24, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ### KEGG enrichment
@@ -429,7 +429,7 @@ head(KO_05)
 dim(KO_05)
 
 #Write file of results 
-write.csv(KO, "../../../output/Slope_Base/GOSeq/GOseq_KEGG_Origin.csv")
+write.csv(KO, "../../../output/glmmseq/GOSeq/GOseq_KEGG_Origin.csv")
 ```
 
 Over-represented KEGG terms, p = 0.05:
@@ -465,7 +465,7 @@ go_results <- GO_05
     #add in parent terms to list of go terms 
     go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
    
-write.csv(go_results, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin_filtered.csv")
+write.csv(go_results, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_filtered.csv")
 
     #plot significantly enriched GO terms by Slim Category faceted by slim term 
 GO.plot <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
@@ -511,7 +511,7 @@ go_results <- GO_05
     #add in parent terms to list of go terms 
     go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
    
-write.csv(go_results, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin_filtered_more10.csv")
+write.csv(go_results, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_filtered_more10.csv")
 
     #plot significantly enriched GO terms by Slim Category faceted by slim term 
 GO.plot <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
@@ -612,7 +612,7 @@ GO_upSlope <- GO.wall_upSlope[order(GO.wall_upSlope$over_represented_pvalue),]
 colnames(GO_upSlope)[1] <- "GOterm"
     
 #Write file of results 
-write.csv(GO_upSlope, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin_upSlope.csv")
+write.csv(GO_upSlope, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_upSlope.csv")
 
 #Filtering for p < 0.05
 GO_upSlope_05 <- GO_upSlope %>%
@@ -680,7 +680,7 @@ for (category in ontologies) {
   
   print(GO.plot_upslope)
   
-ggsave(filename=paste0("../../../output/Slope_Base/GOSeq/OriginDEGs_upslope_P05", "_", category, ".png"), plot=GO.plot_upslope, dpi=100, width=12, height=48, units="in", limitsize=FALSE)
+ggsave(filename=paste0("../../../output/glmmseq/GOSeq/OriginDEGs_upslope_P05", "_", category, ".png"), plot=GO.plot_upslope, dpi=100, width=12, height=48, units="in", limitsize=FALSE)
 }
 ```
 
@@ -713,7 +713,7 @@ GO_upFlat <- GO.wall_upFlat[order(GO.wall_upFlat$over_represented_pvalue),]
 colnames(GO_upFlat)[1] <- "GOterm"
 
 #Write file of results 
-write.csv(GO_upFlat, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin_upFlat.csv")
+write.csv(GO_upFlat, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_upFlat.csv")
 
 #Filtering for p < 0.05
 GO_upFlat_05 <- GO_upFlat %>%
@@ -780,7 +780,7 @@ for (category in ontologies) {
   
   print(GO.plot_upFlat)
   
-ggsave(filename=paste0("../../../output/Slope_Base/GOSeq/OriginDEGs_upFlat_P05", "_", category, ".png"), plot=GO.plot_upFlat, dpi=100, width=12, height=12, units="in", limitsize=FALSE)
+ggsave(filename=paste0("../../../output/glmmseq/GOSeq/OriginDEGs_upFlat_P05", "_", category, ".png"), plot=GO.plot_upFlat, dpi=100, width=12, height=12, units="in", limitsize=FALSE)
 }
 ```
 
@@ -815,7 +815,7 @@ GO_updownSlope <- GO.wall_updownSlope[order(GO.wall_updownSlope$over_represented
 colnames(GO_updownSlope)[1] <- "GOterm"
     
 #Write file of results 
-write.csv(GO_updownSlope, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin_Slope_upStable_downVariable.csv")
+write.csv(GO_updownSlope, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_Slope_upStable_downVariable.csv")
 
 #Filtering for p < 0.05
 GO_updownSlope_05 <- GO_updownSlope %>%
@@ -883,7 +883,7 @@ for (category in ontologies) {
   
   print(GO.plot_updownSlope)
   
-ggsave(filename=paste0("../../../output/Slope_Base/GOSeq/OriginDEGs_updownSlope_P05", "_", category, ".png"), plot=GO.plot_updownSlope, dpi=100, width=12, height=24, units="in", limitsize=FALSE)
+ggsave(filename=paste0("../../../output/glmmseq/GOSeq/OriginDEGs_updownSlope_P05", "_", category, ".png"), plot=GO.plot_updownSlope, dpi=100, width=12, height=24, units="in", limitsize=FALSE)
 }
 ```
 
@@ -924,7 +924,7 @@ GO_downupSlope <- GO.wall_downupSlope[order(GO.wall_downupSlope$over_represented
 colnames(GO_downupSlope)[1] <- "GOterm"
     
 #Write file of results 
-write.csv(GO_downupSlope, "../../../output/Slope_Base/GOSeq/GOseq_DEG_Origin_Slope_downStable_upVariable.csv")
+write.csv(GO_downupSlope, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_Slope_downStable_upVariable.csv")
 
 #Filtering for p < 0.05
 GO_downupSlope_05 <- GO_downupSlope %>%
@@ -992,6 +992,6 @@ for (category in ontologies) {
   
   print(GO.plot_downupSlope)
   
-ggsave(filename=paste0("../../../output/Slope_Base/GOSeq/OriginDEGs_downupSlope_P05", "_", category, ".png"), plot=GO.plot_downupSlope)
+ggsave(filename=paste0("../../../output/glmmseq/GOSeq/OriginDEGs_downupSlope_P05", "_", category, ".png"), plot=GO.plot_downupSlope)
 }
 ```

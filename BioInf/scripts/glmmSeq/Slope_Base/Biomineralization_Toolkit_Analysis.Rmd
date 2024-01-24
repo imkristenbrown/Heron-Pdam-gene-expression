@@ -121,7 +121,7 @@ write.csv(merged_data, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output
 How many of our 9011 genes are represented in the Biomineralization genes?
 
 ```{r}
-DEGs <- read.csv(file="../../../output/Slope_Base/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+DEGs <- read.csv(file="../../../output/glmmseq/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 #NOTE! This is not a file only with differentially expressed genes, this contains all of the genes in our dataset but also contains p-value information and fold change information to help determine which genes are signficant DEGs based on our model in glmmSeq
 
@@ -247,7 +247,7 @@ Biomin_Interaction_DEGs$definition
 Frontloaded genes!
 
 ```{r}
-FRONTs <- read.csv(file="../../../output/Slope_Base/frontloaded_genes.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+FRONTs <- read.csv(file="../../../output/glmmseq/frontloaded_genes.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 Biomin_FRONTs <- FRONTs %>%
   inner_join(merged_data, by = c("Gene" = "Pocillopora_acuta_best_hit"))
@@ -281,7 +281,7 @@ for (i in Biomin_FRONTs_names) {print(Factor_ggmodelPlot(results,
 ```
 
 ```{r}
-READY <- read.csv(file="../../../output/Slope_Base/frontloaded_genes_plotting.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+READY <- read.csv(file="../../../output/glmmseq/frontloaded_genes_plotting.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 
 READY$color <- rep('gray', nrow(READY))
@@ -404,7 +404,7 @@ VST reaction norm for just frontloaded biomineralization genes
 ```{r}
 #load in vst normalized gene expression
 
-vst <- read.csv(file="../../../output/Slope_Base/vst.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+vst <- read.csv(file="../../../output/glmmseq/vst.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 ```
 
 

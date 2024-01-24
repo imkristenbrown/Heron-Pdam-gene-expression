@@ -30,7 +30,7 @@ From glmmSeq, I saved the following output:
 I am going to start by using the normalized counts data frame, we can change this if needed. Most of the analysis uses the first 29 columns, which is the same for all 3 csvs.
 
 ```{r DEGs by variable list}
-DEGs <- read.csv(file="../../../output/Slope_Base/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+DEGs <- read.csv(file="../../../output/glmmseq/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 rownames(DEGs) <- DEGs$Gene
 ```
@@ -73,7 +73,7 @@ melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
 Let's see if the means calculated here match with what glmmSeq predicted
 
 ```{r}
-glmmSeq_predict <- read.csv(file="../../../output/Slope_Base/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+glmmSeq_predict <- read.csv(file="../../../output/glmmseq/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
 
 READY <- glmmSeq_predict %>%
     dplyr::select(!contains("LCI_")) %>% #drop the confidence interval columns for now 
@@ -132,7 +132,7 @@ READY$color <- rep('gray', nrow(READY))
 #These are "frontloaded, need a different color:
 READY$color[READY$yall > 1 & READY$xall_1 < 1] <- 'black'
 
-write.csv(READY, "../../../output/Slope_Base/frontloaded_genes_plotting.csv")
+write.csv(READY, "../../../output/glmmseq/frontloaded_genes_plotting.csv")
 
 P_allgenes <- READY %>% #dplyr::filter(yall < 6) %>% 
         ggplot(aes(x=xall_1, y=yall)) +
@@ -243,7 +243,7 @@ head(P_frontloaded$Gene)
 P_frontloaded_genes <- DEGs[which(DEGs$Gene %in% P_frontloaded$Gene),]
 
 P_frontloaded_genes <- full_join(P_frontloaded_genes,P_frontloaded)
-write.csv(P_frontloaded_genes, "../../../output/Slope_Base/frontloaded_genes.csv") #save this as csv for downstream analysis
+write.csv(P_frontloaded_genes, "../../../output/glmmseq/frontloaded_genes.csv") #save this as csv for downstream analysis
 ```
 
 These will then go into enrichment.
@@ -271,7 +271,7 @@ sum(P_frontloaded_genes$Treatment.Origin < 0.05) #4 of the 30 DEGs by treatment:
 ```{r}
 #load in vst normalized gene expression
 
-vst <- read.csv(file="../../../output/Slope_Base/vst.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+vst <- read.csv(file="../../../output/glmmseq/vst.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 ```
 
 
@@ -402,7 +402,7 @@ Trying below to see what the frontloading inset looks like with the normalized d
 ```{r}
 #load in "normcounts" normalized gene expression
 
-norm <- read.csv(file="../../../output/Slope_Base/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X')) %>% dplyr::select(1, 30:75) 
+norm <- read.csv(file="../../../output/glmmseq/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X')) %>% dplyr::select(1, 30:75) 
 ```
 
 

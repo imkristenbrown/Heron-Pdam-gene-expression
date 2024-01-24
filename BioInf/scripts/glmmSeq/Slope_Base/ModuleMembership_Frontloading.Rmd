@@ -25,7 +25,7 @@ sessionInfo() #list of packages after library-ing these packages
 2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
 
 ```{r}
-frontloaded_genes <- read.csv("../../../output/Slope_Base/frontloaded_genes.csv") %>% select(-"X")
+frontloaded_genes <- read.csv("../../../output/glmmseq/frontloaded_genes.csv") %>% select(-"X")
 
 WGCNA_ModuleMembership <- read.csv("../../../output/WGCNA/WGCNA_ModuleMembership.csv") %>% rename("Gene" = X)
 
@@ -83,7 +83,7 @@ avgs_module <- merge(coldata, avgs_module, by = 'Coral_ID')
 library(reshape2)
 library(ggplot2)
 
-png("../../../output/Slope_Base/frontloaded_by_module.png", 1000, 1000, pointsize=10)
+png("../../../output/glmmseq/frontloaded_by_module.png", 1000, 1000, pointsize=10)
 ggplot(avgs_module, aes(x=Treatment, y=Module_avg, fill = factor(Origin), shape=Origin)) +
   geom_boxplot(aes(middle = mean(Module_avg)), position=position_dodge(0.8), outlier.size = 0, alpha = 0.5) + 
   stat_summary(fun.y = mean, color = "black", position = position_dodge(0.75),
@@ -115,7 +115,7 @@ MEsPlotting <- MEsPlotting %>% select(all_of(desired_order))
 MEsPlotting_melt <- melt(MEsPlotting, id=c('Coral_ID', 'Origin', 'Treatment'))
 #plot it
 
-png("../../../output/Slope_Base/frontloaded_by_module_eigengene.png", 1000, 1000, pointsize=10)
+png("../../../output/glmmseq/frontloaded_by_module_eigengene.png", 1000, 1000, pointsize=10)
 ggplot(MEsPlotting_melt, aes(x=Treatment, y=value, fill = factor(Origin))) +
   geom_boxplot(aes(middle = mean(value)), position=position_dodge(0.8), outlier.size = 0, alpha = 0.5) + 
   geom_point(aes(color = Origin), position=position_dodge(0.8), alpha = 0.5) + 

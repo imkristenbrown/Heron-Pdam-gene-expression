@@ -30,7 +30,7 @@ From glmmSeq, I saved the following output:
 I am going to start by using the normalized counts data frame, we can change this if needed. Most of the analysis uses the first 29 columns, which is the same for all 3 csvs.
 
 ```{r DEGs by variable list}
-DEGs <- read.csv(file="../../../output/Slope_Base/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
+DEGs <- read.csv(file="../../../output/glmmseq/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
 rownames(DEGs) <- DEGs$Gene
 ```
@@ -79,7 +79,7 @@ melted_merge_READY <- dcast(melted_merge, Gene ~ Origin + Treatment)
 Let's see if the means calculated here match with what glmmSeq predicted
 
 ```{r}
-glmmSeq_predict <- read.csv(file="../../../output/Slope_Base/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
+glmmSeq_predict <- read.csv(file="../../../output/glmmseq/model_expression_prediction_allgenes.csv", sep=',', header=TRUE) %>% dplyr::rename("Gene" = 'X')
 
 READY <- glmmSeq_predict %>%
     dplyr::select(!contains("LCI_")) %>% #drop the confidence interval columns for now 
@@ -195,7 +195,7 @@ head(P_frontloaded$Gene)
 P_frontloaded_genes <- DEGs[which(DEGs$Gene %in% P_frontloaded$Gene),]
 
 P_frontloaded_genes <- full_join(P_frontloaded_genes,P_frontloaded)
-write.csv(P_frontloaded_genes, "../../../output/Slope_Base/frontloaded_genes.csv") #save this as csv for downstream analysis
+write.csv(P_frontloaded_genes, "../../../output/glmmseq/frontloaded_genes.csv") #save this as csv for downstream analysis
 ```
 
 These will then go into enrichment.
