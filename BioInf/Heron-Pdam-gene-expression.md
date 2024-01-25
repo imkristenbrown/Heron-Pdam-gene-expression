@@ -521,8 +521,6 @@ nano scripts/prepDE.py #paste in code from github page above
 nano scripts/prepDE.sh #make script for assembly, enter text in next code chunk
 ```
 
-**Had to add -e to stringtie --merge function below, Emma, Danielle, Kevin, Ariana and Sam did not do this**
-
 ```
 #!/bin/bash
 #SBATCH -t 120:00:00
@@ -567,12 +565,6 @@ echo "Gene count matrix compiled." $(date)
 ```
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/prepDE.sh
 ```
-
-Errors from using Ariana, Sam, and Kevin's versions
-
-"Error: sample file /glfs/brick01/gv0/putnamlab/zdellaert/Pdam-TagSeq/Stringtie2/HeronPdam_merged.gtf was not generated with -e option!"
-
-**Had to add -e to stringtie --merge function, Emma, Danielle, Kevin, Ariana and Sam did not do this**
 
 ### initiated prepDE 20230206 sbatch job id 224088
 
@@ -670,8 +662,6 @@ nano scripts/prepDE.py #paste in code from github page above
 nano scripts/prepDE_Pdam.sh #make script for assembly, enter text in next code chunk
 ```
 
-**Had to add -e to stringtie --merge function below, Emma, Danielle, Kevin, Ariana and Sam did not do this**
-
 ```
 #!/bin/bash
 #SBATCH -t 120:00:00
@@ -716,12 +706,6 @@ echo "Gene count matrix compiled." $(date)
 ```
 sbatch /data/putnamlab/zdellaert/Pdam-TagSeq/scripts/prepDE_Pdam.sh
 ```
-
-Errors from using Ariana, Sam, and Kevin's versions
-
-"Error: sample file /glfs/brick01/gv0/putnamlab/zdellaert/Pdam-TagSeq/Stringtie2/HeronPdam_merged.gtf was not generated with -e option!"
-
-**Had to add -e to stringtie --merge function, Emma, Danielle, Kevin, Ariana and Sam did not do this**
 
 ### initiated prepDE 20230206 sbatch job id 224155
 
