@@ -270,7 +270,12 @@ dim(vst2) #  46 9012
 # Choose a set of soft-thresholding powers
 powers = c(c(1:10), seq(from = 12, to=20, by=2))
 # Call the network topology analysis function
-sft = pickSoftThreshold(vst2, powerVector = powers, verbose = 5) #...wait for this to finish
+
+#the below takes a long time to run, so is commented out and the pre-run results are loaded in below
+## sft = pickSoftThreshold(vst2, powerVector = powers, verbose = 5) #...wait for this to finish
+## save(sft, file = "../../output/WGCNA/sft.RData")
+load("../../output/WGCNA/sft.RData")
+
 # pickSoftThreshold 
 #  performs the analysis of network topology and aids the
 # user in choosing a proper soft-thresholding power.
@@ -326,8 +331,10 @@ adjacency_sign = adjacency(vst2, power = softPower, type="signed")  #Calculate a
 ###  Step 2: Turn adjacency into topological overlap: Calculation of the topological overlap matrix, (TOM) and the corresponding dissimilarity, from a given adjacency matrix.
 
 ```{r}
-TOM_sign = TOMsimilarity(adjacency_sign, TOMType="signed") #Translate adjacency into topological overlap matrix
-# this took 10 mins
+#the below takes a long time to run, so is commented out and the pre-run results are loaded in below
+## TOM_sign = TOMsimilarity(adjacency_sign, TOMType="signed") #Translate adjacency into topological overlap matrix
+## save(TOM_sign, file = "../../output/WGCNA/TOM_sign.Rdata")
+load("../../output/WGCNA/TOM_sign.Rdata")
 
 dissTOM_sign   = 1-TOM_sign
 ```
@@ -364,6 +371,12 @@ table(dynamicMods_sign) # number of genes per module. Module 0 is reserved for u
 dynamicColors_sign = labels2colors(dynamicMods_sign) # add colors to module labels (previously numbers)
 table(dynamicColors_sign) # lets look at this table...
 # Plot the dendrogram and colors underneath
+
+plotDendroAndColors(geneTree_sign, dynamicColors_sign, "Dynamic Tree Cut - SIGNED",
+                    dendroLabels = FALSE, hang = 0.03,
+                    addGuide = TRUE, guideHang = 0.05,
+                    main = "Gene dendrogram and module colors 'SIGNED'")
+
 sizeGrWindow(8,6)
 png("../../output/WGCNA/GeneDendrogram.png", 1000, 1000, pointsize=20)
 plotDendroAndColors(geneTree_sign, dynamicColors_sign, "Dynamic Tree Cut - SIGNED",
@@ -423,6 +436,10 @@ MEDiss2 = 1-cor(mergedMEs,use = 'pairwise.complete.obs');
 MEDiss2
 METree2 = hclust(as.dist(MEDiss2), method = "average");
 # Plot the result
+plot(METree2, main = "Clustering of module eigengenes - SIGNED (dissimilarity calc = MEDiss = 1-cor(MEs))",
+     xlab = "", sub = "")
+
+
 sizeGrWindow(7, 6)
 png("../../output/WGCNA/ClusterEigengenes_merged.png", 1000, 1000, pointsize=20)
 plot(METree2, main = "Clustering of module eigengenes - SIGNED (dissimilarity calc = MEDiss = 1-cor(MEs))",
@@ -433,6 +450,11 @@ dev.off()
 ###  Step 8: Plot dendrogram with the cut line 'MEDissThres' 
 
 ```{r}
+plotDendroAndColors(geneTree_sign, cbind(dynamicColors_sign, mergedColors),
+                    c("Dynamic Tree Cut", "Merged dynamic"),
+                    dendroLabels = FALSE, hang = 0.03,
+                    addGuide = TRUE, guideHang = 0.05)
+
 sizeGrWindow(12, 9)
 
 png("../../output/WGCNA/ClusterDendrogram_signed.png", 1000, 1000, pointsize=20)
@@ -493,6 +515,11 @@ head(Traits.Origin)
 
 ```{r}
 # Primary treatment Only
+traitColors_Primary = labels2colors(Traits.Origin); # Convert traits to a color representation: white means low, red means high, grey means missing entry
+plotDendroAndColors(sampleTree, traitColors_Primary, # Plot the sample dendrogram and the colors underneath.
+                    groupLabels = names(Traits.Origin), 
+                    main = "Sample dendrogram and trait heatmap")
+
 png("../../output/WGCNA/ClusterTree_Origin.png", 1000, 1000, pointsize=20)
 traitColors_Primary = labels2colors(Traits.Origin); # Convert traits to a color representation: white means low, red means high, grey means missing entry
 plotDendroAndColors(sampleTree, traitColors_Primary, # Plot the sample dendrogram and the colors underneath.
@@ -552,6 +579,19 @@ d0.PRIMARYTreatments.matrix <-  paste(signif(moduleTraitCor_Primary, 3), "\n(",
 #dim(textMatrix) == dim(moduleTraitCor_treatonly)
 par(mar = c(8, 9.5, 5, 3));
 # Display the correlation values within a heatmap plot
+
+labeledHeatmap(Matrix = moduleTraitCor_Primary,
+               xLabels = names(Traits.Origin),
+               yLabels = names(MEs),
+               ySymbols = names(MEs),
+               colorLabels = TRUE,
+               colors = blueWhiteRed(50),
+               textMatrix = d0.PRIMARYTreatments.matrix,
+               setStdMargins = FALSE,
+               cex.text = 1,
+               zlim = c(-1,1),
+               main = paste("Module-trait relationships - Origin"))
+
 png("../../output/WGCNA/Treatments_Primary_heatmap2.png", 500, 1000, pointsize=20)
 labeledHeatmap(Matrix = moduleTraitCor_Primary,
                xLabels = names(Traits.Origin),
@@ -577,6 +617,21 @@ MEsPlotting <- merge(coldata, MEs_table, by = 'Coral_ID') %>% dplyr::select(-c("
 #MEsPlotting <- MEsPlotting[,-c(2)] # ommit the phys data to just plot the module colors 
 MEsPlotting_melt <- melt(MEsPlotting, id=c('Coral_ID', 'Origin', 'Treatment'))
 #plot it
+
+ggplot(MEsPlotting_melt, aes(x=Origin, y=value, fill = factor(Origin), shape=Origin)) +
+  geom_boxplot(aes(middle = mean(value)), position=position_dodge(0.8), outlier.size = 0, alpha = 0.5) + 
+  stat_summary(fun = mean, color = "black", position = position_dodge(0.75),
+               geom = "point", shape = 19, size = 3,
+               show.legend = FALSE) +
+  ylab("ModuleEigengene") +
+  ylim(-0.5,0.5) +
+  scale_color_manual(values=c("#56B4E9","#D55E00")) +
+  geom_hline(yintercept=0, linetype='dotted', col = 'black', size = 1)+
+  theme_classic() +
+  theme(legend.position = "none") +
+  facet_wrap(~variable)
+
+
 png("../../output/WGCNA/ME_Boxplot.png", 600, 1000, pointsize=20)
 
 ggplot(MEsPlotting_melt, aes(x=Origin, y=value, fill = factor(Origin), shape=Origin)) +
@@ -594,8 +649,12 @@ ggplot(MEsPlotting_melt, aes(x=Origin, y=value, fill = factor(Origin), shape=Ori
 dev.off()
 ```
 
+### Working on plots based off of Strader & Quigley 2022: https://www.nature.com/articles/s41467-022-32217-z
+
+Plot mean eigengene over developmental stages
+
 ```{r}
-# **Plot mean eigengene over developmental stages**  View module eigengene data and make dataframe for Strader plots.  
+# View module eigengene data and make dataframe for Strader plots.  
 head(MEs)
 names(MEs)
 Strader_MEs <- MEs
@@ -605,15 +664,12 @@ head(Strader_MEs)
 
 Strader_MEs <- Strader_MEs%>%
   droplevels() #drop unused level
-
-dim(Strader_MEs)
-head(Strader_MEs)
 ```
 
 
 ```{r}
 plot_MEs <- Strader_MEs %>%
-  gather(., key="Module", value="Mean", MEred:MEtan)
+  gather(., key="Module", value="Mean", 1:15)
 head(plot_MEs)
 ```
 
@@ -624,7 +680,8 @@ head(plot_MEs_mean)
 
 #### Mean module eigengene for each module.  
 ```{r,warning=FALSE}
-plot_MEs_fig <- ggplot(plot_MEs, aes(y=Mean, x=Origin, color=Origin, fill=Origin))+ 
+png("../../output/WGCNA/plot_MEs_fig_Origin.png", 600, 1000, pointsize=20)
+plot_MEs_fig_Origin <- ggplot(plot_MEs, aes(y=Mean, x=Origin, color=Origin, fill=Origin))+ 
   geom_point(alpha=0.8,position=position_jitterdodge(0.05))+
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA)+
   #geom_smooth(method=gam)+
@@ -643,7 +700,8 @@ plot_MEs_fig <- ggplot(plot_MEs, aes(y=Mean, x=Origin, color=Origin, fill=Origin
         panel.background= element_rect(fill=NA, color='black'),
         #legend.position= c(0.89,0.89),
         strip.text = element_text(vjust=0.5, size=12))
-plot_MEs_fig
+plot_MEs_fig_Origin
+dev.off()
 ```
 
 # Module trait correlation 
@@ -666,19 +724,11 @@ d <- subset(d, select = -c(Coral_ID))
 ```{r}
 # ALL TRAIT DATA
 
-dim(d) #46 17
-dim(MEs)  # 46 16
+moduleTraitCor_both = cor(MEs, d, use = "p")
 
-#moduleTraitCor = cor(MEs, d0.Traits, use = "p");
-#moduleTraitPvalue = corPvalueStudent(moduleTraitCor, nSamples);
-
-nSamples = nrow(vst2) #46
-
-moduleTraitCor_both = cor(MEs, d, use = "p");
-moduleTraitCor_both
-moduleTraitPvalue_both = corPvalueStudent(moduleTraitCor_both, nSamples);
-moduleTraitPvalue_both
+moduleTraitPvalue_both = corPvalueStudent(moduleTraitCor_both, nSamples)
 ```
+
 ### Correlations of traits with eigengenes
 ```{r}
 moduleTraitCor_both = cor(MEs, d, use = "p");
@@ -695,6 +745,19 @@ plot(moduleTraitTree, main = "Clustering based on module-trait correlation", sub
 both.matrix <-  paste(signif(moduleTraitCor_both, 3), "\n(",
                                        signif(moduleTraitPvalue_both, 3), ")", sep = "")
 #dim(textMatrix) == dim(moduleTraitCor_treatonly)
+sizeGrWindow(20,20)
+labeledHeatmap(Matrix = moduleTraitCor_both,
+               xLabels = names(d),
+               yLabels = names(MEs),
+               ySymbols = names(MEs),
+               colorLabels = TRUE,
+               colors = blueWhiteRed(50),
+               textMatrix = both.matrix,
+               setStdMargins = FALSE,
+               cex.text = 1,
+               zlim = c(-1,1),
+               main = paste("Module-trait relationships - Origin and Treatment"))
+
 par(mar = c(10, 9.5, 5, 3));
 # Display the correlation values within a heatmap plot
 png("../../output/WGCNA/Both_with phys and pHi_heatmap_new.png", 2000, 2000, pointsize=20)
@@ -711,10 +774,6 @@ labeledHeatmap(Matrix = moduleTraitCor_both,
                main = paste("Module-trait relationships - Origin and Treatment"))
 dev.off()
 ```
-```{r}
-moduleTraitCor_both <- as.data.frame(moduleTraitCor_both)
-moduleTraitCor_both
-```
 
 
 ```{r}
@@ -727,6 +786,7 @@ new_order <- c("MEblack", "MEred", "MEsalmon", "MEturquoise", "MEmidnightblue",
 row_indices <- order(match(new_order, rownames(moduleTraitCor_both)))
 
 # Use the row indices to reorder the rows of the dataframe
+moduleTraitCor_both <- as.data.frame(moduleTraitCor_both)
 moduleTraitCor_both <- moduleTraitCor_both[row_indices, ]
 ```
 
@@ -767,6 +827,7 @@ dev.off()
 
 
 #### Module eigengene -  MEs boxplots by treatment group
+
 ```{r}
 library(reshape2) 
 MEs_table <- MEs # new table for plotting 
@@ -776,7 +837,7 @@ MEsPlotting <- merge(coldata, MEs_table, by = 'Coral_ID') %>% dplyr::select(-c("
 MEsPlotting_melt <- melt(MEsPlotting, id=c('Coral_ID', 'Origin', 'Treatment'))
 #plot it
 png("../../output/WGCNA/ME_Boxplot_Treatment.png", 600, 1000, pointsize=20)
-ggplot(MEsPlotting_melt, aes(x=Treatment, y=value, fill = factor(Treatment), shape=Treatment)) +
+ME_Boxplot_Treatment = ggplot(MEsPlotting_melt, aes(x=Treatment, y=value, fill = factor(Treatment), shape=Treatment)) +
   geom_boxplot(aes(middle = mean(value)), position=position_dodge(0.8), outlier.size = 0, alpha = 0.5) + 
   stat_summary(fun.y = mean, color = "black", position = position_dodge(0.75),
                geom = "point", shape = 19, size = 3,
@@ -788,37 +849,43 @@ ggplot(MEsPlotting_melt, aes(x=Treatment, y=value, fill = factor(Treatment), sha
   theme_classic() +
   theme(legend.position = "none") +
   facet_wrap(~variable)
+ME_Boxplot_Treatment
 dev.off()
 ```
 
+
+### More plots based off of Strader & Quigley 2022: https://www.nature.com/articles/s41467-022-32217-z
+
 ```{r}
-# **Plot mean eigengene over developmental stages**  View module eigengene data and make dataframe for Strader plots.  
+# View module eigengene data and make dataframe for Strader plots.  
 head(MEs)
 names(MEs)
 Strader_MEs <- MEs
 Strader_MEs$Treatment <- coldata_outrm$Treatment
+Strader_MEs$Origin <- coldata_outrm$Origin
+Strader_MEs$Colony <- d$Colony
 Strader_MEs$Coral_ID <- rownames(Strader_MEs)
 head(Strader_MEs)
 Strader_MEs <- Strader_MEs%>%
   droplevels() #drop unused level
-dim(Strader_MEs)
-head(Strader_MEs)
 ```
 
 ```{r}
 plot_MEs <- Strader_MEs%>%
-  gather(., key="Module", value="Mean", MEred:MEtan)
-plot_MEs
+  gather(., key="Module", value="Mean", 1:15)
+head(plot_MEs)
 ```
 
 ```{r}
-plot_MEs_mean <- summarySE(plot_MEs, measurevar='Mean', groupvars=c('Treatment',"Module"), na.rm=TRUE, conf.interval = 0.95)
+plot_MEs_mean <- summarySE(plot_MEs, measurevar='Mean', groupvars=c('Treatment','Origin', "Module"), na.rm=TRUE, conf.interval = 0.95)
 plot_MEs_mean
 ```
 
-#### Plot mean module eigengene for each module.  
+#### By Treatment, Plot mean module eigengene for each module.  
 ```{r,warning=FALSE}
-plot_MEs_fig2 <- ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Treatment, fill=Treatment))+ 
+png("../../output/WGCNA/plot_MEs_fig_Treatment.png", 600, 1000, pointsize=20)
+
+plot_MEs_fig_Treatment <- ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Treatment, fill=Treatment))+ 
   geom_point(alpha=0.8,position=position_jitterdodge(0.05))+
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA)+
   #geom_smooth(method=gam)+
@@ -837,44 +904,20 @@ plot_MEs_fig2 <- ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Treatment, fill
         panel.background= element_rect(fill=NA, color='black'),
         #legend.position= c(0.89,0.89),
         strip.text = element_text(vjust=0.5, size=12))
-plot_MEs_fig2
-```
 
-```{r}
-# **Plot mean eigengene over developmental stages**  View module eigengene data and make dataframe for Strader plots.  
-head(MEs)
-names(MEs)
-Strader_MEs <- MEs
-Strader_MEs$Treatment <- coldata_outrm$Treatment
-Strader_MEs$Origin <- coldata_outrm$Origin
-Strader_MEs$Colony <- d$Colony
-Strader_MEs$Coral_ID <- rownames(Strader_MEs)
-head(Strader_MEs)
-Strader_MEs <- Strader_MEs%>%
-  droplevels() #drop unused level
-dim(Strader_MEs)
-head(Strader_MEs)
-```
-```{r}
-plot_MEs <- Strader_MEs%>%
-  gather(., key="Module", value="Mean", MEred:MEtan)
-plot_MEs
-```
-
-```{r}
-plot_MEs_mean <- summarySE(plot_MEs, measurevar='Mean', groupvars=c('Treatment','Origin', "Module"), na.rm=TRUE, conf.interval = 0.95)
-plot_MEs_mean
-```
-```{r}
-unique(plot_MEs$Module)
+plot_MEs_fig_Treatment
+dev.off()
 ```
 
 
-####Plot mean module eigengene for each module.  
+#### By Treatment and Origin, Plot mean module eigengene for each module.  
 ```{r,warning=FALSE}
 #pca.sites.scores$Time <- factor(pca.sites.scores$Time, levels=c("after","after","After"))
 plot_MEs$Module <- factor(plot_MEs$Module, levels =c("MEblack","MEred","MEsalmon","MEturquoise","MEmidnightblue","MEgrey60","MEpurple","MEtan","MEmagenta","MEgreen","MElightcyan","MEbrown","MEcyan","MEgreenyellow","MEpink","MEblue"))
-plot_MEs_fig2 <- ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Origin, fill=Origin))+ 
+
+png("../../output/WGCNA/plot_MEs_fig_Trt_Orig.png", 600, 1000, pointsize=20)
+
+plot_MEs_fig_Trt_Orig <- ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Origin, fill=Origin))+ 
   geom_point(alpha=0.8,position=position_jitterdodge(0.05))+
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA)+
   #geom_smooth(method=gam)+
@@ -893,7 +936,8 @@ plot_MEs_fig2 <- ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Origin, fill=Or
         panel.background= element_rect(fill=NA, color='black'),
         #legend.position= c(0.89,0.89),
         strip.text = element_text(vjust=0.5, size=12))
-plot_MEs_fig2
+plot_MEs_fig_Trt_Orig
+dev.off()
 ```
 
 ## geneModuleMembership - geneTraitSignificance - GSPvalue
@@ -909,7 +953,8 @@ modNames = substring(names(MEs), 3) # name all the modules, from 3rd character o
 modNames
 
 geneModuleMembership = as.data.frame(cor(vst2, MEs, use = "p"));
-geneModuleMembership
+head(geneModuleMembership)
+     
 MMPvalue = as.data.frame(corPvalueStudent(as.matrix(geneModuleMembership), nSamples));
 names(geneModuleMembership) = paste("MM", modNames, sep="");
 names(MMPvalue) = paste("p.MM", modNames, sep="");
