@@ -1,11 +1,33 @@
 ---
-title: "R Notebook"
-output: html_notebook
+title: "WGCNA"
+author: "Kristen Brown, modified ZD"
+date: "1/24/2024"
+output: html_document
 ---
-#Gene expression - revised March 2023
-```{r}
-#rm(list = ls())
+
+# WGCNA Analysis
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
+
+This is a Rmd file analyzing our raw count data by the WGCNA package as described in the [manual](https://cran.r-project.org/web/packages/WGCNA/WGCNA.pdf).
+
+```{r}
+sessionInfo() #provides list of loaded packages and version of R. 
+```
+
+First, download the necessary packages.
+
+```{r install packages, eval=FALSE}
+install.packages("BiocManager")
+library("BiocManager")
+BiocManager::install("impute", type = "source")
+BiocManager::install("WGCNA",force = TRUE)
+BiocManager::install("vsn")
+```
+
+Next, load the packages 
 
 ```{r}
 library(dplyr)
@@ -20,97 +42,100 @@ library(MuMIn)
 library(emmeans)
 library(locfit)
 library(DESeq2)
+library(impute)
 library(WGCNA)
 library(xfun)
-```
-
-```{r}
-cts_raw2<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/HeronPdam_gene_count_matrix.csv")
-#as.matrix(cts_raw)
-#cts_raw$gene_id <- factor(cts_raw$gene_id)
-cts_raw <- cts_raw2[,-1]
-rownames(cts_raw) <- cts_raw2[,1]
-cts_raw
-```
-```{r}
-colnames(cts_raw)<-gsub("_[^_]+$", "",colnames(cts_raw))
-colnames(cts_raw)<-gsub("_[^_]+$", "",colnames(cts_raw))
-#colnames(cts_raw)[1] <- ""
-rownames(cts_raw)
-colnames(cts_raw)
-cts_raw
-```
-
-```{r}
-coldata <- read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/RNA Submission Sample List metadata.csv")
-coldata <- coldata[,c("Sample.Name","Origin","Treatment")]
-#coldata$Sample.Name <- as.factor(coldata$Sample.Name)
-coldata<- plyr::rename(coldata, c("Sample.Name"="Coral_ID"))
-#coldata$Origin <- factor(coldata$Origin)
-#coldata$Treatment <- factor(coldata$Treatment)
-#colnames(coldata)[1] <- ""
-coldata<-as.data.frame(coldata)
-coldata
-```
-
-```{r}
-all(rownames(coldata$Coral_ID) %in% colnames(cts_raw))
-all(rownames(coldata$Coral_ID) == colnames(cts_raw))
-```
-#Filtering 
-```{r}
-cts_filt<-cts_raw[rowSums(!as.matrix(cts_raw)) < ncol(cts_raw), ]#here we remove all genes that were not expressed in any of our samples- we are left with 24,333 genes.
-cts_filt
-```
-
-##Filtering
-```{r}
 library(genefilter)
-ffun<-filterfun(pOverA(0.25,10)) 
-cts_filtpoa<- genefilter((cts_filt), ffun)
-sum(cts_filtpoa)
-#as.matrix(cts_filtpoa)
+library(vsn)
+library(RColorBrewer)
+library(pheatmap)
+
+sessionInfo()
 ```
 
+Load in raw count data
+
 ```{r}
-#identify genes to keep by count filter
-gkeep <- cts_filt[cts_filtpoa,]
-#identify gene lists
-gn.keep <- rownames(gkeep)
-#gene count data filtered in PoverA, P percent of the samples have counts over A
-gcount_filt <- as.data.frame(cts_filt[which(rownames(cts_filt) %in% gn.keep),])
-#How many rows do we have before and after filtering?
-nrow(cts_filt) #Before
-nrow(gcount_filt) #After
+cts_raw <- read.csv("../../TagSeq_Output/HeronPdam_gene_count_matrix.csv") #load in data
+rownames(cts_raw) <- cts_raw[,1] #set first column that contains gene names as rownames
+cts_raw <- cts_raw[,-1] #remove the column with gene names
+head(cts_raw)
+```
+Clean up sample names from "RF13B_S85_ALL.bam.gtf" to "RF13B"
+```{r}
+colnames(cts_raw) <- gsub("_[^_]+$", "",colnames(cts_raw)) #get rid of "_ALL.bam.gtf"
+colnames(cts_raw) <- gsub("_[^_]+$", "",colnames(cts_raw)) #get rid of "_S85"
+head(colnames(cts_raw)) #see first 6 clean sample names
+```
+
+Metadata from this dataset
+```{r}
+coldata <- read.csv("../../../TagSeq_Submission/RNA Submission Sample List metadata.csv") #read in metadata file
+coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
+coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
+
+coldata$Origin <- factor(coldata$Origin, levels = c("Slope","Flat")) #set variables to factors, with Slope as the baseline
+coldata$Colony <- factor(coldata$Colony) #set variables to factors
+coldata$Treatment <- factor(coldata$Treatment) #set variables to factors
+head(coldata)
+```
+
+Data sanity checks:
+```{r}
+all(rownames(coldata$Coral_ID) %in% colnames(cts_raw)) #are all of the sample names (rows) in the metadata column names in the gene count matrix?
+all(rownames(coldata$Coral_ID) == colnames(cts_raw)) #are they the same in the same order?
+```
+
+## Filtering 
+```{r}
+dim(cts_raw)
+
+cts_filt <- cts_raw[rowSums(!as.matrix(cts_raw)) < ncol(cts_raw), ] #here we remove all genes that were not expressed in any of our samples- we are left with 24,233 genes.
+
+dim(cts_filt)
+```
+
+### pOverA filtering to reduce dataset
+
+```{r}
+ffun <- filterfun(pOverA(0.25,10))  #set up filtering parameters
+cts_filtpoa <- genefilter((cts_filt), ffun) #apply filter
+sum(cts_filtpoa) #count number of genes left
+
+cts_filtpoa <- cts_filt[cts_filtpoa,] #keep only rows that passed filter, 9056 genes
+dim(cts_filtpoa)
 ```
 
 ```{r}
 library("DESeq2")
-dds <- DESeqDataSetFromMatrix(countData = gcount_filt,
+dds <- DESeqDataSetFromMatrix(countData = cts_filtpoa,
                               colData=coldata,
                               design= ~Origin+Treatment)
 dds
 ```
+
 ```{r}
 # transform the data 
 vst <- vst(dds, blind=FALSE) # transform it vst
 ```
-##Effects of transformations on the variance
+
+## Effects of transformations on the variance
 
 ```{r}
-library(vsn)
 meanSdPlot(assay(vst))
 ```
-##Data quality assessment by sample clustering and visualization
 
-###Heatmap of the sample-to-sample distances
+## Data quality assessment by sample clustering and visualization
+
+### Heatmap of the sample-to-sample distances
 ```{r}
 sampleDists <- dist(t(assay(vst)))
 ```
 
 ```{r}
-library("RColorBrewer")
-library(pheatmap)
 sampleDistMatrix <- as.matrix(sampleDists)
 rownames(sampleDistMatrix) <- paste(vst$Origin, vst$Treatment, vst$Coral_ID, sep="-")
 colnames(sampleDistMatrix) <- NULL
@@ -121,73 +146,73 @@ pheatmap(sampleDistMatrix,
          col=colors)
 ```
 
-###Principal component plot of the samples
+### Principal component plot of the samples
 ```{r}
-withoutliers<-plotPCA(vst, intgroup=c("Origin", "Treatment"))
+withoutliers <- plotPCA(vst, intgroup=c("Origin", "Treatment"))
 withoutliers
 ```
 
-```{r}
-coldata
-```
-
-##Removing outliers RF16A and RF16C
-```{r}
-cts_out <-dplyr::select(gcount_filt, -c('RF16A', 'RF16C'))#here we remove the two samples that are behaving weirdly
-coldata_out <-coldata[-c(7, 8),]#here we remove the two samples that are behaving weirdly
-```
-
-
-#Filtering 
-```{r}
-cts_filt_2<-cts_out[rowSums(!as.matrix(cts_out)) < ncol(cts_out), ]#here we remove all genes that were not expressed in any of our samples- we are left with 24,333 genes.
-cts_filt_2
-```
+## Removing outlier "RF16A" and "RF16C"
 
 ```{r}
-write.csv(cts_filt_2, "Counts filtered.csv")
+cts_raw_outrm <- cts_raw %>% dplyr::select(-c("RF16A","RF16C")) #remove those columns from count matrix
+coldata_outrm <- coldata %>% filter(Coral_ID != c("RF16A","RF16C")) #removed those rows from metadata
 ```
 
-##Filtering
-```{r}
-library(genefilter)
-ffun<-filterfun(pOverA(0.25,10)) 
-cts_filtpoa<- genefilter((cts_filt_2), ffun)
-sum(cts_filtpoa)
-#as.matrix(cts_filtpoa)
-```
+## Using filtered data instead of raw counts as input
 
 ```{r}
-#identify genes to keep by count filter
-gkeep <- cts_filt_2[cts_filtpoa,]
-#identify gene lists
-gn.keep <- rownames(gkeep)
-#gene count data filtered in PoverA, P percent of the samples have counts over A
-gcount_filt <- as.data.frame(cts_filt_2[which(rownames(cts_filt_2) %in% gn.keep),])
-#How many rows do we have before and after filtering?
-nrow(cts_filt_2) #Before
-nrow(gcount_filt) #After
+cts_filt_outrm <- cts_raw_outrm[rowSums(!as.matrix(cts_raw_outrm)) < ncol(cts_raw_outrm), ] #here we remove all genes that were not expressed in any of our samples- we are left with 24,220 genes.
+
+dim(cts_filt_outrm)
 ```
+
+### pOverA filtering to reduce dataset
+
+```{r}
+ffun <- filterfun(pOverA(0.25,10))  #set up filtering parameters
+cts_filt_outrm_poa <- genefilter((cts_filt_outrm), ffun) #apply filter
+sum(cts_filt_outrm_poa) #count number of genes left
+
+cts_filt_outrm_poa <- cts_filt_outrm[cts_filt_outrm_poa,] #keep only rows that passed filter, 9011 genes
+
+cts_filtpoa <- cts_filt_outrm_poa
+```
+
+Data sanity checks:
+```{r}
+all(rownames(coldata_outrm$Coral_ID) %in% colnames(cts_filt_outrm_poa)) #are all of the sample names (rows) in the metadata column names in the gene count matrix?
+all(rownames(coldata_outrm$Coral_ID) == colnames(cts_filt_outrm_poa)) #are they the same in the same order?
+```
+
+
+```{r}
+write.csv(cts_filt_outrm_poa, "../../output/Filtered_gene_count_matrix.csv")
+```
+
+
 ```{r}
 library("DESeq2")
-dds2 <- DESeqDataSetFromMatrix(countData = gcount_filt,
-                              colData=coldata_out,
+dds2 <- DESeqDataSetFromMatrix(countData = cts_filtpoa,
+                              colData=coldata_outrm,
                               design= ~Origin+Treatment)
 dds2
 ```
+
 ```{r}
 # transform the data 
 vst2 <- vst(dds2, blind=FALSE) # transform it vst
 ```
-##Effects of transformations on the variance
+
+## Effects of transformations on the variance
 
 ```{r}
-library(vsn)
 meanSdPlot(assay(vst2))
 ```
-##Data quality assessment by sample clustering and visualization
 
-###Heatmap of the sample-to-sample distances
+## Data quality assessment by sample clustering and visualization
+
+### Heatmap of the sample-to-sample distances
 ```{r}
 sampleDists <- dist(t(assay(vst2)))
 ```
@@ -206,15 +231,17 @@ pheatmap(sampleDistMatrix,
 
 ###Principal component plot of the samples
 ```{r}
-withoutoutliers<-plotPCA(vst2, intgroup=c("Origin", "Treatment"))
+withoutoutliers <- plotPCA(vst2, intgroup=c("Origin", "Treatment"))
 withoutoutliers
 ```
+
 ```{r}
-compare_figs<-cowplot::plot_grid(withoutliers, withoutoutliers,withoutliers, withoutoutliers,nrow=2, ncol=2, align="h")
+compare_figs <- cowplot::plot_grid(withoutliers, withoutoutliers,withoutliers, withoutoutliers,nrow=2, ncol=2, align="h")
 compare_figs
 ```
 
-##Transpose the filtered gene count matrix so that the gene IDs are rows and the sample IDs are columns.
+## Transpose the filtered gene count matrix so that the gene IDs are rows and the sample IDs are columns.
+
 ```{r}
 # transform the data 
 vst2 <- vst(dds2) # transform it vst
@@ -223,13 +250,14 @@ vst2 <- assay(vst2) # call only the transformed coutns in the dds object
 vst2 <- t(vst2) # transpose columns to rows and vice versa
 ```
 
-##Check for genes and samples with too many missing values with goodSamplesGenes. There shouldn't be any because we performed pre-filtering
+## Check for genes and samples with too many missing values with goodSamplesGenes. There shouldn't be any because we performed pre-filtering
 ```{r}
 dim(vst2) #  9056 genes; 46  samples
 gsg <- goodSamplesGenes(vst2, verbose = 3);  # We first check for genes and samples with too many missing values
 gsg$allOK # If the statement returns TRUE, all genes have passed the cuts. 
 ```
-##Conduct WGCNA
+
+## Conduct WGCNA
 ```{r}
 library(WGCNA)
 # The following setting is important, do not omit.
@@ -238,7 +266,7 @@ options(stringsAsFactors = FALSE)
 
 ```{r}
 ##Soft threshold
-dim(vst2) #  46 33730
+dim(vst2) #  46 9012
 # Choose a set of soft-thresholding powers
 powers = c(c(1:10), seq(from = 12, to=20, by=2))
 # Call the network topology analysis function
@@ -248,28 +276,34 @@ sft = pickSoftThreshold(vst2, powerVector = powers, verbose = 5) #...wait for th
 # user in choosing a proper soft-thresholding power.
 # The user chooses a set of candidate powers (the function provides suitable default values)
 # function returns a set of network indices that should be inspected
+
 sizeGrWindow(9, 5) # set window size 
 # png to output 
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/sft.png", 1000, 1000, pointsize=20)
+png("../../output/WGCNA/sft.png", 1000, 1000, pointsize=20)
 par(mfrow = c(1,2));
 cex1 = 0.9;
 # Scale-free topology fit index as a function of the soft-thresholding power
 plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
      xlab="Soft Threshold (power)",ylab="Scale Free Topology Model Fit,signed R^2",type="n",
      main = paste("Scale independence"));
+
 text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
      labels=powers,cex=cex1,col="red");
+
 # this line corresponds to using an R^2 cut-off of h
 abline(h=0.90,col="red") # look at at cut off at power of 6
+
 # Mean connectivity as a function of the soft-thresholding power
 plot(sft$fitIndices[,1], sft$fitIndices[,5],
      xlab="Soft Threshold (power)",ylab="Mean Connectivity", type="n",
      main = paste("Mean connectivity"))
 text(sft$fitIndices[,1], sft$fitIndices[,5], labels=powers, cex=cex1,col="red")
 dev.off() # output 
+
 #I used a scale-free topology fit index **R^2 of 0.9**. This lowest recommended R^2 by Langfelder and Horvath is 0.8. I chose 0.9 because we want to use the smallest soft thresholding power that maximizes with model fit. It appears that our **soft thresholding power is 5** because it is the lowest power above the R^2=0.9 threshold that maximizes with model fit.  
 ```
-##Look for outliers by examining tree of samples  
+## Look for outliers by examining tree of samples  
+
 ```{r}
 sampleTree = hclust(dist(vst2), method = "average") # Next we cluster the samples (in contrast to clustering genes that will come later)  to see if there are any obvious outliers.There don't look to be any outliers, so we will move on with business as usual.  
 sizeGrWindow(12,9) 
@@ -288,7 +322,9 @@ softPower = 5 # set the soft threshold based on the plots above
 #to get this to work with a ton of genes >30K, I had to increase my memory limit using: memory.limit(size = 35000) 
 adjacency_sign = adjacency(vst2, power = softPower, type="signed")  #Calculate adjacency
 ```
+
 ###  Step 2: Turn adjacency into topological overlap: Calculation of the topological overlap matrix, (TOM) and the corresponding dissimilarity, from a given adjacency matrix.
+
 ```{r}
 TOM_sign = TOMsimilarity(adjacency_sign, TOMType="signed") #Translate adjacency into topological overlap matrix
 # this took 10 mins
@@ -296,6 +332,7 @@ TOM_sign = TOMsimilarity(adjacency_sign, TOMType="signed") #Translate adjacency 
 dissTOM_sign   = 1-TOM_sign
 ```
 ###  Step 3: Call the hierarchical clustering function - plot the tree
+
 ```{r}
 # Call the hierarchical clustering function
 #to get this to work, I had to increase my memory limit using: memory.limit(size = 45000) 
@@ -321,13 +358,14 @@ table(dynamicMods_sign) # number of genes per module. Module 0 is reserved for u
 ```
 
 ###  Step 5: convert numeric network to colors and plot the dendrogram
+
 ```{r} 
 # Convert numeric lables into colors
 dynamicColors_sign = labels2colors(dynamicMods_sign) # add colors to module labels (previously numbers)
 table(dynamicColors_sign) # lets look at this table...
 # Plot the dendrogram and colors underneath
 sizeGrWindow(8,6)
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/GeneDendrogram.png", 1000, 1000, pointsize=20)
+png("../../output/WGCNA/GeneDendrogram.png", 1000, 1000, pointsize=20)
 plotDendroAndColors(geneTree_sign, dynamicColors_sign, "Dynamic Tree Cut - SIGNED",
                     dendroLabels = FALSE, hang = 0.03,
                     addGuide = TRUE, guideHang = 0.05,
@@ -344,7 +382,7 @@ MEs = MEList$eigengenes
 MEs
 
 library(dplyr)
-MEs<- MEs %>% 
+MEs <- MEs %>% 
     select_if(~ !any(is.na(.)))
 
 # Calculate dissimilarity of module eigengenes
@@ -354,7 +392,7 @@ MEDiss = 1-cor(MEs, use = "pairwise.complete.obs");
 METree = hclust(as.dist(MEDiss), method = "average");
 # Plot the result
 sizeGrWindow(7, 6)
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/ClusterEigengenes.png", 1000, 1000, pointsize=20)
+png("../../output/WGCNA/ClusterEigengenes.png", 1000, 1000, pointsize=20)
 plot(METree, main = "Clustering of module eigengenes - SIGNED (dissimilarity calc = MEDiss = 1-cor(MEs))",
      xlab = "", sub = "")
 MEDissThres = 0.55 
@@ -364,7 +402,8 @@ dev.off()
 
 
 ###  Step 7: Specify the cut line for the dendrogram (module) - Calc MODULE EIGENGENES (mergeMEs)
-####We had 17 modules before merging, and 9 modules after merging
+#### We had 17 modules before merging, and 9 modules after merging
+
 ```{r}
 MEDissThres = 0.15 # **Merge modules with >85% eigengene similarity.** Most studies use somewhere between 80-90% similarity. I will use 85% similarity as my merging threshold.
 # Plot the cut line into the dendrogram
@@ -377,7 +416,7 @@ mergedColors = merge$colors;
 # Eigengenes of the new merged modules:
 mergedMEs = merge$newMEs;
 library(dplyr)
-mergedMEs<- mergedMEs %>% 
+mergedMEs <- mergedMEs %>% 
     select_if(~ !any(is.na(.)))
 # Cluster module eigengenes
 MEDiss2 = 1-cor(mergedMEs,use = 'pairwise.complete.obs');
@@ -385,23 +424,25 @@ MEDiss2
 METree2 = hclust(as.dist(MEDiss2), method = "average");
 # Plot the result
 sizeGrWindow(7, 6)
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/ClusterEigengenes_merged.png", 1000, 1000, pointsize=20)
+png("../../output/WGCNA/ClusterEigengenes_merged.png", 1000, 1000, pointsize=20)
 plot(METree2, main = "Clustering of module eigengenes - SIGNED (dissimilarity calc = MEDiss = 1-cor(MEs))",
      xlab = "", sub = "")
 dev.off()
 ```
 
 ###  Step 8: Plot dendrogram with the cut line 'MEDissThres' 
+
 ```{r}
 sizeGrWindow(12, 9)
 
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/ClusterDendrogram_signed.png", 1000, 1000, pointsize=20)
+png("../../output/WGCNA/ClusterDendrogram_signed.png", 1000, 1000, pointsize=20)
 plotDendroAndColors(geneTree_sign, cbind(dynamicColors_sign, mergedColors),
                     c("Dynamic Tree Cut", "Merged dynamic"),
                     dendroLabels = FALSE, hang = 0.03,
                     addGuide = TRUE, guideHang = 0.05)
 dev.off()
 ```
+
 ###  Step 9: Commit to mergedcolors as 'MEs' and 'moduleColors'
 ```{r}
 # Rename to moduleColors
@@ -411,12 +452,13 @@ colorOrder = c("grey", standardColors(50));
 moduleLabels = match(moduleColors, colorOrder)-1;
 MEs = mergedMEs;
 # Save module colors and labels for use in subsequent parts
-save(MEs, moduleLabels, moduleColors, geneTree_sign, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/networkConstruction-stepByStep.RData")
+save(MEs, moduleLabels, moduleColors, geneTree_sign, file = "../../output/WGCNA/networkConstruction-stepByStep.RData")
 # write csv - save the module eigengenes
-write.csv(MEs, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/WGCNA_ModulEigengenes.csv")
+write.csv(MEs, file = "../../output/WGCNA/WGCNA_ModuleEigengenes.csv")
 table(mergedColors)
 ```
-#  Prepare for  module trait associations - Eigengene calc - trait data as factors
+
+## Prepare for  module trait associations - Eigengene calc - trait data as factors
 ```{r}
 #Prepare trait data. Data has to be numeric, so I will substitute time_points and type for numeric values. The "trait" we are considering here is habitat of origin. Make a dataframe that has a column for each origin name and a row for samples. Populate a 1 for samples that match each origin = flat and a 0 for samples not matching (e.g., origin = slope). This process changes origin from a categorical variable into a binary variable. This will allow for correlations between mean eigengenes and habitat of origin.  
 Samples = rownames(vst2);# start new variable 'd21.Samples' calling the row names of the gene data (sample as 'Mouse' in trait data)
@@ -427,10 +469,11 @@ dim(Traits) #  46 Samples 2 columns (Origin and Treatment)
 all(rownames(Traits) == rownames(vst2))  # should be TRUE
 dim(Traits) #  46 2
 ```
+
 ## Origin
 ```{r}
 # ALL TRAITS 
-Traits
+head(Traits)
 
 # Origin groups 
 Traits.Origin <-  Traits %>% dplyr::select('Origin')
@@ -444,13 +487,13 @@ Traits.Origin$Slope   <- as.numeric(Traits.Origin$Slope)
 Traits.Origin$Slope <- as.factor(Traits.Origin$Slope)
 
 Traits.Origin <- Traits.Origin[,c(2:3)]
-Traits.Origin
+head(Traits.Origin)
 ```
-####Cluster samples by Origin
+#### Cluster samples by Origin
 
 ```{r}
 # Primary treatment Only
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/ClusterTree_Origin.png", 1000, 1000, pointsize=20)
+png("../../output/WGCNA/ClusterTree_Origin.png", 1000, 1000, pointsize=20)
 traitColors_Primary = labels2colors(Traits.Origin); # Convert traits to a color representation: white means low, red means high, grey means missing entry
 plotDendroAndColors(sampleTree, traitColors_Primary, # Plot the sample dendrogram and the colors underneath.
                     groupLabels = names(Traits.Origin), 
@@ -458,10 +501,10 @@ plotDendroAndColors(sampleTree, traitColors_Primary, # Plot the sample dendrogra
 dev.off()
 
 # save data
-save(vst2, Traits, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/dataInput.RData")
+save(vst2, Traits, file = "../../output/WGCNA/dataInput.RData")
 
 # write the vst transformed data 
-write.csv(vst2, "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/vstTransformed_WGCNAdata.csv") # write
+write.csv(vst2, "../../output/WGCNA/vstTransformed_WGCNAdata.csv") # write
 ```
 
 ```{r}
@@ -474,10 +517,8 @@ nGenes = ncol(vst2); # 9266
 nSamples = nrow(vst2); # 46
 # # Recalculate MEs with color labels
 MEs0 = moduleEigengenes(vst2, moduleColors)$eigengenes
-MEs = orderMEs(MEs0) # reorders the columns (colors/modules) 
-# # write csv - save the module eigengenes
-write.csv(MEs, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/WGCNA_ModulEigengenes.csv")
-# 
+MEs = orderMEs(MEs0) # reorders the columns (colors/modules) , doesn't change anything
+
 # change character treatments to integers
 # ALL TRAIT DATA
 Traits$Origin <- as.factor(Traits$Origin)
@@ -511,7 +552,7 @@ d0.PRIMARYTreatments.matrix <-  paste(signif(moduleTraitCor_Primary, 3), "\n(",
 #dim(textMatrix) == dim(moduleTraitCor_treatonly)
 par(mar = c(8, 9.5, 5, 3));
 # Display the correlation values within a heatmap plot
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/Treatments_Primary_heatmap2.png", 500, 1000, pointsize=20)
+png("../../output/WGCNA/Treatments_Primary_heatmap2.png", 500, 1000, pointsize=20)
 labeledHeatmap(Matrix = moduleTraitCor_Primary,
                xLabels = names(Traits.Origin),
                yLabels = names(MEs),
@@ -527,18 +568,20 @@ dev.off()
 ```
 
 #### Module eigengene -  MEs boxplots by treatment group
+
 ```{r}
 library(reshape2) 
 MEs_table <- MEs # new table for plotting 
 MEs_table$Coral_ID <- rownames(MEs) # call rows as coolumn to merge with treatment data
-MEsPlotting <- merge(coldata, MEs_table, by = 'Coral_ID') # merge
+MEsPlotting <- merge(coldata, MEs_table, by = 'Coral_ID') %>% dplyr::select(-c("Colony")) # merge
 #MEsPlotting <- MEsPlotting[,-c(2)] # ommit the phys data to just plot the module colors 
 MEsPlotting_melt <- melt(MEsPlotting, id=c('Coral_ID', 'Origin', 'Treatment'))
 #plot it
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/ME_Boxplot.png", 600, 1000, pointsize=20)
+png("../../output/WGCNA/ME_Boxplot.png", 600, 1000, pointsize=20)
+
 ggplot(MEsPlotting_melt, aes(x=Origin, y=value, fill = factor(Origin), shape=Origin)) +
   geom_boxplot(aes(middle = mean(value)), position=position_dodge(0.8), outlier.size = 0, alpha = 0.5) + 
-  stat_summary(fun.y = mean, color = "black", position = position_dodge(0.75),
+  stat_summary(fun = mean, color = "black", position = position_dodge(0.75),
                geom = "point", shape = 19, size = 3,
                show.legend = FALSE) +
   ylab("ModuleEigengene") +
@@ -550,32 +593,38 @@ ggplot(MEsPlotting_melt, aes(x=Origin, y=value, fill = factor(Origin), shape=Ori
   facet_wrap(~variable)
 dev.off()
 ```
+
 ```{r}
 # **Plot mean eigengene over developmental stages**  View module eigengene data and make dataframe for Strader plots.  
 head(MEs)
 names(MEs)
 Strader_MEs <- MEs
-Strader_MEs$Origin <- coldata_out$Origin
+Strader_MEs$Origin <- coldata_outrm$Origin
 Strader_MEs$Coral_ID <- rownames(Strader_MEs)
 head(Strader_MEs)
-Strader_MEs<-Strader_MEs%>%
+
+Strader_MEs <- Strader_MEs%>%
   droplevels() #drop unused level
+
 dim(Strader_MEs)
 head(Strader_MEs)
 ```
+
+
 ```{r}
-plot_MEs<-Strader_MEs%>%
+plot_MEs <- Strader_MEs %>%
   gather(., key="Module", value="Mean", MEred:MEtan)
-plot_MEs
+head(plot_MEs)
 ```
 
 ```{r}
-plot_MEs_mean<-summarySE(plot_MEs, measurevar='Mean', groupvars=c('Origin',"Module"), na.rm=TRUE, conf.interval = 0.95)
-plot_MEs_mean
+plot_MEs_mean <- summarySE(plot_MEs, measurevar='Mean', groupvars=c('Origin',"Module"), na.rm=TRUE, conf.interval = 0.95)
+head(plot_MEs_mean)
 ```
-####Mean module eigengene for each module.  
+
+#### Mean module eigengene for each module.  
 ```{r,warning=FALSE}
-plot_MEs_fig<-ggplot(plot_MEs, aes(y=Mean, x=Origin, color=Origin, fill=Origin))+ 
+plot_MEs_fig <- ggplot(plot_MEs, aes(y=Mean, x=Origin, color=Origin, fill=Origin))+ 
   geom_point(alpha=0.8,position=position_jitterdodge(0.05))+
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA)+
   #geom_smooth(method=gam)+
@@ -601,26 +650,17 @@ plot_MEs_fig
 
 ##Load in phys for all traits
 ```{r}
-d <- d<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Heron pHi coral physiology and respirometry R_reduced.csv", strip.white=T)
-d$Origin<- as.factor(d$Origin)
-d$Treatment<- as.factor(d$Treatment)
-d$Colony<- as.factor(d$Colony)
-d$Coral.ID<- as.factor(d$Coral.ID)
-d<- plyr::rename(d, c("Coral.ID"="Coral_ID"))
-d <-d[-c(7, 8),]#here we remove the two samples that are behaving weirdly
-d <- subset(d, select = -c(Coral_ID))
-d
-```
-
-```{r}
-# ALL TRAITS 
-d
+d <- read.csv("../../data/Heron pHi coral physiology and respirometry R_reduced.csv", strip.white=T)
 
 d$Origin <- as.factor(d$Origin)
-d$Origin <- as.numeric(d$Origin)
 d$Treatment <- as.factor(d$Treatment)
+d$Origin <- as.numeric(d$Origin)
 d$Treatment <- as.numeric(d$Treatment)
-d
+d$Colony <- as.factor(d$Colony)
+d$Coral.ID <- as.factor(d$Coral.ID)
+d <- plyr::rename(d, c("Coral.ID"="Coral_ID"))
+d <- d[-c(7, 8),]#here we remove the two samples that are behaving weirdly
+d <- subset(d, select = -c(Coral_ID))
 ```
 
 ```{r}
@@ -639,7 +679,7 @@ moduleTraitCor_both
 moduleTraitPvalue_both = corPvalueStudent(moduleTraitCor_both, nSamples);
 moduleTraitPvalue_both
 ```
-###Correlations of traits with eigengenes
+### Correlations of traits with eigengenes
 ```{r}
 moduleTraitCor_both = cor(MEs, d, use = "p");
 moduleTraitPvalue = corPvalueStudent(moduleTraitCor_both, nSamples);
@@ -657,7 +697,7 @@ both.matrix <-  paste(signif(moduleTraitCor_both, 3), "\n(",
 #dim(textMatrix) == dim(moduleTraitCor_treatonly)
 par(mar = c(10, 9.5, 5, 3));
 # Display the correlation values within a heatmap plot
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/Both_with phys and pHi_heatmap_new.png", 2000, 2000, pointsize=20)
+png("../../output/WGCNA/Both_with phys and pHi_heatmap_new.png", 2000, 2000, pointsize=20)
 labeledHeatmap(Matrix = moduleTraitCor_both,
                xLabels = names(d),
                yLabels = names(MEs),
@@ -672,7 +712,7 @@ labeledHeatmap(Matrix = moduleTraitCor_both,
 dev.off()
 ```
 ```{r}
-moduleTraitCor_both<- as.data.frame(moduleTraitCor_both)
+moduleTraitCor_both <- as.data.frame(moduleTraitCor_both)
 moduleTraitCor_both
 ```
 
@@ -701,23 +741,28 @@ heatmappval <- signif(moduleTraitPvalue_both, 1)
 #Make list of heatmap row colors
 htmap.colors <- names(MEs)
 htmap.colors <- gsub("ME", "", htmap.colors)
-#png(file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/Both_with phys and pHi_heatmap_new2.png", height = 2500, width = 2500)
-ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait Eigengene Correlation", 
+
+moduleTraitCor_both_filt <- moduleTraitCor_both[-which(rownames(moduleTraitCor_both) == "NA") , ] 
+moduleTraitCor_both_filt <- as.matrix(moduleTraitCor_both_filt)
+
+png("../../output/WGCNA/Both_with phys and pHi_heatmap_new2.png", height = 2000, width = 2000)
+ht=Heatmap(moduleTraitCor_both_filt, name = "Eigengene", column_title = "Module-Trait Eigengene Correlation", 
         col = blueWhiteRed(50), 
         row_names_side = "left",cluster_rows = FALSE,
-        width = unit(8, "in"), height = unit(8, "in"), 
-        column_order = 1:17, column_dend_reorder = FALSE, cluster_columns = hclust(dist(t(moduleTraitCor_both)), method = "average"),column_dend_height = unit(0.5, "in"),
-         row_gap = unit(1, "mm"), border = TRUE,
+        width = unit(20, "in"), height = unit(20, "in"), 
+        column_order = 1:17, column_dend_reorder = FALSE,
+        cluster_columns = hclust(dist(t(moduleTraitCor_both_filt)), method = "average"),column_dend_height = unit(1.25, "in"),
+        row_gap = unit(2.5, "mm"), border = TRUE,
         cell_fun = function(j, i, x, y, w, h, col) {
         if(heatmappval[i, j] <= 0.05) {
-            grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "bold"))
+            grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = "bold"))
         }
         else {
-            grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 10, fontface = "plain"))
+            grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = "plain"))
         }},
-        column_names_gp =  gpar(fontsize = 12), row_names_gp = gpar(fontsize = 10, alpha = 0.75, border = TRUE, fill = htmap.colors))
-#draw(ht)
+        column_names_gp =  gpar(fontsize = 30), row_names_gp = gpar(fontsize = 25, alpha = 0.75, border = TRUE, fill = htmap.colors))
 ht
+dev.off()
 ```
 
 
@@ -726,11 +771,11 @@ ht
 library(reshape2) 
 MEs_table <- MEs # new table for plotting 
 MEs_table$Coral_ID <- rownames(MEs) # call rows as coolumn to merge with treatment data
-MEsPlotting <- merge(coldata, MEs_table, by = 'Coral_ID') # merge
+MEsPlotting <- merge(coldata, MEs_table, by = 'Coral_ID') %>% dplyr::select(-c("Colony")) # merge
 #MEsPlotting <- MEsPlotting[,-c(2)] # ommit the phys data to just plot the module colors 
 MEsPlotting_melt <- melt(MEsPlotting, id=c('Coral_ID', 'Origin', 'Treatment'))
 #plot it
-png("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/ME_Boxplot_Treatment.png", 600, 1000, pointsize=20)
+png("../../output/WGCNA/ME_Boxplot_Treatment.png", 600, 1000, pointsize=20)
 ggplot(MEsPlotting_melt, aes(x=Treatment, y=value, fill = factor(Treatment), shape=Treatment)) +
   geom_boxplot(aes(middle = mean(value)), position=position_dodge(0.8), outlier.size = 0, alpha = 0.5) + 
   stat_summary(fun.y = mean, color = "black", position = position_dodge(0.75),
@@ -751,28 +796,29 @@ dev.off()
 head(MEs)
 names(MEs)
 Strader_MEs <- MEs
-Strader_MEs$Treatment <- coldata_out$Treatment
+Strader_MEs$Treatment <- coldata_outrm$Treatment
 Strader_MEs$Coral_ID <- rownames(Strader_MEs)
 head(Strader_MEs)
-Strader_MEs<-Strader_MEs%>%
+Strader_MEs <- Strader_MEs%>%
   droplevels() #drop unused level
 dim(Strader_MEs)
 head(Strader_MEs)
 ```
 
 ```{r}
-plot_MEs<-Strader_MEs%>%
+plot_MEs <- Strader_MEs%>%
   gather(., key="Module", value="Mean", MEred:MEtan)
 plot_MEs
 ```
 
 ```{r}
-plot_MEs_mean<-summarySE(plot_MEs, measurevar='Mean', groupvars=c('Treatment',"Module"), na.rm=TRUE, conf.interval = 0.95)
+plot_MEs_mean <- summarySE(plot_MEs, measurevar='Mean', groupvars=c('Treatment',"Module"), na.rm=TRUE, conf.interval = 0.95)
 plot_MEs_mean
 ```
-####Plot mean module eigengene for each module.  
+
+#### Plot mean module eigengene for each module.  
 ```{r,warning=FALSE}
-plot_MEs_fig2<-ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Treatment, fill=Treatment))+ 
+plot_MEs_fig2 <- ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Treatment, fill=Treatment))+ 
   geom_point(alpha=0.8,position=position_jitterdodge(0.05))+
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA)+
   #geom_smooth(method=gam)+
@@ -799,24 +845,24 @@ plot_MEs_fig2
 head(MEs)
 names(MEs)
 Strader_MEs <- MEs
-Strader_MEs$Treatment <- coldata_out$Treatment
-Strader_MEs$Origin <- coldata_out$Origin
+Strader_MEs$Treatment <- coldata_outrm$Treatment
+Strader_MEs$Origin <- coldata_outrm$Origin
 Strader_MEs$Colony <- d$Colony
 Strader_MEs$Coral_ID <- rownames(Strader_MEs)
 head(Strader_MEs)
-Strader_MEs<-Strader_MEs%>%
+Strader_MEs <- Strader_MEs%>%
   droplevels() #drop unused level
 dim(Strader_MEs)
 head(Strader_MEs)
 ```
 ```{r}
-plot_MEs<-Strader_MEs%>%
+plot_MEs <- Strader_MEs%>%
   gather(., key="Module", value="Mean", MEred:MEtan)
 plot_MEs
 ```
 
 ```{r}
-plot_MEs_mean<-summarySE(plot_MEs, measurevar='Mean', groupvars=c('Treatment','Origin', "Module"), na.rm=TRUE, conf.interval = 0.95)
+plot_MEs_mean <- summarySE(plot_MEs, measurevar='Mean', groupvars=c('Treatment','Origin', "Module"), na.rm=TRUE, conf.interval = 0.95)
 plot_MEs_mean
 ```
 ```{r}
@@ -827,8 +873,8 @@ unique(plot_MEs$Module)
 ####Plot mean module eigengene for each module.  
 ```{r,warning=FALSE}
 #pca.sites.scores$Time <- factor(pca.sites.scores$Time, levels=c("after","after","After"))
-plot_MEs$Module<- factor(plot_MEs$Module, levels =c("MEblack","MEred","MEsalmon","MEturquoise","MEmidnightblue","MEgrey60","MEpurple","MEtan","MEmagenta","MEgreen","MElightcyan","MEbrown","MEcyan","MEgreenyellow","MEpink","MEblue"))
-plot_MEs_fig2<-ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Origin, fill=Origin))+ 
+plot_MEs$Module <- factor(plot_MEs$Module, levels =c("MEblack","MEred","MEsalmon","MEturquoise","MEmidnightblue","MEgrey60","MEpurple","MEtan","MEmagenta","MEgreen","MElightcyan","MEbrown","MEcyan","MEgreenyellow","MEpink","MEblue"))
+plot_MEs_fig2 <- ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Origin, fill=Origin))+ 
   geom_point(alpha=0.8,position=position_jitterdodge(0.05))+
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA)+
   #geom_smooth(method=gam)+
@@ -850,7 +896,7 @@ plot_MEs_fig2<-ggplot(plot_MEs, aes(y=Mean, x=Treatment, color=Origin, fill=Orig
 plot_MEs_fig2
 ```
 
-# geneModuleMembership - geneTraitSignificance - GSPvalue
+## geneModuleMembership - geneTraitSignificance - GSPvalue
 ```{r}
 
 # Gene relationship to trait and important modules: 
@@ -909,46 +955,45 @@ length(colnames(vst2)[moduleColors=="grey60"]) # 171 total genes
 
 
 
-#  Call annotation data to get module gene data (prep for downstream GO)
+## Call annotation data to get module gene data (prep for downstream GO)
 
 ```{r}
 library(rtracklayer)
-gff<-rtracklayer::import("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Pocillopora_acuta_HIv2.genes_fixed.gff3")
-gff<-as.data.frame(gff)
+gff <- rtracklayer::import("../../data/Pocillopora_acuta_HIv2.genes_fixed.gff3")
+gff <- as.data.frame(gff)
 dim(gff) # 478988     9
 names(gff) 
-gff
+
 transcripts <- subset(gff, type == "transcript")
 transcripts_gr <- makeGRangesFromDataFrame(transcripts, keep.extra.columns=TRUE) #extract length information
 transcript_lengths <- width(transcripts_gr) #isolate length of each gene
-seqnames<-transcripts_gr$ID #extract list of gene id 
-lengths<-cbind(seqnames, transcript_lengths)
-lengths<-as.data.frame(lengths) #convert to data frame
-transcripts
+seqnames <- transcripts_gr$ID #extract list of gene id 
+lengths <- cbind(seqnames, transcript_lengths)
+lengths <- as.data.frame(lengths) #convert to data frame
 ```
 
 ```{r}
-eggnog<-read.delim("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Pocillopora_acuta_HIv2.genes.EggNog_results.txt")
-eggnog<- plyr::rename(eggnog, c("X.query"="gene_id"))
-eggnog
+eggnog <- read.delim("../../data/Pocillopora_acuta_HIv2.genes.EggNog_results.txt")
+eggnog <- plyr::rename(eggnog, c("X.query"="gene_id"))
 ```
 
 ```{r}
-gogene<- merge(transcripts, eggnog, by=c("gene_id"), all=T)
-gogene
+gogene <- merge(transcripts, eggnog, by=c("gene_id"), all=T)
 ```
+
 ```{r}
 colnames(gogene)
 ```
 
 ```{r}
-probes = rownames(gcount_filt)
+probes = rownames(cts_filtpoa)
 probes2annot = match(probes, gogene$gene_id)
 # The following is the number or probes without annotation:
 sum(is.na(probes2annot))
 # Should return 0.
 ```
-#  BUILD GENE INFO DATAFRAMES
+
+##  BUILD GENE INFO DATAFRAMES
 ```{r}
 length(probes)
 length(gogene$seqnames[probes2annot])
@@ -966,7 +1011,7 @@ geneInfo_GROUPS = data.frame(substanceBXH = probes,
                                   GO.description = gogene$Description[probes2annot],
                                   Flat_geneTraitSignificance, Slope_geneTraitSignificance, # call this specific to the module and trait of interest
                                   Flat_GSPvalue,  Slope_GSPvalue)              # call this specific to the module and trait of interest
-View(geneInfo_GROUPS)
+head(geneInfo_GROUPS)
 modOrder = order(-abs(cor(MEs, Flat, use = "p"))); # order by the strength of the correlation between module and trait values for each sample
 
 for (mod in 1:ncol(geneModuleMembership)) # Add module membership information in the chosen order
@@ -978,13 +1023,14 @@ for (mod in 1:ncol(geneModuleMembership)) # Add module membership information in
                                   paste("p.A.", modNames[modOrder[mod]], sep=""))
 }
 ```
-# Order the genes in the geneInfo variable first by module color, then by geneTraitSignificance
+
+## Order the genes in the geneInfo variable first by module color, then by geneTraitSignificance
 ```{r}
 geneOrder = order(geneInfo_GROUPS$moduleColor, -abs(geneInfo_GROUPS$GS.Flat));
 geneInfo_GROUPS = geneInfo_GROUPS[geneOrder, ]
-View(geneInfo_GROUPS)
+head(geneInfo_GROUPS)
 ```
 
 ```{r}
-write.csv(geneInfo_GROUPS, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/WGCNA_ModulMembership.csv")
+write.csv(geneInfo_GROUPS, file = "../../output/WGCNA/WGCNA_ModuleMembership.csv")
 ```

@@ -4639,7 +4639,7 @@ test_fig
 #Specific differentially expressed genes
 
 ```{r}
-wgcna_counts_filtered<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Counts filtered.csv", strip.white=T)
+wgcna_counts_filtered<-read.csv("../../output/Filtered_gene_count_matrix.csv", strip.white=T)
 wgcna_counts_filtered<- plyr::rename(wgcna_counts_filtered, c("X"="Gene"))
 wgcna_counts_filtered
 ```

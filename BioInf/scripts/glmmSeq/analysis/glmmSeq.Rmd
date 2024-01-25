@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE)
 This is a Rmd file analyzing our raw count data by the glmmSeq package as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html) and [manual](https://cran.r-project.org/web/packages/glmmSeq/glmmSeq.pdf).
 
 ```{r}
-sessionInfo() #provides list of loaded packages and version of R. I still have version 4.1 for now.
+sessionInfo() #provides list of loaded packages and version of R.
 ```
 
 First, download the glmmSeq package. I had to install qvalue using BiocManager as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html)
@@ -27,7 +27,7 @@ BiocManager::install("genefilter")
 BiocManager::install("DESeq2")
 ```
 
-Next, load the package 
+Next, load the packages 
   
 ```{r}
 library(lme4)
@@ -35,6 +35,7 @@ library(glmmSeq)
 library(dplyr) #load dplyr, which is required to run this tutorial but not included in the vignette
 library(kableExtra) #load kableExtra, which is also required to run this tutorial but not included in the vignette
 library(plotly) #library plotly to make interactive plots
+library(genefilter) #for pOverA filtering
 sessionInfo()
 ```
 
@@ -57,10 +58,10 @@ Metadata from this dataset
 ```{r}
 coldata <- read.csv("../../../../RAnalysis/Data/RNA Submission Sample List metadata.csv") #read in metadata file
 coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
-coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by remobing letters after colony name
-coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
-coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
-coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
 
 coldata$Origin <- factor(coldata$Origin, levels = c("Slope","Flat")) #set variables to factors, with Slope as the baseline
 coldata$Colony <- factor(coldata$Colony) #set variables to factors
@@ -88,13 +89,9 @@ cts_filt_outrm <- cts_raw_outrm[rowSums(!as.matrix(cts_raw_outrm)) < ncol(cts_ra
 ```
 
 
-## pOverA filtering
+## pOverA filtering to reduce dataset
 
 ```{r}
-library(genefilter)
-
-#use pOverA filtering to reduce dataset
-
 ffun<-filterfun(pOverA(0.25,10))  #set up filtering parameters
 cts_filt_outrm_poa <- genefilter((cts_filt_outrm), ffun) #apply filter
 sum(cts_filt_outrm_poa) #count number of genes left
