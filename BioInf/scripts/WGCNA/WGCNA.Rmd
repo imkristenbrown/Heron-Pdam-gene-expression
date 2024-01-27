@@ -338,6 +338,7 @@ load("../../output/WGCNA/TOM_sign.Rdata")
 
 dissTOM_sign   = 1-TOM_sign
 ```
+
 ###  Step 3: Call the hierarchical clustering function - plot the tree
 
 ```{r}
@@ -731,8 +732,8 @@ moduleTraitPvalue_both = corPvalueStudent(moduleTraitCor_both, nSamples)
 
 ### Correlations of traits with eigengenes
 ```{r}
-moduleTraitCor_both = cor(MEs, d, use = "p");
-moduleTraitPvalue = corPvalueStudent(moduleTraitCor_both, nSamples);
+moduleTraitCor_both = cor(MEs, d, use = "p")
+moduleTraitPvalue = corPvalueStudent(moduleTraitCor_both, nSamples)
 Colors=sub("ME","",names(MEs))
 moduleTraitTree = hclust(dist(t(moduleTraitCor_both)), method = "average");
 plot(moduleTraitTree, main = "Clustering based on module-trait correlation", sub="", xlab="", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
@@ -777,13 +778,18 @@ dev.off()
 
 
 ```{r}
+rownames(moduleTraitCor_both)
+
 # Define the desired order of row names
 new_order <- c("MEblack", "MEred", "MEsalmon", "MEturquoise", "MEmidnightblue", 
-               "MEgrey60", "MEpurple", "MEtan", "MEmagenta", "MEgreen", 
-               "MElightcyan", "MEbrown", "MEcyan", "MEgreenyellow", "MEpink", "MEblue")
+              # "MEgrey60",
+              "MEgreen", "MEtan", 
+              #"MEgreenyellow",
+              "MEcyan", "MEbrown",
+               "MEpurple",  "MElightcyan",  "MEmagenta", "MEpink", "MEblue", "MEyellow")
 
 # Use order() and match() to get the row indices in the desired order based on new_order
-row_indices <- order(match(new_order, rownames(moduleTraitCor_both)))
+row_indices <- order(match(rownames(moduleTraitCor_both),new_order))
 
 # Use the row indices to reorder the rows of the dataframe
 moduleTraitCor_both <- as.data.frame(moduleTraitCor_both)
@@ -799,19 +805,18 @@ library(ComplexHeatmap)
 #Create list of pvalues for eigengene correlation with specific life stages
 heatmappval <- signif(moduleTraitPvalue_both, 1)
 #Make list of heatmap row colors
-htmap.colors <- names(MEs)
+htmap.colors <- rownames(moduleTraitCor_both)
 htmap.colors <- gsub("ME", "", htmap.colors)
 
-moduleTraitCor_both_filt <- moduleTraitCor_both[-which(rownames(moduleTraitCor_both) == "NA") , ] 
-moduleTraitCor_both_filt <- as.matrix(moduleTraitCor_both_filt)
+moduleTraitCor_both <- as.matrix(moduleTraitCor_both)
 
 png("../../output/WGCNA/Both_with phys and pHi_heatmap_new2.png", height = 2000, width = 2000)
-ht=Heatmap(moduleTraitCor_both_filt, name = "Eigengene", column_title = "Module-Trait Eigengene Correlation", 
+ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait Eigengene Correlation", 
         col = blueWhiteRed(50), 
         row_names_side = "left",cluster_rows = FALSE,
         width = unit(20, "in"), height = unit(20, "in"), 
         column_order = 1:17, column_dend_reorder = FALSE,
-        cluster_columns = hclust(dist(t(moduleTraitCor_both_filt)), method = "average"),column_dend_height = unit(1.25, "in"),
+        cluster_columns = hclust(dist(t(moduleTraitCor_both)), method = "average"),column_dend_height = unit(1.25, "in"),
         row_gap = unit(2.5, "mm"), border = TRUE,
         cell_fun = function(j, i, x, y, w, h, col) {
         if(heatmappval[i, j] <= 0.05) {
@@ -976,26 +981,6 @@ Slope_GSPvalue = as.data.frame(corPvalueStudent(as.matrix(Slope_geneTraitSignifi
 names(Slope_geneTraitSignificance) = paste("GS.", names(Slope), sep=""); # MA_geneTraitSignificance - pearsons correlation between reads and the MA grop
 names(Slope_GSPvalue) = paste("p.GS.", names(Slope), sep=""); # corPvalueStudent
 
-```
-
-####COUNT GENES OF INTEREST IN  MODULES
-```{r}
-length(colnames(vst2)[moduleColors=="purple"]) # 233 total genes 
-length(colnames(vst2)[moduleColors=="midnightblue"]) # 1001 total genes 
-length(colnames(vst2)[moduleColors=="pink"]) # 442 total genes
-length(colnames(vst2)[moduleColors=="salmon"]) # 105 total genes 
-length(colnames(vst2)[moduleColors=="turquoise"]) # 2234 total genes
-length(colnames(vst2)[moduleColors=="magenta"]) # 305 total genes
-length(colnames(vst2)[moduleColors=="black"]) # 517 total genes 
-length(colnames(vst2)[moduleColors=="greenyellow"]) # 234 total genes 
-length(colnames(vst2)[moduleColors=="lightcyan"]) # 89 total genes
-length(colnames(vst2)[moduleColors=="brown"]) # 1074 total genes 
-length(colnames(vst2)[moduleColors=="green"]) # 765 total genes
-length(colnames(vst2)[moduleColors=="cyan"]) # 97 total genes
-length(colnames(vst2)[moduleColors=="red"]) # 643 total genes 
-length(colnames(vst2)[moduleColors=="blue"]) # 1304 total genes
-length(colnames(vst2)[moduleColors=="tan"]) # 171 total genes
-length(colnames(vst2)[moduleColors=="grey60"]) # 171 total genes
 ```
 
 

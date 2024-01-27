@@ -2010,9 +2010,9 @@ moduleTraitCor_both = cor(MEs, d, use = &quot;p&quot;)</code></pre>
 <pre class="r"><code>moduleTraitPvalue_both = corPvalueStudent(moduleTraitCor_both, nSamples)</code></pre>
 <div id="correlations-of-traits-with-eigengenes" class="section level3">
 <h3>Correlations of traits with eigengenes</h3>
-<pre class="r"><code>moduleTraitCor_both = cor(MEs, d, use = &quot;p&quot;);</code></pre>
+<pre class="r"><code>moduleTraitCor_both = cor(MEs, d, use = &quot;p&quot;)</code></pre>
 <pre><code>## Warning in storage.mode(y) &lt;- &quot;double&quot;: NAs introduced by coercion</code></pre>
-<pre class="r"><code>moduleTraitPvalue = corPvalueStudent(moduleTraitCor_both, nSamples);
+<pre class="r"><code>moduleTraitPvalue = corPvalueStudent(moduleTraitCor_both, nSamples)
 Colors=sub(&quot;ME&quot;,&quot;&quot;,names(MEs))
 moduleTraitTree = hclust(dist(t(moduleTraitCor_both)), method = &quot;average&quot;);
 plot(moduleTraitTree, main = &quot;Clustering based on module-trait correlation&quot;, sub=&quot;&quot;, xlab=&quot;&quot;, cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)</code></pre>
@@ -2054,13 +2054,21 @@ labeledHeatmap(Matrix = moduleTraitCor_both,
 dev.off()</code></pre>
 <pre><code>## pdf 
 ##   2</code></pre>
+<pre class="r"><code>rownames(moduleTraitCor_both)</code></pre>
+<pre><code>##  [1] &quot;MEcyan&quot;         &quot;MEblack&quot;        &quot;MEsalmon&quot;       &quot;MEpink&quot;        
+##  [5] &quot;MEred&quot;          &quot;MEgreen&quot;        &quot;MEmidnightblue&quot; &quot;MEblue&quot;        
+##  [9] &quot;MEbrown&quot;        &quot;MEpurple&quot;       &quot;MEturquoise&quot;    &quot;MEtan&quot;         
+## [13] &quot;MEmagenta&quot;      &quot;MElightcyan&quot;    &quot;MEyellow&quot;</code></pre>
 <pre class="r"><code># Define the desired order of row names
 new_order &lt;- c(&quot;MEblack&quot;, &quot;MEred&quot;, &quot;MEsalmon&quot;, &quot;MEturquoise&quot;, &quot;MEmidnightblue&quot;, 
-               &quot;MEgrey60&quot;, &quot;MEpurple&quot;, &quot;MEtan&quot;, &quot;MEmagenta&quot;, &quot;MEgreen&quot;, 
-               &quot;MElightcyan&quot;, &quot;MEbrown&quot;, &quot;MEcyan&quot;, &quot;MEgreenyellow&quot;, &quot;MEpink&quot;, &quot;MEblue&quot;)
+              # &quot;MEgrey60&quot;,
+              &quot;MEgreen&quot;, &quot;MEtan&quot;, 
+              #&quot;MEgreenyellow&quot;,
+              &quot;MEcyan&quot;, &quot;MEbrown&quot;,
+               &quot;MEpurple&quot;,  &quot;MElightcyan&quot;,  &quot;MEmagenta&quot;, &quot;MEpink&quot;, &quot;MEblue&quot;, &quot;MEyellow&quot;)
 
 # Use order() and match() to get the row indices in the desired order based on new_order
-row_indices &lt;- order(match(new_order, rownames(moduleTraitCor_both)))
+row_indices &lt;- order(match(rownames(moduleTraitCor_both),new_order))
 
 # Use the row indices to reorder the rows of the dataframe
 moduleTraitCor_both &lt;- as.data.frame(moduleTraitCor_both)
@@ -2103,19 +2111,18 @@ moduleTraitCor_both &lt;- moduleTraitCor_both[row_indices, ]</code></pre>
 #Create list of pvalues for eigengene correlation with specific life stages
 heatmappval &lt;- signif(moduleTraitPvalue_both, 1)
 #Make list of heatmap row colors
-htmap.colors &lt;- names(MEs)
+htmap.colors &lt;- rownames(moduleTraitCor_both)
 htmap.colors &lt;- gsub(&quot;ME&quot;, &quot;&quot;, htmap.colors)
 
-moduleTraitCor_both_filt &lt;- moduleTraitCor_both[-which(rownames(moduleTraitCor_both) == &quot;NA&quot;) , ] 
-moduleTraitCor_both_filt &lt;- as.matrix(moduleTraitCor_both_filt)
+moduleTraitCor_both &lt;- as.matrix(moduleTraitCor_both)
 
 png(&quot;../../output/WGCNA/Both_with phys and pHi_heatmap_new2.png&quot;, height = 2000, width = 2000)
-ht=Heatmap(moduleTraitCor_both_filt, name = &quot;Eigengene&quot;, column_title = &quot;Module-Trait Eigengene Correlation&quot;, 
+ht=Heatmap(moduleTraitCor_both, name = &quot;Eigengene&quot;, column_title = &quot;Module-Trait Eigengene Correlation&quot;, 
         col = blueWhiteRed(50), 
         row_names_side = &quot;left&quot;,cluster_rows = FALSE,
         width = unit(20, &quot;in&quot;), height = unit(20, &quot;in&quot;), 
         column_order = 1:17, column_dend_reorder = FALSE,
-        cluster_columns = hclust(dist(t(moduleTraitCor_both_filt)), method = &quot;average&quot;),column_dend_height = unit(1.25, &quot;in&quot;),
+        cluster_columns = hclust(dist(t(moduleTraitCor_both)), method = &quot;average&quot;),column_dend_height = unit(1.25, &quot;in&quot;),
         row_gap = unit(2.5, &quot;mm&quot;), border = TRUE,
         cell_fun = function(j, i, x, y, w, h, col) {
         if(heatmappval[i, j] &lt;= 0.05) {
@@ -2497,39 +2504,6 @@ Slope_geneTraitSignificance = as.data.frame(cor(vst2, Slope, use = &quot;p&quot;
 Slope_GSPvalue = as.data.frame(corPvalueStudent(as.matrix(Slope_geneTraitSignificance), nSamples));
 names(Slope_geneTraitSignificance) = paste(&quot;GS.&quot;, names(Slope), sep=&quot;&quot;); # MA_geneTraitSignificance - pearsons correlation between reads and the MA grop
 names(Slope_GSPvalue) = paste(&quot;p.GS.&quot;, names(Slope), sep=&quot;&quot;); # corPvalueStudent</code></pre>
-<p>####COUNT GENES OF INTEREST IN MODULES</p>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;purple&quot;]) # 233 total genes </code></pre>
-<pre><code>## [1] 218</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;midnightblue&quot;]) # 1001 total genes </code></pre>
-<pre><code>## [1] 71</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;pink&quot;]) # 442 total genes</code></pre>
-<pre><code>## [1] 220</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;salmon&quot;]) # 105 total genes </code></pre>
-<pre><code>## [1] 154</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;turquoise&quot;]) # 2234 total genes</code></pre>
-<pre><code>## [1] 2558</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;magenta&quot;]) # 305 total genes</code></pre>
-<pre><code>## [1] 219</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;black&quot;]) # 517 total genes </code></pre>
-<pre><code>## [1] 396</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;greenyellow&quot;]) # 234 total genes </code></pre>
-<pre><code>## [1] 0</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;lightcyan&quot;]) # 89 total genes</code></pre>
-<pre><code>## [1] 65</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;brown&quot;]) # 1074 total genes </code></pre>
-<pre><code>## [1] 942</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;green&quot;]) # 765 total genes</code></pre>
-<pre><code>## [1] 563</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;cyan&quot;]) # 97 total genes</code></pre>
-<pre><code>## [1] 105</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;red&quot;]) # 643 total genes </code></pre>
-<pre><code>## [1] 425</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;blue&quot;]) # 1304 total genes</code></pre>
-<pre><code>## [1] 1989</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;tan&quot;]) # 171 total genes</code></pre>
-<pre><code>## [1] 170</code></pre>
-<pre class="r"><code>length(colnames(vst2)[moduleColors==&quot;grey60&quot;]) # 171 total genes</code></pre>
-<pre><code>## [1] 0</code></pre>
 </div>
 <div id="call-annotation-data-to-get-module-gene-data-prep-for-downstream-go" class="section level2">
 <h2>Call annotation data to get module gene data (prep for downstream
