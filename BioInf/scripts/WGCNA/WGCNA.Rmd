@@ -785,16 +785,16 @@ htmap.colors <- gsub("ME", "", htmap.colors)
 moduleTraitCor_both <- as.matrix(moduleTraitCor_both)
 
 row_dend = as.dendrogram(hclust(dist(moduleTraitCor_both), method = "average"))
-row_dend = rev(row_dend)
+row_dend = rotate(row_dend,c(1:3,5,4,8:10, 12, 11, 14:15 ,13 ,6:7))
 column_dend = as.dendrogram(hclust(dist(t(moduleTraitCor_both)), method = "average"))
-column_dend = rotate(column_dend,c(3:6))
+column_dend = rotate(column_dend,c(1:2,12:17,7:11,3:6))
 
 png("../../output/WGCNA/Both_with phys and pHi_heatmap_new_row_clust.png", height = 2000, width = 2000)
 ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait Eigengene Correlation", 
         col = blueWhiteRed(50), 
         row_names_side = "left",
         cluster_rows = row_dend,
-        row_dend_width = unit(1.5, "in"),
+        row_dend_width = unit(2, "in"),
         width = unit(20, "in"), height = unit(20, "in"), 
         cluster_columns = column_dend,
         column_dend_height = unit(1.25, "in"),
@@ -804,7 +804,7 @@ ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait
             grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = "bold"))
         }
         else {
-            grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = "plain"))
+            #grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = "plain"))
         }},
         column_names_gp =  gpar(fontsize = 30), row_names_gp = gpar(fontsize = 25, alpha = 0.75, border = TRUE, fill = htmap.colors))
 ht
