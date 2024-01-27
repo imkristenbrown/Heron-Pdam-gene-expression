@@ -722,20 +722,13 @@ d <- d[-c(7, 8),]#here we remove the two samples that are behaving weirdly
 d <- subset(d, select = -c(Coral_ID))
 ```
 
-```{r}
-# ALL TRAIT DATA
-
-moduleTraitCor_both = cor(MEs, d, use = "p")
-
-moduleTraitPvalue_both = corPvalueStudent(moduleTraitCor_both, nSamples)
-```
 
 ### Correlations of traits with eigengenes
 ```{r}
 moduleTraitCor_both = cor(MEs, d, use = "p")
-moduleTraitPvalue = corPvalueStudent(moduleTraitCor_both, nSamples)
+moduleTraitPvalue_both = corPvalueStudent(moduleTraitCor_both, nSamples)
 Colors=sub("ME","",names(MEs))
-moduleTraitTree = hclust(dist(t(moduleTraitCor_both)), method = "average");
+moduleTraitTree = hclust(dist(t(moduleTraitCor_both)), method = "average")
 plot(moduleTraitTree, main = "Clustering based on module-trait correlation", sub="", xlab="", cex.lab = 1.5, cex.axis = 1.5, cex.main = 2)
 ```
 
@@ -777,25 +770,6 @@ dev.off()
 ```
 
 
-```{r}
-rownames(moduleTraitCor_both)
-
-# Define the desired order of row names
-new_order <- c("MEblack", "MEred", "MEsalmon", "MEturquoise", "MEmidnightblue", 
-              # "MEgrey60",
-              "MEgreen", "MEtan", 
-              #"MEgreenyellow",
-              "MEcyan", "MEbrown",
-               "MEpurple",  "MElightcyan",  "MEmagenta", "MEpink", "MEblue", "MEyellow")
-
-# Use order() and match() to get the row indices in the desired order based on new_order
-row_indices <- order(match(rownames(moduleTraitCor_both),new_order))
-
-# Use the row indices to reorder the rows of the dataframe
-moduleTraitCor_both <- as.data.frame(moduleTraitCor_both)
-moduleTraitCor_both <- moduleTraitCor_both[row_indices, ]
-```
-
 ##Complex heatmap
 ```{r}
 library(ComplexHeatmap)
@@ -810,13 +784,20 @@ htmap.colors <- gsub("ME", "", htmap.colors)
 
 moduleTraitCor_both <- as.matrix(moduleTraitCor_both)
 
-png("../../output/WGCNA/Both_with phys and pHi_heatmap_new2.png", height = 2000, width = 2000)
+row_dend = as.dendrogram(hclust(dist(moduleTraitCor_both), method = "average"))
+row_dend = rev(row_dend)
+column_dend = as.dendrogram(hclust(dist(t(moduleTraitCor_both)), method = "average"))
+column_dend = rotate(column_dend,c(3:6))
+
+png("../../output/WGCNA/Both_with phys and pHi_heatmap_new_row_clust.png", height = 2000, width = 2000)
 ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait Eigengene Correlation", 
         col = blueWhiteRed(50), 
-        row_names_side = "left",cluster_rows = FALSE,
+        row_names_side = "left",
+        cluster_rows = row_dend,
+        row_dend_width = unit(1.5, "in"),
         width = unit(20, "in"), height = unit(20, "in"), 
-        column_order = 1:17, column_dend_reorder = FALSE,
-        cluster_columns = hclust(dist(t(moduleTraitCor_both)), method = "average"),column_dend_height = unit(1.25, "in"),
+        cluster_columns = column_dend,
+        column_dend_height = unit(1.25, "in"),
         row_gap = unit(2.5, "mm"), border = TRUE,
         cell_fun = function(j, i, x, y, w, h, col) {
         if(heatmappval[i, j] <= 0.05) {
