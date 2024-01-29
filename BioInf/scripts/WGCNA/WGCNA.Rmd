@@ -25,6 +25,7 @@ library("BiocManager")
 BiocManager::install("impute", type = "source")
 BiocManager::install("WGCNA",force = TRUE)
 BiocManager::install("vsn")
+install.packages("dendextend")
 ```
 
 Next, load the packages 
@@ -49,7 +50,7 @@ library(genefilter)
 library(vsn)
 library(RColorBrewer)
 library(pheatmap)
-
+library(dendextend)
 sessionInfo()
 ```
 
