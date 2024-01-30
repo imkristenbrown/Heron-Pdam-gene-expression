@@ -557,7 +557,7 @@ for (color in module_colors) {
 }
 ```
 
-#Specific differentially expressed genes
+## Specific differentially expressed genes
 
 ```{r}
 wgcna_counts_filtered<-read.csv("../../output/Filtered_gene_count_matrix.csv", strip.white=T)
@@ -600,7 +600,8 @@ wgcna_counts_filtered_long <- wgcna_counts_filtered_long %>%
                ifelse(Treatment == "C" | Treatment == "D", "Stable", NA)))
 wgcna_counts_filtered_long$Treatment2 <- as.factor(wgcna_counts_filtered_long$Treatment2)
 ```
-##SLC4A7
+
+## SLC4A7
 ```{r}
 wgcna_counts_filtered_long_SLC4A7<- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g7402.t1")
@@ -2029,7 +2030,7 @@ g25935_fig<-ggplot(data=g25935_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g25935_fig
 ```
 
-#SLIT-ROBO Rho GTPase-activating protein 1-like 
+## SLIT-ROBO Rho GTPase-activating protein 1-like 
 ```{r}
 wgcna_counts_filtered_long_g27376 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g27376.t1")
@@ -2161,7 +2162,7 @@ g27976_fig<-ggplot(data=g27976_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g27976_fig
 ```
 
-#von Willebrand factor D and EGF domain-containing protein-like
+## von Willebrand factor D and EGF domain-containing protein-like
 ```{r}
 wgcna_counts_filtered_long_g28226 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g28226.t2")
@@ -2205,7 +2206,7 @@ g28226_fig<-ggplot(data=g28226_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g28226_fig
 ```
 
-#low-density lipoprotein receptor-related protein 8-like 
+## low-density lipoprotein receptor-related protein 8-like 
 ```{r}
 wgcna_counts_filtered_long_g4085 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g4085.t1")
@@ -2249,7 +2250,7 @@ g4085_fig<-ggplot(data=g4085_sum, aes(y=Counts, x=Treatment2, color=Origin),grou
 g4085_fig
 ```
 
-#**Cephalotoxin-like protein
+## **Cephalotoxin-like protein
 ```{r}
 wgcna_counts_filtered_long_g5013 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g5013.t1")
@@ -2293,7 +2294,7 @@ g5013_fig<-ggplot(data=g5013_sum, aes(y=Counts, x=Treatment2, color=Origin),grou
 g5013_fig
 ```
 
-#**sodium bicarbonate cotransporter 3-like isoform X - SLC4A7
+## **sodium bicarbonate cotransporter 3-like isoform X - SLC4A7
 ```{r}
 wgcna_counts_filtered_long_g7402 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g7402.t1")
@@ -2381,7 +2382,7 @@ g7902_fig<-ggplot(data=g7902_sum, aes(y=Counts, x=Treatment2, color=Origin),grou
 g7902_fig
 ```
 
-##***CA1
+## ***CA1
 ```{r}
 wgcna_counts_filtered_long_CA1<- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___TS.g12304.t1")
@@ -2600,7 +2601,8 @@ g6583_fig<-ggplot(data=g6583_sum, aes(y=Counts, x=Treatment2, color=Origin),grou
         axis.title.y = element_text(size=12))#making the axis title larger 
 g6583_fig
 ```
-#Comparison of sig genes
+
+## Comparison of sig genes
 ```{r}
 biomin_compare_figs<-cowplot::plot_grid(g10093_fig,CA2_fig,g25351_fig,g5013_fig,g15280_fig, CA1_fig,g7402_fig,g7902_fig,g27566_fig,g28226_fig,g14505_fig,g11609_fig,g10093_fig, nrow=4)
 biomin_compare_figs
@@ -2608,10 +2610,6 @@ biomin_compare_figs
 
 
 ## Merge the frequency of GOterms for both up- and down-regulation of calcification
-
-```{r}
-cal_freq_terms <- merge(result,result_down, by=c("ParentTerm","Number.of.terms","Calcification.direction"),all=T)
-```
 
 ```{r}
 cal_biomin_terms <-read.csv("../../output/Biomineralization_goterms.csv") 
@@ -2636,8 +2634,6 @@ head(cal_down_terms)
 colnames(cal_biomin_terms)
 colnames(cal_up_terms)
 colnames(cal_down_terms)
-
-colnames(cal_freq_terms)
 ```
 
 ### Merge biomineralization, up and down-regulation of calcification GOterms
