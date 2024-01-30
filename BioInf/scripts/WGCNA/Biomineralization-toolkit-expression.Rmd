@@ -434,7 +434,7 @@ g12304_fig<-ggplot(data=g12304_sum, aes(y=Expression, x=Treatment2, color=Origin
   geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
   scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
   scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Carbonic~Anhydrase~(STPCA2~1)))+
+  scale_y_continuous(expression(paste("Carbonic Anhydrase\n(STPCA2 1)")))+
   ggtitle(~MERed)+
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
@@ -549,7 +549,7 @@ g25351_fig<-ggplot(data=g25351_sum, aes(y=Expression, x=Treatment2, color=Origin
   geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
   scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
   scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Mammalian~ependymin~related~protein~1-like))+
+  scale_y_continuous(expression(paste("Mammalian ependymin\nrelated protein 1-like")))+
   ggtitle(~MEBrown)+
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
@@ -597,7 +597,7 @@ g13222_fig<-ggplot(data=g13222_sum, aes(y=Expression, x=Treatment2, color=Origin
   geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
   scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
   scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(vitellogenin-like~~protein))+
+  scale_y_continuous(expression(Vitellogenin))+
   ggtitle(~MEBrown)+
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
@@ -645,7 +645,7 @@ g21232_fig<-ggplot(data=g21232_sum, aes(y=Expression, x=Treatment2, color=Origin
   geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
   scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
   scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(uncharacterized~protein~LOC111323869))+
+  scale_y_continuous(expression(paste("Skeletal organic matrix\nprotein (LOC111323869)")))+
   ggtitle(~MEBrown)+
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
@@ -741,7 +741,7 @@ g10093_fig<-ggplot(data=g10093_sum, aes(y=Expression, x=Treatment2, color=Origin
   geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
   scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
   scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(thioredoxin~reductase~1))+
+  scale_y_continuous(expression(Thioredoxin~reductase~1))+
   ggtitle(~MEBrown)+
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
@@ -789,7 +789,7 @@ g13824_fig<-ggplot(data=g13824_sum, aes(y=Expression, x=Treatment2, color=Origin
   geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
   scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
   scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(carbonic~anhydrase~(STPCA2-2)))+
+  scale_y_continuous(expression(paste("Carbonic Anhydrase\n(STPCA2 2)")))+
   ggtitle(~MEBrown)+
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
@@ -814,471 +814,27 @@ biomin_compare_figs
 ggsave(filename="../../output/WGCNA/GO_analysis/biomin_Brown_Red_compare_figs.png", plot=biomin_compare_figs, dpi=300, height=8, units="in", limitsize=FALSE)
 ```
 
-
-## Old Pink and Blue code below:
-
-## MEBlue signficant genes
-### Thioredoxin reductase 1
-```{r}
-biomin_all_filtered_long_g10093 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g10093.t2")
-biomin_all_filtered_long_g10093  
-```
-```{r}
-library(nlme)
-library(emmeans)
-g10093.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g10093 , na.action=na.exclude)
-car::Anova(g10093.lme, type=3)
-tukey3<- emmeans(g10093.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
+## Non-Module Biomin signficant genes
 
 ```{r}
-library(Rmisc)
-g10093_sum<-summarySE(biomin_all_filtered_long_g10093 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g10093_sum
+Biomin_DE_Origin <- biomin_all %>% filter(Origin < 0.05) %>% dplyr::select(c(Gene, Origin, definition, Ref))
+Biomin_DE_Origin
+
+unique(Biomin_DE_Origin$Gene)
+unique(red_genes_data_DE_Origin$Gene) %in% unique(Biomin_DE_Origin$Gene)
+unique(brown_genes_data_DE_Origin$Gene) %in% unique(Biomin_DE_Origin$Gene)
+
+unique(Biomin_DE_Origin$Gene) %in% c(unique(red_genes_data_DE_Origin$Gene),unique(brown_genes_data_DE_Origin$Gene))
+
+setdiff(unique(Biomin_DE_Origin$Gene), c(unique(red_genes_data_DE_Origin$Gene),unique(brown_genes_data_DE_Origin$Gene)))
+
+Biomin_DE_Origin %>% filter(Gene == setdiff(unique(Biomin_DE_Origin$Gene), c(unique(red_genes_data_DE_Origin$Gene),unique(brown_genes_data_DE_Origin$Gene)))
+)
 ```
 
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g10093_fig<-ggplot(data=g10093_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g10093,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Thioredoxin~reductase~1))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g10093_fig
-```
+"Pocillopora_acuta_HIv2___RNAseq.g20587.t2" = uncharacterized protein LOC111345150 [Stylophora pistillata]
 
-### Carbonic anhydrase - STPCA2-2
-```{r}
-biomin_all_filtered_long_g13824 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g13824.t1")
-biomin_all_filtered_long_g13824  
-```
-```{r}
-library(nlme)
-g13824.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g13824 , na.action=na.exclude)
-car::Anova(g13824.lme, type=3)
-tukey3<- emmeans(g13824.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g13824_sum<-summarySE(biomin_all_filtered_long_g13824 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g13824_sum
-```
-###Figure
-```{r}
-pd<- position_dodge(0.2)
-g13824_fig<-ggplot(data=g13824_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g13824,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Carbonic~anhydrase~("STPCA2-2")), limits=c(0,300))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g13824_fig
-```
-
-### Mammalian ependymin-related protein 1-like
-```{r}
-biomin_all_filtered_long_g25351 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g25351.t1")
-biomin_all_filtered_long_g25351  
-```
-```{r}
-library(nlme)
-g25351.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g25351 , na.action=na.exclude)
-car::Anova(g25351.lme, type=3)
-tukey3<- emmeans(g25351.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g25351_sum<-summarySE(biomin_all_filtered_long_g25351 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g25351_sum
-```
-
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g25351_fig<-ggplot(data=g25351_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g25351,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Mammalian~ependymin-related~protein~1-like),limits=c(2000,10000))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g25351_fig
-```
-
-### Cephalotoxin-like protein
-```{r}
-biomin_all_filtered_long_g5013 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g5013.t1")
-biomin_all_filtered_long_g5013  
-```
-```{r}
-library(nlme)
-g5013.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g5013 , na.action=na.exclude)
-car::Anova(g5013.lme, type=3)
-tukey3<- emmeans(g5013.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g5013_sum<-summarySE(biomin_all_filtered_long_g5013 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g5013_sum
-```
-
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g5013_fig<-ggplot(data=g5013_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g5013,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Cephalotoxin-like~protein), breaks=c(0,5,10,15,20,25))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g5013_fig
-```
-
-## MEPink signficant genes
-### Carbonic anhydrase - STPCA2-1
-```{r}
-biomin_all_filtered_long_g12304 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___TS.g12304.t1")
-biomin_all_filtered_long_g12304  
-```
-```{r}
-library(nlme)
-g12304.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g12304 , na.action=na.exclude)
-car::Anova(g12304.lme, type=3)
-tukey3<- emmeans(g12304.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g12304_sum<-summarySE(biomin_all_filtered_long_g12304 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g12304_sum
-```
-
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g12304_fig<-ggplot(data=g12304_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g12304,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Carbonic~anhydrase~("STPCA2-1")), limits=c(0,10000))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g12304_fig
-```
-
-### SLC4 gamma- solute carrier family 4 member gamma
-```{r}
-biomin_all_filtered_long_g15280 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g15280.t1")
-biomin_all_filtered_long_g15280  
-```
-```{r}
-library(nlme)
-g15280.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g15280 , na.action=na.exclude)
-car::Anova(g15280.lme, type=3)
-tukey3<- emmeans(g15280.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g15280_sum<-summarySE(biomin_all_filtered_long_g15280 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g15280_sum
-```
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g15280_fig<-ggplot(data=g15280_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g15280,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Solute~carrier~family~4~member~gamma))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g15280_fig
-```
-
-### SLC4A7 - sodium bicarbonate cotransporter 3-like isoform X2
-```{r}
-biomin_all_filtered_long_g7402 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g7402.t1")
-biomin_all_filtered_long_g7402  
-```
-```{r}
-library(nlme)
-g7402.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g7402 , na.action=na.exclude)
-car::Anova(g7402.lme, type=3)
-tukey3<- emmeans(g7402.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g7402_sum<-summarySE(biomin_all_filtered_long_g7402 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g7402_sum
-```
-
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g7402_fig<-ggplot(data=g7402_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g7402,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(sodium~bicarbonate~cotransporter~3-like~isoform~X2))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g7402_fig
-```
-
-### Protein lingerer-like
-```{r}
-biomin_all_filtered_long_g7908 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g7908.t1")
-biomin_all_filtered_long_g7908  
-```
-```{r}
-library(nlme)
-g7908.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g7908 , na.action=na.exclude)
-car::Anova(g7908.lme, type=3)
-tukey3<- emmeans(g7908.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g7908_sum<-summarySE(biomin_all_filtered_long_g7908 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g7908_sum
-```
-
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g7908_fig<-ggplot(data=g7908_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g7908,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(protein~lingerer-like))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g7908_fig
-```
-
-## Signficant genes not in WGCNA modules
-### Vitellogenin
-```{r}
-biomin_all_filtered_long_g13222 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___TS.g13222.t1b")
-biomin_all_filtered_long_g13222  
-```
-```{r}
-library(nlme)
-g13222.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g13222 , na.action=na.exclude)
-car::Anova(g13222.lme, type=3)
-tukey3<- emmeans(g13222.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g13222_sum<-summarySE(biomin_all_filtered_long_g13222 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g13222_sum
-```
-
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g13222_fig<-ggplot(data=g13222_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g13222,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Vitellogenin))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g13222_fig
-```
-
-### uncharacterized protein LOC111323869
-```{r}
-biomin_all_filtered_long_g21232 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g21232.t1")
-biomin_all_filtered_long_g21232  
-```
-
-```{r}
-library(nlme)
-g21232.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g21232 , na.action=na.exclude)
-car::Anova(g21232.lme, type=3)
-tukey3<- emmeans(g21232.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
-library(Rmisc)
-g21232_sum<-summarySE(biomin_all_filtered_long_g21232 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g21232_sum
-```
-
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g21232_fig<-ggplot(data=g21232_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g21232,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(uncharacterized~protein~LOC111323869))+
-  ggtitle(~blue)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
-g21232_fig
-```
+"Pocillopora_acuta_HIv2___RNAseq.g16715.t1" = Late embryogenesis protein
 
 ### uncharacterized protein LOC111345150
 ```{r}
@@ -1286,8 +842,10 @@ biomin_all_filtered_long_g20587 <- biomin_all_filtered_long  %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g20587.t2")
 biomin_all_filtered_long_g20587  
 ```
+
 ```{r}
 library(nlme)
+library(emmeans)
 g20587.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g20587 , na.action=na.exclude)
 car::Anova(g20587.lme, type=3)
 tukey3<- emmeans(g20587.lme, list(pairwise ~ Origin), adjust = "tukey")
@@ -1310,8 +868,8 @@ g20587_fig<-ggplot(data=g20587_sum, aes(y=Expression, x=Treatment2, color=Origin
   geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
   scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
   scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(uncharacterized~protein~LOC111345150), limits=c(0,30))+
-  ggtitle(~blue)+
+  scale_y_continuous(expression(paste("Skeletal organic matrix\nprotein (LOC111345150)")))+
+  ggtitle("")+
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
@@ -1335,6 +893,7 @@ biomin_all_filtered_long_g16715
 
 ```{r}
 library(nlme)
+library(emmeans)
 g16715.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g16715 , na.action=na.exclude)
 car::Anova(g16715.lme, type=3)
 tukey3<- emmeans(g16715.lme, list(pairwise ~ Origin), adjust = "tukey")
@@ -1357,8 +916,8 @@ g16715_fig<-ggplot(data=g16715_sum, aes(y=Expression, x=Treatment2, color=Origin
   geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
   scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
   scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_y_continuous(expression(Late~embryogenesis~protein))+
-  ggtitle(~blue)+
+  scale_y_continuous(expression(paste("Late embryogenesis\nprotein")))+
+  ggtitle("")+
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
@@ -1373,10 +932,11 @@ g16715_fig<-ggplot(data=g16715_sum, aes(y=Expression, x=Treatment2, color=Origin
 g16715_fig
 ```
 
-## Comparison of all sig. genes
+## Comparison of all Origin sig. genes of the Biomineralization toolkit
 ```{r}
-biomin_compare_figs<-cowplot::plot_grid(g13824_fig,g25351_fig,g10093_fig,g5013_fig, g12304_fig,g7908_fig,g12304_fig,g13222_fig,g16715_fig,g20587_fig,g21232_fig,g15280_fig,g7402_fig, nrow=4)
+biomin_compare_figs <- cowplot::plot_grid(g12304_fig,g7908_fig,g25351_fig,g13222_fig,g21232_fig, g5013_fig,g10093_fig,g13824_fig,g20587_fig,g16715_fig,nrow=3)
 biomin_compare_figs
 
-ggsave(filename="../../output/WGCNA/GO_analysis/biomin_compare_figs.png", plot=biomin_compare_figs, dpi=300, height=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/biomin_Brown_Red_nonMod_compare_figs.png", plot=biomin_compare_figs, dpi=300, height=8, width=16, units="in")
 ```
+
