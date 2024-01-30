@@ -446,7 +446,7 @@ g12304_fig<-ggplot(data=g12304_sum, aes(y=Expression, x=Treatment2, color=Origin
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g12304_fig
 ```
 
@@ -495,7 +495,7 @@ g7908_fig<-ggplot(data=g7908_sum, aes(y=Expression, x=Treatment2, color=Origin),
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g7908_fig
 ```
 
@@ -561,7 +561,7 @@ g25351_fig<-ggplot(data=g25351_sum, aes(y=Expression, x=Treatment2, color=Origin
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g25351_fig
 ```
 
@@ -609,7 +609,7 @@ g13222_fig<-ggplot(data=g13222_sum, aes(y=Expression, x=Treatment2, color=Origin
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g13222_fig
 ```
 
@@ -657,7 +657,7 @@ g21232_fig<-ggplot(data=g21232_sum, aes(y=Expression, x=Treatment2, color=Origin
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g21232_fig
 ```
 
@@ -705,7 +705,7 @@ g5013_fig<-ggplot(data=g5013_sum, aes(y=Expression, x=Treatment2, color=Origin),
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g5013_fig
 ```
 
@@ -753,7 +753,7 @@ g10093_fig<-ggplot(data=g10093_sum, aes(y=Expression, x=Treatment2, color=Origin
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g10093_fig
 ```
 
@@ -801,7 +801,7 @@ g13824_fig<-ggplot(data=g13824_sum, aes(y=Expression, x=Treatment2, color=Origin
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g13824_fig
 ```
 
@@ -880,7 +880,7 @@ g20587_fig<-ggplot(data=g20587_sum, aes(y=Expression, x=Treatment2, color=Origin
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g20587_fig
 ```
 
@@ -928,13 +928,14 @@ g16715_fig<-ggplot(data=g16715_sum, aes(y=Expression, x=Treatment2, color=Origin
         legend.position="none",
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12))#making the axis title larger 
+        axis.title.y = element_text(size=12),
+        plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
 g16715_fig
 ```
 
 ## Comparison of all Origin sig. genes of the Biomineralization toolkit
 ```{r}
-biomin_compare_figs <- cowplot::plot_grid(g12304_fig,g7908_fig,g25351_fig,g13222_fig,g21232_fig, g5013_fig,g10093_fig,g13824_fig,g20587_fig,g16715_fig,nrow=3)
+biomin_compare_figs <- cowplot::plot_grid(g12304_fig,g7908_fig,g25351_fig,g13222_fig,g21232_fig, g5013_fig,g10093_fig,g13824_fig,g20587_fig,g16715_fig,nrow=2)
 biomin_compare_figs
 
 ggsave(filename="../../output/WGCNA/GO_analysis/biomin_Brown_Red_nonMod_compare_figs.png", plot=biomin_compare_figs, dpi=300, height=8, width=16, units="in")
