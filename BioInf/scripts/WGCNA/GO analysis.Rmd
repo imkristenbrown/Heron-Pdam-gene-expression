@@ -171,7 +171,7 @@ ID.vector <- geneInfo %>%
   filter(moduleColor %in% c("brown", "red", "black", "pink", "salmon", "blue")) %>%
   pull(gene_id)
 
-length(ID.vector) #2700
+length(ID.vector) #4126
 
 ##Get a list of GO Terms for each module
 GO.terms <- geneInfo %>%
@@ -179,7 +179,7 @@ GO.terms <- geneInfo %>%
   #filter(get_rows(.data[[module]]))%>%
   dplyr::select(GOs,gene_id) %>% rename(GOs = "GO.terms")
 
-dim(GO.terms) #2700    2
+dim(GO.terms) #4126    2
 ```
 
 ```{r}
@@ -228,7 +228,6 @@ keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbios
 
 ```{r}
 go_results <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv")
-go_results
 ```
 
 ```{r}
@@ -451,457 +450,7 @@ result_down <- go_results %>%
 print(result_down)
 ```
 
-### Merge the frequency of GOterms for both up- and down-regulation of calcification
-
-```{r}
-cal_freq_terms<- merge(result,result_down, by=c("ParentTerm","Number.of.terms","Calcification.direction"),all=T)
-```
-
-```{r}
-cal_biomin_terms <-read.csv("../../output/Biomineralization_goterms.csv")
-head(cal_biomin_terms)
-```
-
-```{r}
-cal_up_terms <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
-cal_up_terms<- cal_up_terms %>%
-  mutate(Factor = "Up")
-head(cal_up_terms)
-```
-
-```{r}
-cal_down_terms <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
-cal_down_terms<-cal_down_terms %>%
-  mutate(Factor = "Down")
-head(cal_down_terms)
-```
-
-```{r}
-colnames(cal_biomin_terms)
-colnames(cal_up_terms)
-colnames(cal_down_terms)
-
-colnames(cal_freq_terms)
-```
-
-###Merge biomineralization, up and down-regulation of calcification GOterms
-```{r}
-all_terms<- merge(cal_up_terms,cal_down_terms, by=c("Factor","GOterm","X.1","X","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm"),all=T)
-
-
-all_terms<- merge(all_terms,cal_biomin_terms, by=c("Factor","GOterm","X.1","X","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm"),all=T)
-
-all_terms$GOterm<-as.factor(all_terms$GOterm)
-head(all_terms)
-tail(all_terms)
-```
-
-```{r}
-goterms_shared <- all_terms %>%
-  group_by(GOterm) %>%
-  dplyr::summarise(
-    ParentTerm = paste(unique(ParentTerm), collapse = ", "),
-    Factor = paste(unique(Factor), collapse = ", ")
-  )
-dim(goterms_shared)
-```
-
-```{r}
-write.csv(goterms_shared, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm.csv")
-```
-
-```{r}
-result_unique <- goterms_shared %>%
-  group_by(ParentTerm,Factor) %>%
-  dplyr::summarise(SharedGOterms = n_distinct(GOterm))%>%
-  arrange(-SharedGOterms)
-```
-
-```{r}
-result_filtered_up<- result_unique %>%
-  dplyr::filter(Factor=="Biomin, Down, Up" | Factor=="Biomin, Up")
- #dplyr::filter(SharedGOterms>=5) 
-```
-
-```{r}
-result_filtered_down<- result_unique %>%
-  dplyr::filter(Factor=="Biomin, Down, Up" | Factor=="Biomin, Down")
- #dplyr::filter(SharedGOterms>=5) 
-```
-
-### Calculate the percentage of shared GOterms upregulation of calcification
-```{r}
-merged_up <- result_filtered_up %>%
-  tidyr::separate_rows(ParentTerm, sep = ", ") %>%
-  dplyr::group_by(ParentTerm) %>%
-  dplyr::summarize(Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE))%>%
-  left_join(result, by = "ParentTerm") %>%
-  mutate(Proportion.of.shared.GO.terms.with.biomineralization.genes = Sum_of_SharedGOterms / Number.of.terms)%>%
-  mutate(Percentage.of.shared.GO.terms.with.biomineralization.genes = Proportion.of.shared.GO.terms.with.biomineralization.genes * 100)
-merged_up_clean <- na.omit(merged_up)
-merged_up_clean
-```
-
-### Calculate the percentage of shared GOterms downregulation of calcification
-```{r}
-merged_down <- result_filtered_down %>%
-  tidyr::separate_rows(ParentTerm, sep = ", ") %>%
-  dplyr::group_by(ParentTerm) %>%
-  dplyr::summarize(Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE))%>%
-  left_join(result_down, by = "ParentTerm") %>%
-  mutate(Proportion.of.shared.GO.terms.with.biomineralization.genes = Sum_of_SharedGOterms / Number.of.terms)%>%
-  mutate(Percentage.of.shared.GO.terms.with.biomineralization.genes = Proportion.of.shared.GO.terms.with.biomineralization.genes * 100)
-merged_down_clean<- na.omit(merged_down)
-merged_down_clean
-```
-
-###Frequency >10 up
-```{r}
-cal_freq_terms_filtered_up <- merged_up_clean %>%
-  filter(Number.of.terms>=10) %>%
-  filter(Calcification.direction=="Up")
-cal_freq_terms_filtered_up
-```
-
-#### Figure
-```{r}
-#counts$Direction.of.flat.origin<- factor(counts$Direction.of.flat.origin, levels =c("up","no pattern","down"))
-#counts$Module<- factor(counts$Module, levels=c("Blue","Brown","Greenyellow","Cyan","Pink","Magenta","Lightcyan","Midnight blue","Purple","Turquiose","Red","Black"))
-freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
-  #facet_wrap(~Calcification.direction, nrow = 1)+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
-  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
-  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
-  coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
-  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
- #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
-  theme_classic()+
-   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
-        panel.background= element_rect(fill=NA, color='black'),
-        legend.title = element_blank(),
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_blank(),
-        strip.text = element_text(size=12))#making the axis title larger 
-freq_fig_up
-
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
-```
-###Frequency >10 down
-```{r}
-cal_freq_terms_filtered_down <- merged_down_clean %>%
-  filter(Number.of.terms>=10)
-  #filter(Calcification.direction=="Down")
-cal_freq_terms_filtered_down
-```
-
-####Figure
-```{r} 
-freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes))+
-  #facet_wrap(~Calcification.direction, nrow = 1)+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
-  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
-  #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
-  coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
-  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
-  #scale_fill_gradientn(colours=c("#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(10, 40))+ 
- #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
-  theme_classic()+
-   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95, size=12),
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
-        panel.background= element_rect(fill=NA, color='black'),
-        legend.title = element_blank(),
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_blank(),
-        strip.text = element_text(size=12))#making the axis title larger 
-freq_fig_down
-
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
-```
-```{r}
-compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, nrow=2, align="v")
-compare_figs
-```
-### All terms up
-```{r}
-cal_freq_terms_filtered_up_all <- merged_up_clean %>%
-  filter(Calcification.direction=="Up")
-cal_freq_terms_filtered_up_all
-```
-####Figure
-```{r}
-#counts$Direction.of.flat.origin<- factor(counts$Direction.of.flat.origin, levels =c("up","no pattern","down"))
-#counts$Module<- factor(counts$Module, levels=c("Blue","Brown","Greenyellow","Cyan","Pink","Magenta","Lightcyan","Midnight blue","Purple","Turquiose","Red","Black"))
-freq_fig_up<-ggplot(cal_freq_terms_filtered_up_all, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
-  #facet_wrap(~Calcification.direction, nrow = 1)+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
-  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
-  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
-  coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,100))+
-  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
- #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
-  theme_classic()+
-   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
-        panel.background= element_rect(fill=NA, color='black'),
-        legend.title = element_blank(),
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_blank(),
-        strip.text = element_text(size=12))#making the axis title larger 
-freq_fig_up
-```
-
-###All terms down
-```{r}
-cal_freq_terms_filtered_down_all <- merged_down_clean %>%
-  filter(Calcification.direction=="Down")
-cal_freq_terms_filtered_down_all
-```
-####Figure
-```{r}
-freq_fig_down<-ggplot(cal_freq_terms_filtered_down_all, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes))+
-  #facet_wrap(~Calcification.direction, nrow = 1)+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
-  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
-  #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
-  coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,100))+
-  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
-  #scale_fill_gradientn(colours=c("#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(10, 40))+ 
- #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
-  theme_classic()+
-   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95, size=12),
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
-        panel.background= element_rect(fill=NA, color='black'),
-        legend.title = element_blank(),
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_blank(),
-        strip.text = element_text(size=12))#making the axis title larger 
-freq_fig_down
-```
-```{r}
-compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, ncol=2, align="h")
-compare_figs
-```
-## Green
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-nrow(geneInfo %>% dplyr::filter(moduleColor=="green")) #563
-
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor %in% "green")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-
-length(ID.vector)
-
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor %in% "green")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GOs,gene_id) %>% rename(GOs = "GO.terms")
-dim(GO.terms)
-```
-
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "../../output/WGCNA/GO_analysis/goseq_pattern_green.csv")
-```
-
-```{r}
-go_results <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_green.csv")
-```
-
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>100)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-
-```{r}
-#go_results<-go_results %>% filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_green <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_green
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="cation transport"])
-length(colnames(go_results)[go_results$ParentTerm=="inorganic ion homeostasis"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of cellular response to stress"])
-```
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor %in% "green") %>%
-  dplyr::select(gene_id, KEGG_new)
-KO.terms
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "../../output/WGCNA/GO_analysis/goseq_KEGG_pattern_green.csv")
-    
-```
-
-```{r}
-ko_results_green<-read.csv("../../output/WGCNA/GO_analysis/goseq_KEGG_pattern_green.csv") 
-head(ko_results_green)
-```
-
-```{r}
-ko_results_green<-ko_results_green%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_green
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.green <-  ggplot(ko_results_green, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "green"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.green
-```
-
-
-## by module
-
+## code for by module
 ```{r,eval=FALSE}
 library(rrvgo)
 
@@ -1070,7 +619,8 @@ library(Rmisc)
 SLC4A7_sum<-summarySE(wgcna_counts_filtered_long_SLC4A7, measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 SLC4A7_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 SLC4A7_fig<-ggplot(data=SLC4A7_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1112,7 +662,8 @@ library(Rmisc)
 SLC4A3_sum<-summarySE(wgcna_counts_filtered_long_SLC4A3 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 SLC4A3_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 SLC4A3_fig<-ggplot(data=SLC4A3_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1155,7 +706,8 @@ library(Rmisc)
 NHE3_sum<-summarySE(wgcna_counts_filtered_long_NHE3, measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 NHE3_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 NHE3_fig<-ggplot(data=NHE3_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1198,7 +750,8 @@ library(Rmisc)
 CA1_sum<-summarySE(wgcna_counts_filtered_long_CA1, measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 CA1_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 CA1_fig<-ggplot(data=CA1_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1240,7 +793,8 @@ library(Rmisc)
 CA2_sum<-summarySE(wgcna_counts_filtered_long_CA2, measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 CA2_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 CA2_fig<-ggplot(data=CA2_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1282,7 +836,8 @@ library(Rmisc)
 VHA_sum<-summarySE(wgcna_counts_filtered_long_VHA, measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 VHA_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 VHA_fig<-ggplot(data=VHA_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1324,7 +879,8 @@ library(Rmisc)
 HSP90_sum<-summarySE(wgcna_counts_filtered_long_HSP90, measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 HSP90_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 HSP90_fig<-ggplot(data=HSP90_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1367,7 +923,8 @@ library(Rmisc)
 HIF1A_sum<-summarySE(wgcna_counts_filtered_long_HIF1A , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 HIF1A_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 HIF1A_fig<-ggplot(data=HIF1A_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1393,7 +950,7 @@ HIF1A_fig
 ```
 
 
-##HSP70 
+## HSP70 
 ```{r}
 wgcna_counts_filtered_long_HSP70 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g10659.t1")
@@ -1411,7 +968,8 @@ library(Rmisc)
 HSP70_sum<-summarySE(wgcna_counts_filtered_long_HSP70 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 HSP70_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 HSP70_fig<-ggplot(data=HSP70_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1436,7 +994,7 @@ HSP70_fig<-ggplot(data=HSP70_sum, aes(y=Counts, x=Treatment2, color=Origin),grou
 HSP70_fig
 ```
 
-##PRKCD 
+## PRKCD 
 ```{r}
 wgcna_counts_filtered_long_PRKCD <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g25259.t1")
@@ -1454,7 +1012,8 @@ library(Rmisc)
 PRKCD_sum<-summarySE(wgcna_counts_filtered_long_PRKCD , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 PRKCD_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 PRKCD_fig<-ggplot(data=PRKCD_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1479,14 +1038,12 @@ PRKCD_fig<-ggplot(data=PRKCD_sum, aes(y=Counts, x=Treatment2, color=Origin),grou
 PRKCD_fig
 ```
 
-
 ```{r}
 compare_figs<-cowplot::plot_grid(SLC4A7_fig, NHE3_fig, CA1_fig, CA2_fig, HSP70_fig,HIF1A_fig, nrow=3)
 compare_figs
 ```
 
-
-#Biomineralization toolkit present in modules
+## Biomineralization toolkit present in modules
 
 ```{r}
 biomin <-read.csv("../../output/Biomin_blast_Pocillopora_acuta_best_hit.csv")
@@ -1497,12 +1054,10 @@ wgcnamod <-read.csv("../../output/WGCNA/WGCNA_ModuleMembership.csv")
 wgcnamod<- plyr::rename(wgcnamod, c("X"="Pocillopora_acuta_best_hit"))
 ```
 
-
 ```{r}
 biomin_mod <- merge(biomin, wgcnamod, by=c("Pocillopora_acuta_best_hit"), all=F)
 head(biomin_mod)
 ```
-
 
 ```{r}
 plyr::count(biomin_mod, "moduleColor")
@@ -1515,7 +1070,7 @@ biomin_mod$GO.terms <- gsub('"', "", biomin_mod$GO.terms)
 biomin_mod$GO.terms <- gsub("-", NA, biomin_mod$GO.terms)
 ```
 
-##GO terms
+### GO terms
 
 ```{r}
 ### Generate vector with names of all genes 
@@ -1546,7 +1101,7 @@ split <- strsplit(as.character(GO.terms_biomin$GO.terms), ";")
 split2 <- data.frame(v1 = rep.int(GO.terms_biomin$Pocillopora_acuta_best_hit, sapply(split, length)), v2 = unlist(split)) 
 colnames(split2) <- c("Pocillopora_acuta_best_hit", "GO.terms")
 GO.terms_biomin<-split2
-GO.terms_biomin
+head(GO.terms_biomin)
 ```
 
 ```{r}
@@ -1592,7 +1147,6 @@ keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbios
 
 ```{r}
 go_results <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv")
-go_results
 ```
 
 ```{r}
@@ -1601,7 +1155,8 @@ go_results
       filter(bh_adjust != "NA") %>%
       #filter(numInCat>10)%>%
       arrange(., bh_adjust)
-go_results
+
+head(go_results)
 ```
 
 ```{r}
@@ -1620,7 +1175,7 @@ reducedTerms <- reduceSimMatrix(simMatrix,
                                 scores,
                                 threshold=0.7,
                                 orgdb="org.Ce.eg.db")
-reducedTerms
+head(reducedTerms)
 ```
 
 ```{r}
@@ -1629,11 +1184,14 @@ go_results<-go_results%>%
   filter(GOterm %in% reducedTerms$go)
  #add in parent terms to list of go terms 
 go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
+
+go_results<-go_results %>%
+  mutate(Factor = "Biomin")
+head(go_results)
 ```
 
 ```{r}
-#write.csv(go_results, "Biomineralizationgo terms.csv")
+write.csv(go_results, "../../output/Biomineralization_goterms.csv")
 ```
 
 ```{r}
@@ -1656,12 +1214,14 @@ go_results<-go_results%>%
     axis.title.y = element_blank())
 GO.plot_biomin
 ```
-##***thioredoxin reductase 1
+
+## ***thioredoxin reductase 1
 ```{r}
 wgcna_counts_filtered_long_g10093 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g10093.t2")
 wgcna_counts_filtered_long_g10093  
 ```
+
 ```{r}
 g10093.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g10093 , na.action=na.exclude)
 car::Anova(g10093.lme, type=3)
@@ -1674,7 +1234,8 @@ library(Rmisc)
 g10093_sum<-summarySE(wgcna_counts_filtered_long_g10093 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g10093_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g10093_fig<-ggplot(data=g10093_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1700,12 +1261,13 @@ g10093_fig<-ggplot(data=g10093_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g10093_fig
 ```
 
-##***Flagellar associated protein
+## ***Flagellar associated protein
 ```{r}
 wgcna_counts_filtered_long_g11609 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g11609.t1")
 wgcna_counts_filtered_long_g11609  
 ```
+
 ```{r}
 g11609.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g11609 , na.action=na.exclude)
 car::Anova(g11609.lme, type=3)
@@ -1718,7 +1280,8 @@ library(Rmisc)
 g11609_sum<-summarySE(wgcna_counts_filtered_long_g11609 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g11609_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g11609_fig<-ggplot(data=g11609_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1744,25 +1307,27 @@ g11609_fig<-ggplot(data=g11609_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g11609_fig
 ```
 
-##***Actin
+## ***Actin
 ```{r}
 wgcna_counts_filtered_long_g14505 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g14505.t1")
 wgcna_counts_filtered_long_g14505  
 ```
+
 ```{r}
 g14505.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g14505 , na.action=na.exclude)
 car::Anova(g14505.lme, type=3)
 tukey3<- emmeans(g14505.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+
 ```{r}
 library(Rmisc)
 g14505_sum<-summarySE(wgcna_counts_filtered_long_g14505 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g14505_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g14505_fig<-ggplot(data=g14505_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1788,12 +1353,13 @@ g14505_fig<-ggplot(data=g14505_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g14505_fig
 ```
 
-##***CA2
+## ***CA2
 ```{r}
 wgcna_counts_filtered_long_CA2<- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g13824.t1")
 wgcna_counts_filtered_long_CA2
 ```
+
 ```{r}
 CA2.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_CA2, na.action=na.exclude)
 car::Anova(CA2.lme, type=3)
@@ -1806,7 +1372,8 @@ library(Rmisc)
 CA2_sum<-summarySE(wgcna_counts_filtered_long_CA2, measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 CA2_sum
 ```
-####Figure
+
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 CA2_fig<-ggplot(data=CA2_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1832,7 +1399,7 @@ CA2_fig<-ggplot(data=CA2_sum, aes(y=Counts, x=Treatment2, color=Origin),group = 
 CA2_fig
 ```
 
-##Poly [ADP-ribose] polymerase 11
+## Poly [ADP-ribose] polymerase 11
 ```{r}
 wgcna_counts_filtered_long_g14663 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g14663.t1a")
@@ -1850,7 +1417,7 @@ g14663_sum<-summarySE(wgcna_counts_filtered_long_g14663 , measurevar='Counts', g
 g14663_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g14663_fig<-ggplot(data=g14663_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1875,25 +1442,28 @@ g14663_fig<-ggplot(data=g14663_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
         axis.title.y = element_text(size=12))#making the axis title larger 
 g14663_fig
 ```
-##***solute carrier family 4 member gamma
+
+## ***solute carrier family 4 member gamma
 ```{r}
 wgcna_counts_filtered_long_g15280 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g15280.t1")
 wgcna_counts_filtered_long_g15280  
 ```
+
 ```{r}
 g15280.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g15280 , na.action=na.exclude)
 car::Anova(g15280.lme, type=3)
 tukey3<- emmeans(g15280.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+
 ```{r}
 library(Rmisc)
 g15280_sum<-summarySE(wgcna_counts_filtered_long_g15280 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g15280_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g15280_fig<-ggplot(data=g15280_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1918,25 +1488,28 @@ g15280_fig<-ggplot(data=g15280_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
         axis.title.y = element_text(size=12))#making the axis title larger 
 g15280_fig
 ```
-##MAGUK p55 subfamily member 7-like
+
+## MAGUK p55 subfamily member 7-like
 ```{r}
 wgcna_counts_filtered_long_g15517 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g15517.t1")
 wgcna_counts_filtered_long_g15517  
 ```
+
 ```{r}
 g15517.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g15517 , na.action=na.exclude)
 car::Anova(g15517.lme, type=3)
 tukey3<- emmeans(g15517.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+
 ```{r}
 library(Rmisc)
 g15517_sum<-summarySE(wgcna_counts_filtered_long_g15517 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g15517_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g15517_fig<-ggplot(data=g15517_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -1962,25 +1535,27 @@ g15517_fig<-ggplot(data=g15517_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g15517_fig
 ```
 
-##CARP1
+## CARP1
 ```{r}
 wgcna_counts_filtered_long_g16280 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g16280.t1")
 wgcna_counts_filtered_long_g16280  
 ```
+
 ```{r}
 g16280.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g16280 , na.action=na.exclude)
 car::Anova(g16280.lme, type=3)
 tukey3<- emmeans(g16280.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+
 ```{r}
 library(Rmisc)
 g16280_sum<-summarySE(wgcna_counts_filtered_long_g16280 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g16280_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g16280_fig<-ggplot(data=g16280_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2006,25 +1581,27 @@ g16280_fig<-ggplot(data=g16280_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g16280_fig
 ```
 
-##PHD finger protein 21A-like
+## PHD finger protein 21A-like
 ```{r}
 wgcna_counts_filtered_long_g1634 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g1634.t1")
 wgcna_counts_filtered_long_g1634  
 ```
+
 ```{r}
 g1634.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g1634 , na.action=na.exclude)
 car::Anova(g1634.lme, type=3)
 tukey3<- emmeans(g1634.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+
 ```{r}
 library(Rmisc)
 g1634_sum<-summarySE(wgcna_counts_filtered_long_g1634 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g1634_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g1634_fig<-ggplot(data=g1634_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2050,25 +1627,27 @@ g1634_fig<-ggplot(data=g1634_sum, aes(y=Counts, x=Treatment2, color=Origin),grou
 g1634_fig
 ```
 
-##digestive cysteine proteinase 1-like
+## digestive cysteine proteinase 1-like
 ```{r}
 wgcna_counts_filtered_long_g18103 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g18103.t1")
 wgcna_counts_filtered_long_g18103  
 ```
+
 ```{r}
 g18103.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g18103 , na.action=na.exclude)
 car::Anova(g18103.lme, type=3)
 tukey3<- emmeans(g18103.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+
 ```{r}
 library(Rmisc)
 g18103_sum<-summarySE(wgcna_counts_filtered_long_g18103 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g18103_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g18103_fig<-ggplot(data=g18103_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2094,25 +1673,27 @@ g18103_fig<-ggplot(data=g18103_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g18103_fig
 ```
 
-##.endothelin-converting enzyme 1-like isoform X2
+## endothelin-converting enzyme 1-like isoform X2
 ```{r}
 wgcna_counts_filtered_long_g19211 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g19211.t1")
 wgcna_counts_filtered_long_g19211  
 ```
+
 ```{r}
 g19211.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g19211 , na.action=na.exclude)
 car::Anova(g19211.lme, type=3)
 tukey3<- emmeans(g19211.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+
 ```{r}
 library(Rmisc)
 g19211_sum<-summarySE(wgcna_counts_filtered_long_g19211 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g19211_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g19211_fig<-ggplot(data=g19211_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2138,25 +1719,27 @@ g19211_fig<-ggplot(data=g19211_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g19211_fig
 ```
 
-##chymotrypsin-like elastase family member 1 
+## chymotrypsin-like elastase family member 1 
 ```{r}
 wgcna_counts_filtered_long_g19288 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g19288.t1")
 wgcna_counts_filtered_long_g19288  
 ```
+
 ```{r}
 g19288.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g19288 , na.action=na.exclude)
 car::Anova(g19288.lme, type=3)
 tukey3<- emmeans(g19288.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+
 ```{r}
 library(Rmisc)
 g19288_sum<-summarySE(wgcna_counts_filtered_long_g19288 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g19288_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g19288_fig<-ggplot(data=g19288_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2182,25 +1765,27 @@ g19288_fig<-ggplot(data=g19288_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g19288_fig
 ```
 
-##CUB and peptidase domain-containing protein 2-like 
+## CUB and peptidase domain-containing protein 2-like 
 ```{r}
 wgcna_counts_filtered_long_g21338 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g21338.t1")
 wgcna_counts_filtered_long_g21338  
 ```
+
 ```{r}
 g21338.lme <- lme(Counts~Origin*Treatment2, random = ~1|Colony, data=wgcna_counts_filtered_long_g21338 , na.action=na.exclude)
 car::Anova(g21338.lme, type=3)
 tukey3<- emmeans(g21338.lme, list(pairwise ~ Origin), adjust = "tukey")
 tukey3
 ```
+ 
 ```{r}
 library(Rmisc)
 g21338_sum<-summarySE(wgcna_counts_filtered_long_g21338 , measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g21338_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g21338_fig<-ggplot(data=g21338_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2244,7 +1829,7 @@ g21501_sum<-summarySE(wgcna_counts_filtered_long_g21501 , measurevar='Counts', g
 g21501_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g21501_fig<-ggplot(data=g21501_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2288,7 +1873,7 @@ g21501_sum<-summarySE(wgcna_counts_filtered_long_g21501 , measurevar='Counts', g
 g21501_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g21501_fig<-ggplot(data=g21501_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2332,7 +1917,7 @@ g24639_sum<-summarySE(wgcna_counts_filtered_long_g24639 , measurevar='Counts', g
 g24639_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g24639_fig<-ggplot(data=g24639_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2375,7 +1960,7 @@ g25351_sum<-summarySE(wgcna_counts_filtered_long_g25351 , measurevar='Counts', g
 g25351_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g25351_fig<-ggplot(data=g25351_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2418,7 +2003,7 @@ g25935_sum<-summarySE(wgcna_counts_filtered_long_g25935 , measurevar='Counts', g
 g25935_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g25935_fig<-ggplot(data=g25935_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2462,7 +2047,7 @@ g27376_sum<-summarySE(wgcna_counts_filtered_long_g27376 , measurevar='Counts', g
 g27376_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g27376_fig<-ggplot(data=g27376_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2506,7 +2091,7 @@ g27566_sum<-summarySE(wgcna_counts_filtered_long_g27566 , measurevar='Counts', g
 g27566_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g27566_fig<-ggplot(data=g27566_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2532,7 +2117,7 @@ g27566_fig<-ggplot(data=g27566_sum, aes(y=Counts, x=Treatment2, color=Origin),gr
 g27566_fig
 ```
 
-#plasma membrane calcium ATPase - frontloaded
+## plasma membrane calcium ATPase - frontloaded
 ```{r}
 wgcna_counts_filtered_long_g27976 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g27976.t1")
@@ -2550,7 +2135,7 @@ g27976_sum<-summarySE(wgcna_counts_filtered_long_g27976 , measurevar='Counts', g
 g27976_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g27976_fig<-ggplot(data=g27976_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2594,7 +2179,7 @@ g28226_sum<-summarySE(wgcna_counts_filtered_long_g28226 , measurevar='Counts', g
 g28226_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g28226_fig<-ggplot(data=g28226_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2638,7 +2223,7 @@ g4085_sum<-summarySE(wgcna_counts_filtered_long_g4085 , measurevar='Counts', gro
 g4085_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g4085_fig<-ggplot(data=g4085_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2682,7 +2267,7 @@ g5013_sum<-summarySE(wgcna_counts_filtered_long_g5013 , measurevar='Counts', gro
 g5013_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g5013_fig<-ggplot(data=g5013_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2726,7 +2311,7 @@ g7402_sum<-summarySE(wgcna_counts_filtered_long_g7402 , measurevar='Counts', gro
 g7402_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g7402_fig<-ggplot(data=g7402_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2770,7 +2355,7 @@ g7902_sum<-summarySE(wgcna_counts_filtered_long_g7902 , measurevar='Counts', gro
 g7902_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g7902_fig<-ggplot(data=g7902_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2814,7 +2399,7 @@ library(Rmisc)
 CA1_sum<-summarySE(wgcna_counts_filtered_long_CA1, measurevar='Counts', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 CA1_sum
 ```
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 CA1_fig<-ggplot(data=CA1_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2858,7 +2443,7 @@ g22622_sum<-summarySE(wgcna_counts_filtered_long_g22622 , measurevar='Counts', g
 g22622_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g22622_fig<-ggplot(data=g22622_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2902,7 +2487,7 @@ g27873_sum<-summarySE(wgcna_counts_filtered_long_g27873 , measurevar='Counts', g
 g27873_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g27873_fig<-ggplot(data=g27873_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2946,7 +2531,7 @@ g5338_sum<-summarySE(wgcna_counts_filtered_long_g5338 , measurevar='Counts', gro
 g5338_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g5338_fig<-ggplot(data=g5338_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -2972,7 +2557,7 @@ g5338_fig<-ggplot(data=g5338_sum, aes(y=Counts, x=Treatment2, color=Origin),grou
 g5338_fig
 ```
 
-##Protocadherin
+## Protocadherin
 ```{r}
 wgcna_counts_filtered_long_g6583 <- wgcna_counts_filtered_long %>%
   filter(Gene == "Pocillopora_acuta_HIv2___TS.g6583.t1")
@@ -2990,7 +2575,7 @@ g6583_sum<-summarySE(wgcna_counts_filtered_long_g6583 , measurevar='Counts', gro
 g6583_sum
 ```
 
-####Figure
+#### Figure
 ```{r}
 pd<- position_dodge(0.2)
 g6583_fig<-ggplot(data=g6583_sum, aes(y=Counts, x=Treatment2, color=Origin),group = interaction(Origin))+
@@ -3019,4 +2604,262 @@ g6583_fig
 ```{r}
 biomin_compare_figs<-cowplot::plot_grid(g10093_fig,CA2_fig,g25351_fig,g5013_fig,g15280_fig, CA1_fig,g7402_fig,g7902_fig,g27566_fig,g28226_fig,g14505_fig,g11609_fig,g10093_fig, nrow=4)
 biomin_compare_figs
+```
+
+
+## Merge the frequency of GOterms for both up- and down-regulation of calcification
+
+```{r}
+cal_freq_terms <- merge(result,result_down, by=c("ParentTerm","Number.of.terms","Calcification.direction"),all=T)
+```
+
+```{r}
+cal_biomin_terms <-read.csv("../../output/Biomineralization_goterms.csv") 
+head(cal_biomin_terms)
+```
+
+```{r}
+cal_up_terms <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
+cal_up_terms<- cal_up_terms %>%
+  mutate(Factor = "Up")
+head(cal_up_terms)
+```
+
+```{r}
+cal_down_terms <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
+cal_down_terms<-cal_down_terms %>%
+  mutate(Factor = "Down")
+head(cal_down_terms)
+```
+
+```{r}
+colnames(cal_biomin_terms)
+colnames(cal_up_terms)
+colnames(cal_down_terms)
+
+colnames(cal_freq_terms)
+```
+
+### Merge biomineralization, up and down-regulation of calcification GOterms
+```{r}
+all_terms<- merge(cal_up_terms,cal_down_terms, by=c("Factor","GOterm","X.1","X","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm"),all=T)
+
+
+all_terms<- merge(all_terms,cal_biomin_terms, by=c("Factor","GOterm","X.1","X","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm"),all=T)
+
+all_terms$GOterm<-as.factor(all_terms$GOterm)
+head(all_terms)
+tail(all_terms)
+```
+
+```{r}
+goterms_shared <- all_terms %>%
+  group_by(GOterm) %>%
+  dplyr::summarise(
+    ParentTerm = paste(unique(ParentTerm), collapse = ", "),
+    Factor = paste(unique(Factor), collapse = ", ")
+  )
+dim(goterms_shared)
+```
+
+```{r}
+write.csv(goterms_shared, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm.csv")
+```
+
+```{r}
+result_unique <- goterms_shared %>%
+  group_by(ParentTerm,Factor) %>%
+  dplyr::summarise(SharedGOterms = n_distinct(GOterm))%>%
+  arrange(-SharedGOterms)
+```
+
+```{r}
+result_filtered_up<- result_unique %>%
+  dplyr::filter(Factor=="Biomin, Down, Up" | Factor=="Biomin, Up")
+ #dplyr::filter(SharedGOterms>=5) 
+```
+
+```{r}
+result_filtered_down<- result_unique %>%
+  dplyr::filter(Factor=="Biomin, Down, Up" | Factor=="Biomin, Down")
+ #dplyr::filter(SharedGOterms>=5) 
+```
+
+### Calculate the percentage of shared GOterms upregulation of calcification
+```{r}
+merged_up <- result_filtered_up %>%
+  tidyr::separate_rows(ParentTerm, sep = ", ") %>%
+  dplyr::group_by(ParentTerm) %>%
+  dplyr::summarize(Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE))%>%
+  left_join(result, by = "ParentTerm") %>%
+  mutate(Proportion.of.shared.GO.terms.with.biomineralization.genes = Sum_of_SharedGOterms / Number.of.terms)%>%
+  mutate(Percentage.of.shared.GO.terms.with.biomineralization.genes = Proportion.of.shared.GO.terms.with.biomineralization.genes * 100)
+merged_up_clean <- na.omit(merged_up)
+merged_up_clean
+```
+
+### Calculate the percentage of shared GOterms downregulation of calcification
+```{r}
+merged_down <- result_filtered_down %>%
+  tidyr::separate_rows(ParentTerm, sep = ", ") %>%
+  dplyr::group_by(ParentTerm) %>%
+  dplyr::summarize(Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE))%>%
+  left_join(result_down, by = "ParentTerm") %>%
+  mutate(Proportion.of.shared.GO.terms.with.biomineralization.genes = Sum_of_SharedGOterms / Number.of.terms)%>%
+  mutate(Percentage.of.shared.GO.terms.with.biomineralization.genes = Proportion.of.shared.GO.terms.with.biomineralization.genes * 100)
+merged_down_clean<- na.omit(merged_down)
+merged_down_clean
+```
+
+###Frequency >10 up
+```{r}
+cal_freq_terms_filtered_up <- merged_up_clean %>%
+  filter(Number.of.terms>=10) %>%
+  filter(Calcification.direction=="Up")
+cal_freq_terms_filtered_up
+```
+
+#### Figure
+```{r}
+#counts$Direction.of.flat.origin<- factor(counts$Direction.of.flat.origin, levels =c("up","no pattern","down"))
+#counts$Module<- factor(counts$Module, levels=c("Blue","Brown","Greenyellow","Cyan","Pink","Magenta","Lightcyan","Midnight blue","Purple","Turquiose","Red","Black"))
+freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
+  #facet_wrap(~Calcification.direction, nrow = 1)+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
+  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
+ #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
+  theme_classic()+
+   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig_up
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
+```
+
+###Frequency >10 down
+```{r}
+cal_freq_terms_filtered_down <- merged_down_clean %>%
+  filter(Number.of.terms>=10)
+  #filter(Calcification.direction=="Down")
+cal_freq_terms_filtered_down
+```
+
+#### Figure
+```{r} 
+freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes))+
+  #facet_wrap(~Calcification.direction, nrow = 1)+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
+  #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
+  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
+  #scale_fill_gradientn(colours=c("#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(10, 40))+ 
+ #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
+  theme_classic()+
+   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95, size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig_down
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
+```
+```{r}
+compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, nrow=2, align="v")
+compare_figs
+```
+
+### All terms up
+```{r}
+cal_freq_terms_filtered_up_all <- merged_up_clean %>%
+  filter(Calcification.direction=="Up")
+cal_freq_terms_filtered_up_all
+```
+
+#### Figure
+```{r}
+#counts$Direction.of.flat.origin<- factor(counts$Direction.of.flat.origin, levels =c("up","no pattern","down"))
+#counts$Module<- factor(counts$Module, levels=c("Blue","Brown","Greenyellow","Cyan","Pink","Magenta","Lightcyan","Midnight blue","Purple","Turquiose","Red","Black"))
+freq_fig_up<-ggplot(cal_freq_terms_filtered_up_all, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
+  #facet_wrap(~Calcification.direction, nrow = 1)+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
+  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
+ #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
+  theme_classic()+
+   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig_up
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_ALL.png", plot=freq_fig_up, dpi=300, height=17, units="in", limitsize=FALSE)
+```
+
+### All terms down
+```{r}
+cal_freq_terms_filtered_down_all <- merged_down_clean %>%
+  filter(Calcification.direction=="Down")
+cal_freq_terms_filtered_down_all
+```
+
+#### Figure
+```{r}
+freq_fig_down<-ggplot(cal_freq_terms_filtered_down_all, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes))+
+  #facet_wrap(~Calcification.direction, nrow = 1)+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
+  #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
+  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
+  #scale_fill_gradientn(colours=c("#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(10, 40))+ 
+ #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
+  theme_classic()+
+   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95, size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig_down
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_ALL.png", plot=freq_fig_down, dpi=300, height=17, units="in", limitsize=FALSE)
+```
+
+```{r}
+compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, ncol=2, align="h")
+compare_figs
 ```
