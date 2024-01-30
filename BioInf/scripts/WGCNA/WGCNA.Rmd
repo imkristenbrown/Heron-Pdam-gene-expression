@@ -417,7 +417,7 @@ dev.off()
 
 
 ###  Step 7: Specify the cut line for the dendrogram (module) - Calc MODULE EIGENGENES (mergeMEs)
-#### We had 17 modules before merging, and 9 modules after merging
+#### We had 17 modules before merging, and 15 modules after merging
 
 ```{r}
 MEDissThres = 0.15 # **Merge modules with >85% eigengene similarity.** Most studies use somewhere between 80-90% similarity. I will use 85% similarity as my merging threshold.
@@ -811,7 +811,6 @@ ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait
 ht
 dev.off()
 ```
-
 
 #### Module eigengene -  MEs boxplots by treatment group
 

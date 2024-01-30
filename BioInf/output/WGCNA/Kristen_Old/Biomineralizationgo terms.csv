@@ -1,0 +1,803 @@
+Factor,,X,GOterm,over_represented_pvalue,under_represented_pvalue,numDEInCat,numInCat,term,ontology,bh_adjust,ParentTerm
+Biomin,110,158,GO:0030048,1,0.941795499,0,1,actin filament-based movement,BP,1,actin-mediated cell contraction
+Biomin,135,192,GO:0070252,1,0.941795499,0,1,actin-mediated cell contraction,BP,1,actin-mediated cell contraction
+Biomin,397,563,GO:0006928,1,0.819439423,0,4,movement of cell or subcellular component,BP,1,actin-mediated cell contraction
+Biomin,449,627,GO:0030334,1,0.949413007,0,1,regulation of cell migration,BP,1,actin-mediated cell contraction
+Biomin,450,628,GO:0030335,1,0.949413007,0,1,positive regulation of cell migration,BP,1,actin-mediated cell contraction
+Biomin,451,629,GO:0030336,1,0.949413007,0,1,negative regulation of cell migration,BP,1,actin-mediated cell contraction
+Biomin,465,644,GO:0051271,1,0.949413007,0,1,negative regulation of cellular component movement,BP,1,actin-mediated cell contraction
+Biomin,466,645,GO:0051272,1,0.949413007,0,1,positive regulation of cellular component movement,BP,1,actin-mediated cell contraction
+Biomin,479,659,GO:2000145,1,0.949413007,0,1,regulation of cell motility,BP,1,actin-mediated cell contraction
+Biomin,480,660,GO:2000146,1,0.949413007,0,1,negative regulation of cell motility,BP,1,actin-mediated cell contraction
+Biomin,481,661,GO:2000147,1,0.949413007,0,1,positive regulation of cell motility,BP,1,actin-mediated cell contraction
+Biomin,482,662,GO:2001222,1,0.949413007,0,1,regulation of neuron migration,BP,1,actin-mediated cell contraction
+Biomin,483,663,GO:2001223,1,0.949413007,0,1,negative regulation of neuron migration,BP,1,actin-mediated cell contraction
+Biomin,484,664,GO:2001224,1,0.949413007,0,1,positive regulation of neuron migration,BP,1,actin-mediated cell contraction
+Biomin,623,840,GO:0051270,1,0.894148367,0,2,regulation of cellular component movement,BP,1,actin-mediated cell contraction
+Biomin,462,641,GO:0051014,1,0.949413007,0,1,actin filament severing,BP,1,actomyosin structure organization
+Biomin,501,681,GO:0030029,1,0.885397978,0,3,actin filament-based process,BP,1,actomyosin structure organization
+Biomin,598,815,GO:0030036,1,0.932579608,0,2,actin cytoskeleton organization,BP,1,actomyosin structure organization
+Biomin,730,1034,GO:0031032,1,0.990215516,0,1,actomyosin structure organization,BP,1,actomyosin structure organization
+Biomin,543,742,GO:0007275,1,0.578036545,0,13,multicellular organism development,BP,1,aging
+Biomin,550,750,GO:0032502,1,0.578036545,0,13,developmental process,BP,1,aging
+Biomin,557,757,GO:0048856,1,0.578036545,0,13,anatomical structure development,BP,1,aging
+Biomin,576,779,GO:0007568,1,0.910686025,0,2,aging,BP,1,aging
+Biomin,197,294,GO:0042428,1,0.95409834,0,1,serotonin metabolic process,BP,1,ammonium ion metabolic process
+Biomin,259,382,GO:0097164,1,0.95409834,0,1,ammonium ion metabolic process,BP,1,ammonium ion metabolic process
+Biomin,681,940,GO:0021700,1,0.960555294,0,1,developmental maturation,BP,1,anatomical structure maturation
+Biomin,691,977,GO:0071695,1,0.960555294,0,1,anatomical structure maturation,BP,1,anatomical structure maturation
+Biomin,48,57,GO:0010941,1,0.947950792,0,1,regulation of cell death,BP,1,apoptotic process
+Biomin,49,58,GO:0010942,1,0.947950792,0,1,positive regulation of cell death,BP,1,apoptotic process
+Biomin,86,110,GO:0006915,1,0.955443239,0,1,apoptotic process,BP,1,apoptotic process
+Biomin,800,1115,GO:0008219,1,0.908781652,0,2,cell death,BP,1,apoptotic process
+Biomin,801,1116,GO:0012501,1,0.908781652,0,2,programmed cell death,BP,1,apoptotic process
+Biomin,588,799,GO:0030198,1,0.989625492,0,1,extracellular matrix organization,BP,1,basement membrane organization
+Biomin,590,801,GO:0034769,1,0.989625492,0,1,basement membrane disassembly,BP,1,basement membrane organization
+Biomin,592,806,GO:0043062,1,0.989625492,0,1,extracellular structure organization,BP,1,basement membrane organization
+Biomin,593,809,GO:0071711,1,0.989625492,0,1,basement membrane organization,BP,1,basement membrane organization
+Biomin,60,73,GO:0042537,1,0.947950792,0,1,benzene-containing compound metabolic process,BP,1,benzene-containing compound metabolic process
+Biomin,270,401,GO:1901135,1,0.95409834,0,1,carbohydrate derivative metabolic process,BP,1,carbohydrate derivative metabolic process
+Biomin,82,99,GO:0048666,1,0.803006333,0,5,neuron development,BP,1,cell development
+Biomin,122,178,GO:0048814,1,0.941795499,0,1,regulation of dendrite morphogenesis,BP,1,cell development
+Biomin,311,455,GO:0048468,1,0.763770679,0,7,cell development,BP,1,cell development
+Biomin,441,607,GO:0031175,1,0.844245389,0,4,neuron projection development,BP,1,cell development
+Biomin,446,614,GO:0016358,1,0.949413007,0,1,dendrite development,BP,1,cell development
+Biomin,473,652,GO:0060996,1,0.949413007,0,1,dendritic spine development,BP,1,cell development
+Biomin,474,653,GO:0060998,1,0.949413007,0,1,regulation of dendritic spine development,BP,1,cell development
+Biomin,487,667,GO:0007413,1,0.932023874,0,2,axonal fasciculation,BP,1,cell development
+Biomin,493,673,GO:0061564,1,0.932023874,0,2,axon development,BP,1,cell development
+Biomin,494,674,GO:0106030,1,0.932023874,0,2,neuron projection fasciculation,BP,1,cell development
+Biomin,620,837,GO:0050773,1,0.894148367,0,2,regulation of dendrite development,BP,1,cell development
+Biomin,655,884,GO:0042490,1,0.907502332,0,2,mechanoreceptor differentiation,BP,1,cell development
+Biomin,772,1078,GO:0030154,1,0.724765972,0,8,cell differentiation,BP,1,cell development
+Biomin,773,1079,GO:0048869,1,0.724765972,0,8,cellular developmental process,BP,1,cell development
+Biomin,312,456,GO:0008283,1,0.91055596,0,2,cell population proliferation,BP,1,cell population proliferation
+Biomin,3,3,GO:0044260,1,0.798434733,0,7,cellular macromolecule metabolic process,BP,1,cellular macromolecule metabolic process
+Biomin,88,113,GO:0010467,1,0.955443239,0,1,gene expression,BP,1,cellular macromolecule metabolic process
+Biomin,552,752,GO:0043170,1,0.749539387,0,9,macromolecule metabolic process,BP,1,cellular macromolecule metabolic process
+Biomin,40,48,GO:0006575,1,0.947950792,0,1,cellular modified amino acid metabolic process,BP,1,cellular modified amino acid metabolic process
+Biomin,42,50,GO:0006749,1,0.947950792,0,1,glutathione metabolic process,BP,1,cellular modified amino acid metabolic process
+Biomin,541,740,GO:0006807,1,0.677877301,0,11,nitrogen compound metabolic process,BP,1,cellular nitrogen compound metabolic process
+Biomin,544,744,GO:0008152,1,0.677877301,0,11,metabolic process,BP,1,cellular nitrogen compound metabolic process
+Biomin,553,753,GO:0044237,1,0.677877301,0,11,cellular metabolic process,BP,1,cellular nitrogen compound metabolic process
+Biomin,554,754,GO:0044238,1,0.677877301,0,11,primary metabolic process,BP,1,cellular nitrogen compound metabolic process
+Biomin,564,764,GO:0071704,1,0.677877301,0,11,organic substance metabolic process,BP,1,cellular nitrogen compound metabolic process
+Biomin,572,775,GO:0034641,1,0.864129457,0,3,cellular nitrogen compound metabolic process,BP,1,cellular nitrogen compound metabolic process
+Biomin,546,746,GO:0009987,1,0.459397347,0,20,cellular process,BP,1,cellular process
+Biomin,164,227,GO:0009895,1,0.95409834,0,1,negative regulation of catabolic process,BP,1,cellular protein catabolic process
+Biomin,175,265,GO:0031329,1,0.95409834,0,1,regulation of cellular catabolic process,BP,1,cellular protein catabolic process
+Biomin,176,266,GO:0031330,1,0.95409834,0,1,negative regulation of cellular catabolic process,BP,1,cellular protein catabolic process
+Biomin,320,464,GO:0009057,1,0.967306446,0,1,macromolecule catabolic process,BP,1,cellular protein catabolic process
+Biomin,321,465,GO:0030163,1,0.967306446,0,1,protein catabolic process,BP,1,cellular protein catabolic process
+Biomin,322,466,GO:0044257,1,0.967306446,0,1,cellular protein catabolic process,BP,1,cellular protein catabolic process
+Biomin,323,467,GO:0044265,1,0.967306446,0,1,cellular macromolecule catabolic process,BP,1,cellular protein catabolic process
+Biomin,324,468,GO:0051603,1,0.967306446,0,1,proteolysis involved in cellular protein catabolic process,BP,1,cellular protein catabolic process
+Biomin,360,516,GO:0009896,1,0.948953234,0,1,positive regulation of catabolic process,BP,1,cellular protein catabolic process
+Biomin,362,519,GO:0042176,1,0.948953234,0,1,regulation of protein catabolic process,BP,1,cellular protein catabolic process
+Biomin,364,521,GO:0045732,1,0.948953234,0,1,positive regulation of protein catabolic process,BP,1,cellular protein catabolic process
+Biomin,519,718,GO:0009056,1,0.87609401,0,3,catabolic process,BP,1,cellular protein catabolic process
+Biomin,520,719,GO:0044248,1,0.87609401,0,3,cellular catabolic process,BP,1,cellular protein catabolic process
+Biomin,538,737,GO:1901565,1,0.924204119,0,2,organonitrogen compound catabolic process,BP,1,cellular protein catabolic process
+Biomin,539,738,GO:1901575,1,0.924204119,0,2,organic substance catabolic process,BP,1,cellular protein catabolic process
+Biomin,667,902,GO:0009894,1,0.905391075,0,2,regulation of catabolic process,BP,1,cellular protein catabolic process
+Biomin,47,55,GO:0009636,1,0.947950792,0,1,response to toxic substance,BP,1,cellular response to chemical stimulus
+Biomin,72,87,GO:0071241,1,0.947950792,0,1,cellular response to inorganic substance,BP,1,cellular response to chemical stimulus
+Biomin,73,88,GO:0071248,1,0.947950792,0,1,cellular response to metal ion,BP,1,cellular response to chemical stimulus
+Biomin,77,94,GO:0097237,1,0.947950792,0,1,cellular response to toxic substance,BP,1,cellular response to chemical stimulus
+Biomin,78,95,GO:0098754,1,0.947950792,0,1,detoxification,BP,1,cellular response to chemical stimulus
+Biomin,79,96,GO:0098869,1,0.947950792,0,1,cellular oxidant detoxification,BP,1,cellular response to chemical stimulus
+Biomin,81,98,GO:1990748,1,0.947950792,0,1,cellular detoxification,BP,1,cellular response to chemical stimulus
+Biomin,94,136,GO:0046686,1,0.955443239,0,1,response to cadmium ion,BP,1,cellular response to chemical stimulus
+Biomin,165,228,GO:0010243,1,0.95409834,0,1,response to organonitrogen compound,BP,1,cellular response to chemical stimulus
+Biomin,190,287,GO:0033993,1,0.95409834,0,1,response to lipid,BP,1,cellular response to chemical stimulus
+Biomin,215,317,GO:0048545,1,0.95409834,0,1,response to steroid hormone,BP,1,cellular response to chemical stimulus
+Biomin,245,361,GO:0071383,1,0.95409834,0,1,cellular response to steroid hormone stimulus,BP,1,cellular response to chemical stimulus
+Biomin,246,366,GO:0071396,1,0.95409834,0,1,cellular response to lipid,BP,1,cellular response to chemical stimulus
+Biomin,247,367,GO:0071417,1,0.95409834,0,1,cellular response to organonitrogen compound,BP,1,cellular response to chemical stimulus
+Biomin,250,370,GO:0071867,1,0.95409834,0,1,response to monoamine,BP,1,cellular response to chemical stimulus
+Biomin,251,371,GO:0071868,1,0.95409834,0,1,cellular response to monoamine stimulus,BP,1,cellular response to chemical stimulus
+Biomin,252,372,GO:0071869,1,0.95409834,0,1,response to catecholamine,BP,1,cellular response to chemical stimulus
+Biomin,253,373,GO:0071870,1,0.95409834,0,1,cellular response to catecholamine stimulus,BP,1,cellular response to chemical stimulus
+Biomin,276,407,GO:1901698,1,0.95409834,0,1,response to nitrogen compound,BP,1,cellular response to chemical stimulus
+Biomin,277,408,GO:1901699,1,0.95409834,0,1,cellular response to nitrogen compound,BP,1,cellular response to chemical stimulus
+Biomin,370,535,GO:0070887,1,0.782895496,0,5,cellular response to chemical stimulus,BP,1,cellular response to chemical stimulus
+Biomin,506,691,GO:0046685,1,0.951165903,0,1,response to arsenic-containing substance,BP,1,cellular response to chemical stimulus
+Biomin,551,751,GO:0042221,1,0.639518094,0,9,response to chemical,BP,1,cellular response to chemical stimulus
+Biomin,567,767,GO:0019221,1,0.91221138,0,2,cytokine-mediated signaling pathway,BP,1,cellular response to chemical stimulus
+Biomin,568,768,GO:0034097,1,0.91221138,0,2,response to cytokine,BP,1,cellular response to chemical stimulus
+Biomin,569,771,GO:0071345,1,0.91221138,0,2,cellular response to cytokine stimulus,BP,1,cellular response to chemical stimulus
+Biomin,635,853,GO:0010038,1,0.864495584,0,3,response to metal ion,BP,1,cellular response to chemical stimulus
+Biomin,662,897,GO:0046688,1,0.904817754,0,2,response to copper ion,BP,1,cellular response to chemical stimulus
+Biomin,668,903,GO:0014070,1,0.905391075,0,2,response to organic cyclic compound,BP,1,cellular response to chemical stimulus
+Biomin,671,906,GO:0071407,1,0.905391075,0,2,cellular response to organic cyclic compound,BP,1,cellular response to chemical stimulus
+Biomin,770,1076,GO:0010033,1,0.825895754,0,4,response to organic substance,BP,1,cellular response to chemical stimulus
+Biomin,771,1077,GO:0071310,1,0.825895754,0,4,cellular response to organic substance,BP,1,cellular response to chemical stimulus
+Biomin,784,1093,GO:0042493,1,0.905709581,0,2,response to drug,BP,1,cellular response to chemical stimulus
+Biomin,802,1118,GO:0010035,1,0.824804607,0,4,response to inorganic substance,BP,1,cellular response to chemical stimulus
+Biomin,56,68,GO:0033554,1,0.947950792,0,1,cellular response to stress,BP,1,cellular response to stress
+Biomin,162,225,GO:0009719,1,0.95409834,0,1,response to endogenous stimulus,BP,1,cellular response to stress
+Biomin,163,226,GO:0009725,1,0.95409834,0,1,response to hormone,BP,1,cellular response to stress
+Biomin,183,277,GO:0032870,1,0.95409834,0,1,cellular response to hormone stimulus,BP,1,cellular response to stress
+Biomin,248,368,GO:0071495,1,0.95409834,0,1,cellular response to endogenous stimulus,BP,1,cellular response to stress
+Biomin,439,605,GO:0006950,1,0.828614246,0,5,response to stress,BP,1,cellular response to stress
+Biomin,532,731,GO:0051716,1,0.713943592,0,7,cellular response to stimulus,BP,1,cellular response to stress
+Biomin,560,760,GO:0050896,1,0.559192838,0,13,response to stimulus,BP,1,cellular response to stress
+Biomin,372,537,GO:0006821,1,0.877623002,0,3,chloride transport,BP,1,chloride transport
+Biomin,375,540,GO:0015698,1,0.877623002,0,3,inorganic anion transport,BP,1,chloride transport
+Biomin,381,546,GO:0098656,1,0.877623002,0,3,anion transmembrane transport,BP,1,chloride transport
+Biomin,382,547,GO:0098661,1,0.877623002,0,3,inorganic anion transmembrane transport,BP,1,chloride transport
+Biomin,383,548,GO:1902476,1,0.877623002,0,3,chloride transmembrane transport,BP,1,chloride transport
+Biomin,628,846,GO:0006820,1,0.800562037,0,5,anion transport,BP,1,chloride transport
+Biomin,629,847,GO:0015701,1,0.800562037,0,5,bicarbonate transport,BP,1,chloride transport
+Biomin,630,848,GO:0015711,1,0.800562037,0,5,organic anion transport,BP,1,chloride transport
+Biomin,297,441,GO:0007596,1,0.968963242,0,1,blood coagulation,BP,1,coagulation
+Biomin,305,449,GO:0050817,1,0.968963242,0,1,coagulation,BP,1,coagulation
+Biomin,30,34,GO:0009235,1,0.982563925,0,1,cobalamin metabolic process,BP,1,cobalamin metabolic process
+Biomin,31,35,GO:0033013,1,0.982563925,0,1,tetrapyrrole metabolic process,BP,1,cobalamin metabolic process
+Biomin,112,160,GO:0030865,1,0.941795499,0,1,cortical cytoskeleton organization,BP,1,cortical cytoskeleton organization
+Biomin,113,161,GO:0030866,1,0.941795499,0,1,cortical actin cytoskeleton organization,BP,1,cortical cytoskeleton organization
+Biomin,389,555,GO:0007010,1,0.850466919,0,4,cytoskeleton organization,BP,1,cortical cytoskeleton organization
+Biomin,581,784,GO:0006325,1,0.959481944,0,2,chromatin organization,BP,1,cortical cytoskeleton organization
+Biomin,582,785,GO:0016569,1,0.959481944,0,2,covalent chromatin modification,BP,1,cortical cytoskeleton organization
+Biomin,583,786,GO:0016570,1,0.959481944,0,2,histone modification,BP,1,cortical cytoskeleton organization
+Biomin,584,787,GO:0051276,1,0.959481944,0,2,chromosome organization,BP,1,cortical cytoskeleton organization
+Biomin,715,1016,GO:0006338,1,0.990215516,0,1,chromatin remodeling,BP,1,cortical cytoskeleton organization
+Biomin,733,1037,GO:0043044,1,0.990215516,0,1,ATP-dependent chromatin remodeling,BP,1,cortical cytoskeleton organization
+Biomin,734,1038,GO:0043486,1,0.990215516,0,1,histone exchange,BP,1,cortical cytoskeleton organization
+Biomin,713,1014,GO:0000281,1,0.990215516,0,1,mitotic cytokinesis,BP,1,cytoskeleton-dependent cytokinesis
+Biomin,714,1015,GO:0000910,1,0.990215516,0,1,cytokinesis,BP,1,cytoskeleton-dependent cytokinesis
+Biomin,738,1043,GO:0051301,1,0.990215516,0,1,cell division,BP,1,cytoskeleton-dependent cytokinesis
+Biomin,743,1048,GO:0061640,1,0.990215516,0,1,cytoskeleton-dependent cytokinesis,BP,1,cytoskeleton-dependent cytokinesis
+Biomin,160,223,GO:0009581,1,0.95409834,0,1,detection of external stimulus,BP,1,detection of external stimulus
+Biomin,161,224,GO:0009582,1,0.95409834,0,1,detection of abiotic stimulus,BP,1,detection of external stimulus
+Biomin,219,323,GO:0050906,1,0.95409834,0,1,detection of stimulus involved in sensory perception,BP,1,detection of external stimulus
+Biomin,221,326,GO:0050974,1,0.95409834,0,1,detection of mechanical stimulus involved in sensory perception,BP,1,detection of external stimulus
+Biomin,222,327,GO:0050982,1,0.95409834,0,1,detection of mechanical stimulus,BP,1,detection of external stimulus
+Biomin,232,343,GO:0051606,1,0.95409834,0,1,detection of stimulus,BP,1,detection of external stimulus
+Biomin,149,209,GO:0006816,1,0.95409834,0,1,calcium ion transport,BP,1,divalent metal ion transport
+Biomin,236,349,GO:0060401,1,0.95409834,0,1,cytosolic calcium ion transport,BP,1,divalent metal ion transport
+Biomin,241,354,GO:0070509,1,0.95409834,0,1,calcium ion import,BP,1,divalent metal ion transport
+Biomin,242,355,GO:0070588,1,0.95409834,0,1,calcium ion transmembrane transport,BP,1,divalent metal ion transport
+Biomin,243,356,GO:0070838,1,0.95409834,0,1,divalent metal ion transport,BP,1,divalent metal ion transport
+Biomin,256,379,GO:0072511,1,0.95409834,0,1,divalent inorganic cation transport,BP,1,divalent metal ion transport
+Biomin,275,406,GO:1901660,1,0.95409834,0,1,calcium ion export,BP,1,divalent metal ion transport
+Biomin,335,479,GO:0000041,1,0.954502522,0,1,transition metal ion transport,BP,1,divalent metal ion transport
+Biomin,336,481,GO:0006825,1,0.954502522,0,1,copper ion transport,BP,1,divalent metal ion transport
+Biomin,337,482,GO:0006826,1,0.954502522,0,1,iron ion transport,BP,1,divalent metal ion transport
+Biomin,339,487,GO:0035434,1,0.954502522,0,1,copper ion transmembrane transport,BP,1,divalent metal ion transport
+Biomin,371,536,GO:0006814,1,0.877623002,0,3,sodium ion transport,BP,1,divalent metal ion transport
+Biomin,374,539,GO:0015672,1,0.877623002,0,3,monovalent inorganic cation transport,BP,1,divalent metal ion transport
+Biomin,378,543,GO:0035725,1,0.877623002,0,3,sodium ion transmembrane transport,BP,1,divalent metal ion transport
+Biomin,512,702,GO:1902600,1,0.951165903,0,1,proton transmembrane transport,BP,1,divalent metal ion transport
+Biomin,524,723,GO:0006812,1,0.799223093,0,5,cation transport,BP,1,divalent metal ion transport
+Biomin,525,724,GO:0030001,1,0.799223093,0,5,metal ion transport,BP,1,divalent metal ion transport
+Biomin,528,727,GO:0098655,1,0.799223093,0,5,cation transmembrane transport,BP,1,divalent metal ion transport
+Biomin,530,729,GO:0098662,1,0.799223093,0,5,inorganic cation transmembrane transport,BP,1,divalent metal ion transport
+Biomin,604,821,GO:0006811,1,0.729035929,0,7,ion transport,BP,1,divalent metal ion transport
+Biomin,325,469,GO:0017144,1,0.889915021,0,3,drug metabolic process,BP,1,drug metabolic process
+Biomin,785,1094,GO:0042737,1,0.905709581,0,2,drug catabolic process,BP,1,drug metabolic process
+Biomin,6,6,GO:0048598,1,0.805375778,0,5,embryonic morphogenesis,BP,1,embryonic morphogenesis
+Biomin,36,42,GO:0001704,1,0.947950792,0,1,formation of primary germ layer,BP,1,embryonic morphogenesis
+Biomin,522,721,GO:0007369,1,0.892771132,0,2,gastrulation,BP,1,embryonic morphogenesis
+Biomin,549,749,GO:0032501,1,0.560080354,0,14,multicellular organismal process,BP,1,embryonic morphogenesis
+Biomin,640,859,GO:0007389,1,0.904643096,0,2,pattern specification process,BP,1,embryonic morphogenesis
+Biomin,674,909,GO:0009790,1,0.773596976,0,6,embryo development,BP,1,embryonic morphogenesis
+Biomin,678,918,GO:0003002,1,0.960555294,0,1,regionalization,BP,1,embryonic morphogenesis
+Biomin,792,1106,GO:0009792,1,0.824645371,0,4,embryo development ending in birth or egg hatching,BP,1,embryonic morphogenesis
+Biomin,32,36,GO:0008544,1,0.871700618,0,3,epidermis development,BP,1,epidermis development
+Biomin,33,37,GO:0009913,1,0.871700618,0,3,epidermal cell differentiation,BP,1,epidermis development
+Biomin,37,43,GO:0001707,1,0.947950792,0,1,mesoderm formation,BP,1,epidermis development
+Biomin,45,53,GO:0007498,1,0.947950792,0,1,mesoderm development,BP,1,epidermis development
+Biomin,66,79,GO:0048332,1,0.947950792,0,1,mesoderm morphogenesis,BP,1,epidermis development
+Biomin,99,146,GO:0003381,1,0.941795499,0,1,epithelial cell morphogenesis involved in gastrulation,BP,1,epidermis development
+Biomin,100,147,GO:0003382,1,0.941795499,0,1,epithelial cell morphogenesis,BP,1,epidermis development
+Biomin,101,148,GO:0003383,1,0.941795499,0,1,apical constriction,BP,1,epidermis development
+Biomin,102,149,GO:0003384,1,0.941795499,0,1,apical constriction involved in gastrulation,BP,1,epidermis development
+Biomin,393,559,GO:0002009,1,0.895256326,0,3,morphogenesis of an epithelium,BP,1,epidermis development
+Biomin,429,595,GO:0030855,1,0.820952711,0,4,epithelial cell differentiation,BP,1,epidermis development
+Biomin,586,797,GO:0016331,1,0.989625492,0,1,morphogenesis of embryonic epithelium,BP,1,epidermis development
+Biomin,637,855,GO:0001738,1,0.904643096,0,2,morphogenesis of a polarized epithelium,BP,1,epidermis development
+Biomin,688,966,GO:0060485,1,0.960555294,0,1,mesenchyme development,BP,1,epidermis development
+Biomin,695,993,GO:0090175,1,0.960555294,0,1,regulation of establishment of planar polarity,BP,1,epidermis development
+Biomin,696,996,GO:1905330,1,0.960555294,0,1,regulation of morphogenesis of an epithelium,BP,1,epidermis development
+Biomin,780,1089,GO:0060429,1,0.812432974,0,5,epithelium development,BP,1,epidermis development
+Biomin,781,1090,GO:0060537,1,0.939667417,0,2,muscle tissue development,BP,1,epidermis development
+Biomin,782,1091,GO:0002064,1,0.854673513,0,3,epithelial cell development,BP,1,epidermis development
+Biomin,798,1113,GO:0009888,1,0.723649252,0,8,tissue development,BP,1,epidermis development
+Biomin,799,1114,GO:0048729,1,0.848650761,0,4,tissue morphogenesis,BP,1,epidermis development
+Biomin,116,165,GO:0040001,1,0.941795499,0,1,establishment of mitotic spindle localization,BP,1,establishment of mitotic spindle localization
+Biomin,128,185,GO:0051293,1,0.941795499,0,1,establishment of spindle localization,BP,1,establishment of mitotic spindle localization
+Biomin,130,187,GO:0051640,1,0.941795499,0,1,organelle localization,BP,1,establishment of mitotic spindle localization
+Biomin,132,189,GO:0051653,1,0.941795499,0,1,spindle localization,BP,1,establishment of mitotic spindle localization
+Biomin,133,190,GO:0051656,1,0.941795499,0,1,establishment of organelle localization,BP,1,establishment of mitotic spindle localization
+Biomin,387,552,GO:0051649,1,0.8985614,0,2,establishment of localization in cell,BP,1,establishment of mitotic spindle localization
+Biomin,500,680,GO:0051641,1,0.863111855,0,3,cellular localization,BP,1,establishment of mitotic spindle localization
+Biomin,97,143,GO:0000132,1,0.941795499,0,1,establishment of mitotic spindle orientation,BP,1,establishment of mitotic spindle orientation
+Biomin,129,186,GO:0051294,1,0.941795499,0,1,establishment of spindle orientation,BP,1,establishment of mitotic spindle orientation
+Biomin,345,494,GO:0007163,1,0.865713359,0,3,establishment or maintenance of cell polarity,BP,1,establishment of mitotic spindle orientation
+Biomin,347,496,GO:0030010,1,0.865713359,0,3,establishment of cell polarity,BP,1,establishment of mitotic spindle orientation
+Biomin,682,943,GO:0035088,1,0.960555294,0,1,establishment or maintenance of apical/basal cell polarity,BP,1,establishment of mitotic spindle orientation
+Biomin,686,958,GO:0045197,1,0.960555294,0,1,establishment or maintenance of epithelial cell apical/basal polarity,BP,1,establishment of mitotic spindle orientation
+Biomin,690,972,GO:0061245,1,0.960555294,0,1,establishment or maintenance of bipolar cell polarity,BP,1,establishment of mitotic spindle orientation
+Biomin,694,992,GO:0090162,1,0.960555294,0,1,establishment of epithelial cell polarity,BP,1,establishment of mitotic spindle orientation
+Biomin,117,167,GO:0042074,1,0.941795499,0,1,cell migration involved in gastrulation,BP,1,flagellated sperm motility
+Biomin,174,262,GO:0030317,1,0.95409834,0,1,flagellated sperm motility,BP,1,flagellated sperm motility
+Biomin,263,386,GO:0097722,1,0.95409834,0,1,sperm motility,BP,1,flagellated sperm motility
+Biomin,392,558,GO:0016477,1,0.858872646,0,3,cell migration,BP,1,flagellated sperm motility
+Biomin,399,565,GO:0048870,1,0.819439423,0,4,cell motility,BP,1,flagellated sperm motility
+Biomin,400,566,GO:0051674,1,0.819439423,0,4,localization of cell,BP,1,flagellated sperm motility
+Biomin,605,822,GO:0001667,1,0.894148367,0,2,ameboidal-type cell migration,BP,1,flagellated sperm motility
+Biomin,316,460,GO:0032504,1,0.880329061,0,3,multicellular organism reproduction,BP,1,gonad development
+Biomin,319,463,GO:0048609,1,0.880329061,0,3,multicellular organismal reproductive process,BP,1,gonad development
+Biomin,354,510,GO:0007548,1,0.948953234,0,1,sex differentiation,BP,1,gonad development
+Biomin,358,514,GO:0008406,1,0.948953234,0,1,gonad development,BP,1,gonad development
+Biomin,359,515,GO:0008585,1,0.948953234,0,1,female gonad development,BP,1,gonad development
+Biomin,363,520,GO:0045137,1,0.948953234,0,1,development of primary sexual characteristics,BP,1,gonad development
+Biomin,365,522,GO:0046545,1,0.948953234,0,1,development of primary female sexual characteristics,BP,1,gonad development
+Biomin,366,523,GO:0046660,1,0.948953234,0,1,female sex differentiation,BP,1,gonad development
+Biomin,497,677,GO:0003006,1,0.899556868,0,2,developmental process involved in reproduction,BP,1,gonad development
+Biomin,748,1054,GO:0000003,1,0.791888644,0,5,reproduction,BP,1,gonad development
+Biomin,749,1055,GO:0022414,1,0.791888644,0,5,reproductive process,BP,1,gonad development
+Biomin,367,530,GO:0060323,1,0.948953234,0,1,head morphogenesis,BP,1,head development
+Biomin,412,578,GO:0060322,1,0.817595801,0,4,head development,BP,1,head development
+Biomin,575,778,GO:0007420,1,0.861587447,0,3,brain development,BP,1,head development
+Biomin,454,632,GO:0031589,1,0.949413007,0,1,cell-substrate adhesion,BP,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules
+Biomin,455,633,GO:0034446,1,0.949413007,0,1,substrate adhesion-dependent cell spreading,BP,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules
+Biomin,632,850,GO:0007155,1,0.849960041,0,4,cell adhesion,BP,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules
+Biomin,633,851,GO:0022610,1,0.849960041,0,4,biological adhesion,BP,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules
+Biomin,638,857,GO:0007156,1,0.904643096,0,2,homophilic cell adhesion via plasma membrane adhesion molecules,BP,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules
+Biomin,644,868,GO:0098609,1,0.904643096,0,2,cell-cell adhesion,BP,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules
+Biomin,645,869,GO:0098742,1,0.904643096,0,2,cell-cell adhesion via plasma-membrane adhesion molecules,BP,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules
+Biomin,679,932,GO:0007157,1,0.960555294,0,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules,BP,1,heterophilic cell-cell adhesion via plasma membrane cell adhesion molecules
+Biomin,349,504,GO:0002376,1,0.948953234,0,1,immune system process,BP,1,immune system process
+Biomin,198,295,GO:0042430,1,0.95409834,0,1,indole-containing compound metabolic process,BP,1,indole-containing compound metabolic process
+Biomin,265,388,GO:0098659,1,0.95409834,0,1,inorganic cation import across plasma membrane,BP,1,inorganic cation import across plasma membrane
+Biomin,267,391,GO:0098739,1,0.95409834,0,1,import across plasma membrane,BP,1,inorganic cation import across plasma membrane
+Biomin,268,392,GO:0099587,1,0.95409834,0,1,inorganic ion import across plasma membrane,BP,1,inorganic cation import across plasma membrane
+Biomin,526,725,GO:0034220,1,0.799223093,0,5,ion transmembrane transport,BP,1,inorganic cation import across plasma membrane
+Biomin,527,726,GO:0055085,1,0.799223093,0,5,transmembrane transport,BP,1,inorganic cation import across plasma membrane
+Biomin,529,728,GO:0098660,1,0.799223093,0,5,inorganic ion transmembrane transport,BP,1,inorganic cation import across plasma membrane
+Biomin,7,7,GO:0090066,1,0.816087374,0,5,regulation of anatomical structure size,BP,1,ion homeostasis
+Biomin,8,8,GO:0006875,1,0.894804822,0,3,cellular metal ion homeostasis,BP,1,ion homeostasis
+Biomin,9,9,GO:0055065,1,0.894804822,0,3,metal ion homeostasis,BP,1,ion homeostasis
+Biomin,64,77,GO:0045454,1,0.947950792,0,1,cell redox homeostasis,BP,1,ion homeostasis
+Biomin,90,121,GO:0016486,1,0.955443239,0,1,peptide hormone processing,BP,1,ion homeostasis
+Biomin,111,159,GO:0030516,1,0.941795499,0,1,regulation of axon extension,BP,1,ion homeostasis
+Biomin,115,164,GO:0032507,1,0.941795499,0,1,maintenance of protein location in cell,BP,1,ion homeostasis
+Biomin,119,171,GO:0045185,1,0.941795499,0,1,maintenance of protein location,BP,1,ion homeostasis
+Biomin,127,184,GO:0051235,1,0.941795499,0,1,maintenance of location,BP,1,ion homeostasis
+Biomin,131,188,GO:0051651,1,0.941795499,0,1,maintenance of location in cell,BP,1,ion homeostasis
+Biomin,134,191,GO:0061387,1,0.941795499,0,1,regulation of extent of cell growth,BP,1,ion homeostasis
+Biomin,143,201,GO:0001505,1,0.95409834,0,1,regulation of neurotransmitter levels,BP,1,ion homeostasis
+Biomin,151,211,GO:0007204,1,0.95409834,0,1,positive regulation of cytosolic calcium ion concentration,BP,1,ion homeostasis
+Biomin,195,292,GO:0042133,1,0.95409834,0,1,neurotransmitter metabolic process,BP,1,ion homeostasis
+Biomin,230,340,GO:0051480,1,0.95409834,0,1,regulation of cytosolic calcium ion concentration,BP,1,ion homeostasis
+Biomin,231,341,GO:0051481,1,0.95409834,0,1,negative regulation of cytosolic calcium ion concentration,BP,1,ion homeostasis
+Biomin,237,350,GO:0060402,1,0.95409834,0,1,calcium ion transport into cytosol,BP,1,ion homeostasis
+Biomin,262,385,GO:0097553,1,0.95409834,0,1,calcium ion transmembrane import into cytosol,BP,1,ion homeostasis
+Biomin,266,389,GO:0098703,1,0.95409834,0,1,calcium ion import across plasma membrane,BP,1,ion homeostasis
+Biomin,281,413,GO:1902656,1,0.95409834,0,1,calcium ion import into cytosol,BP,1,ion homeostasis
+Biomin,298,442,GO:0007599,1,0.968963242,0,1,hemostasis,BP,1,ion homeostasis
+Biomin,326,470,GO:0006873,1,0.785282704,0,6,cellular ion homeostasis,BP,1,ion homeostasis
+Biomin,327,471,GO:0030003,1,0.785282704,0,6,cellular cation homeostasis,BP,1,ion homeostasis
+Biomin,328,472,GO:0048878,1,0.785282704,0,6,chemical homeostasis,BP,1,ion homeostasis
+Biomin,329,473,GO:0050801,1,0.785282704,0,6,ion homeostasis,BP,1,ion homeostasis
+Biomin,330,474,GO:0055080,1,0.785282704,0,6,cation homeostasis,BP,1,ion homeostasis
+Biomin,331,475,GO:0055082,1,0.785282704,0,6,cellular chemical homeostasis,BP,1,ion homeostasis
+Biomin,332,476,GO:0098771,1,0.785282704,0,6,inorganic ion homeostasis,BP,1,ion homeostasis
+Biomin,338,483,GO:0006879,1,0.954502522,0,1,cellular iron ion homeostasis,BP,1,ion homeostasis
+Biomin,340,488,GO:0046916,1,0.954502522,0,1,cellular transition metal ion homeostasis,BP,1,ion homeostasis
+Biomin,341,489,GO:0055072,1,0.954502522,0,1,iron ion homeostasis,BP,1,ion homeostasis
+Biomin,342,490,GO:0055076,1,0.954502522,0,1,transition metal ion homeostasis,BP,1,ion homeostasis
+Biomin,343,492,GO:0019725,1,0.744393686,0,7,cellular homeostasis,BP,1,ion homeostasis
+Biomin,344,493,GO:0042592,1,0.744393686,0,7,homeostatic process,BP,1,ion homeostasis
+Biomin,356,512,GO:0008209,1,0.948953234,0,1,androgen metabolic process,BP,1,ion homeostasis
+Biomin,357,513,GO:0008210,1,0.948953234,0,1,estrogen metabolic process,BP,1,ion homeostasis
+Biomin,373,538,GO:0006885,1,0.877623002,0,3,regulation of pH,BP,1,ion homeostasis
+Biomin,376,541,GO:0030004,1,0.877623002,0,3,cellular monovalent inorganic cation homeostasis,BP,1,ion homeostasis
+Biomin,377,542,GO:0030641,1,0.877623002,0,3,regulation of cellular pH,BP,1,ion homeostasis
+Biomin,379,544,GO:0051453,1,0.877623002,0,3,regulation of intracellular pH,BP,1,ion homeostasis
+Biomin,380,545,GO:0055067,1,0.877623002,0,3,monovalent inorganic cation homeostasis,BP,1,ion homeostasis
+Biomin,384,549,GO:0008361,1,0.8985614,0,2,regulation of cell size,BP,1,ion homeostasis
+Biomin,385,550,GO:0032535,1,0.8985614,0,2,regulation of cellular component size,BP,1,ion homeostasis
+Biomin,394,560,GO:0035150,1,0.908230736,0,3,regulation of tube size,BP,1,ion homeostasis
+Biomin,420,586,GO:0051963,1,0.956973618,0,1,regulation of synapse assembly,BP,1,ion homeostasis
+Biomin,563,763,GO:0065008,1,0.554691781,0,15,regulation of biological quality,BP,1,ion homeostasis
+Biomin,664,899,GO:0010817,1,0.906667424,0,2,regulation of hormone levels,BP,1,ion homeostasis
+Biomin,665,900,GO:0034754,1,0.906667424,0,2,cellular hormone metabolic process,BP,1,ion homeostasis
+Biomin,666,901,GO:0042445,1,0.906667424,0,2,hormone metabolic process,BP,1,ion homeostasis
+Biomin,704,1005,GO:0006874,1,0.93746134,0,2,cellular calcium ion homeostasis,BP,1,ion homeostasis
+Biomin,705,1006,GO:0055074,1,0.93746134,0,2,calcium ion homeostasis,BP,1,ion homeostasis
+Biomin,706,1007,GO:0072503,1,0.93746134,0,2,cellular divalent inorganic cation homeostasis,BP,1,ion homeostasis
+Biomin,707,1008,GO:0072507,1,0.93746134,0,2,divalent inorganic cation homeostasis,BP,1,ion homeostasis
+Biomin,764,1070,GO:0050878,1,0.924483986,0,2,regulation of body fluid levels,BP,1,ion homeostasis
+Biomin,788,1097,GO:0050803,1,0.947609447,0,2,regulation of synapse structure or activity,BP,1,ion homeostasis
+Biomin,789,1098,GO:0050807,1,0.947609447,0,2,regulation of synapse organization,BP,1,ion homeostasis
+Biomin,52,64,GO:0019216,1,0.947950792,0,1,regulation of lipid metabolic process,BP,1,lipid metabolic process
+Biomin,351,507,GO:0006629,1,0.948953234,0,1,lipid metabolic process,BP,1,lipid metabolic process
+Biomin,355,511,GO:0008202,1,0.948953234,0,1,steroid metabolic process,BP,1,lipid metabolic process
+Biomin,153,215,GO:0007626,1,0.95409834,0,1,locomotory behavior,BP,1,locomotory behavior
+Biomin,299,443,GO:0007631,1,0.968963242,0,1,feeding behavior,BP,1,locomotory behavior
+Biomin,756,1062,GO:0007610,1,0.924483986,0,2,behavior,BP,1,locomotory behavior
+Biomin,290,433,GO:0006464,1,0.825429273,0,6,cellular protein modification process,BP,1,macromolecule deacylation
+Biomin,291,434,GO:0036211,1,0.825429273,0,6,protein modification process,BP,1,macromolecule deacylation
+Biomin,292,435,GO:0043412,1,0.825429273,0,6,macromolecule modification,BP,1,macromolecule deacylation
+Biomin,296,440,GO:0006476,1,0.968963242,0,1,protein deacetylation,BP,1,macromolecule deacylation
+Biomin,301,445,GO:0016575,1,0.968963242,0,1,histone deacetylation,BP,1,macromolecule deacylation
+Biomin,302,446,GO:0035601,1,0.968963242,0,1,protein deacylation,BP,1,macromolecule deacylation
+Biomin,307,451,GO:0098732,1,0.968963242,0,1,macromolecule deacylation,BP,1,macromolecule deacylation
+Biomin,350,506,GO:0006471,1,0.948953234,0,1,protein ADP-ribosylation,BP,1,macromolecule deacylation
+Biomin,531,730,GO:0043687,1,0.943812229,0,2,post-translational protein modification,BP,1,macromolecule deacylation
+Biomin,716,1017,GO:0006473,1,0.990215516,0,1,protein acetylation,BP,1,macromolecule deacylation
+Biomin,717,1018,GO:0006475,1,0.990215516,0,1,internal protein amino acid acetylation,BP,1,macromolecule deacylation
+Biomin,724,1028,GO:0016573,1,0.990215516,0,1,histone acetylation,BP,1,macromolecule deacylation
+Biomin,725,1029,GO:0018193,1,0.990215516,0,1,peptidyl-amino acid modification,BP,1,macromolecule deacylation
+Biomin,726,1030,GO:0018205,1,0.990215516,0,1,peptidyl-lysine modification,BP,1,macromolecule deacylation
+Biomin,727,1031,GO:0018393,1,0.990215516,0,1,internal peptidyl-lysine acetylation,BP,1,macromolecule deacylation
+Biomin,728,1032,GO:0018394,1,0.990215516,0,1,peptidyl-lysine acetylation,BP,1,macromolecule deacylation
+Biomin,735,1039,GO:0043543,1,0.990215516,0,1,protein acylation,BP,1,macromolecule deacylation
+Biomin,346,495,GO:0008104,1,0.865713359,0,3,protein localization,BP,1,macromolecule localization
+Biomin,348,497,GO:0033036,1,0.865713359,0,3,macromolecule localization,BP,1,macromolecule localization
+Biomin,422,588,GO:0071896,1,0.956973618,0,1,protein localization to adherens junction,BP,1,macromolecule localization
+Biomin,423,589,GO:1902414,1,0.956973618,0,1,protein localization to cell junction,BP,1,macromolecule localization
+Biomin,642,863,GO:0034613,1,0.904643096,0,2,cellular protein localization,BP,1,macromolecule localization
+Biomin,643,867,GO:0070727,1,0.904643096,0,2,cellular macromolecule localization,BP,1,macromolecule localization
+Biomin,692,990,GO:0072657,1,0.960555294,0,1,protein localization to membrane,BP,1,macromolecule localization
+Biomin,693,991,GO:0072659,1,0.960555294,0,1,protein localization to plasma membrane,BP,1,macromolecule localization
+Biomin,697,997,GO:1990778,1,0.960555294,0,1,protein localization to cell periphery,BP,1,macromolecule localization
+Biomin,139,196,GO:1902850,1,0.941795499,0,1,microtubule cytoskeleton organization involved in mitosis,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,167,230,GO:0010564,1,0.95409834,0,1,regulation of cell cycle process,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,233,344,GO:0051726,1,0.95409834,0,1,regulation of cell cycle,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,279,410,GO:1901987,1,0.95409834,0,1,regulation of cell cycle phase transition,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,282,414,GO:1902806,1,0.95409834,0,1,regulation of cell cycle G1/S phase transition,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,595,812,GO:0000278,1,0.932579608,0,2,mitotic cell cycle,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,596,813,GO:0007049,1,0.932579608,0,2,cell cycle,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,597,814,GO:0022402,1,0.932579608,0,2,cell cycle process,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,599,816,GO:1903047,1,0.932579608,0,2,mitotic cell cycle process,BP,1,microtubule cytoskeleton organization involved in mitosis
+Biomin,390,556,GO:0000226,1,0.858872646,0,3,microtubule cytoskeleton organization,BP,1,microtubule-based process
+Biomin,391,557,GO:0007017,1,0.858872646,0,3,microtubule-based process,BP,1,microtubule-based process
+Biomin,51,63,GO:0018996,1,0.947950792,0,1,"molting cycle, collagen and cuticulin-based cuticle",BP,1,"molting cycle, collagen and cuticulin-based cuticle"
+Biomin,55,67,GO:0022404,1,0.947950792,0,1,molting cycle process,BP,1,"molting cycle, collagen and cuticulin-based cuticle"
+Biomin,59,72,GO:0042395,1,0.947950792,0,1,"ecdysis, collagen and cuticulin-based cuticle",BP,1,"molting cycle, collagen and cuticulin-based cuticle"
+Biomin,540,739,GO:0042303,1,0.938115407,0,2,molting cycle,BP,1,"molting cycle, collagen and cuticulin-based cuticle"
+Biomin,719,1020,GO:0007517,1,0.990215516,0,1,muscle organ development,BP,1,muscle structure development
+Biomin,722,1025,GO:0014866,1,0.990215516,0,1,skeletal myofibril assembly,BP,1,muscle structure development
+Biomin,723,1026,GO:0014902,1,0.990215516,0,1,myotube differentiation,BP,1,muscle structure development
+Biomin,732,1036,GO:0042692,1,0.990215516,0,1,muscle cell differentiation,BP,1,muscle structure development
+Biomin,736,1041,GO:0048747,1,0.990215516,0,1,muscle fiber development,BP,1,muscle structure development
+Biomin,737,1042,GO:0051146,1,0.990215516,0,1,striated muscle cell differentiation,BP,1,muscle structure development
+Biomin,739,1044,GO:0055001,1,0.990215516,0,1,muscle cell development,BP,1,muscle structure development
+Biomin,740,1045,GO:0055002,1,0.990215516,0,1,striated muscle cell development,BP,1,muscle structure development
+Biomin,741,1046,GO:0060538,1,0.990215516,0,1,skeletal muscle organ development,BP,1,muscle structure development
+Biomin,742,1047,GO:0061061,1,0.990215516,0,1,muscle structure development,BP,1,muscle structure development
+Biomin,41,49,GO:0006739,1,0.947950792,0,1,NADP metabolic process,BP,1,NADP metabolic process
+Biomin,189,286,GO:0033674,1,0.95409834,0,1,positive regulation of kinase activity,BP,1,negative regulation of catalytic activity
+Biomin,199,298,GO:0043086,1,0.95409834,0,1,negative regulation of catalytic activity,BP,1,negative regulation of catalytic activity
+Biomin,202,301,GO:0043549,1,0.95409834,0,1,regulation of kinase activity,BP,1,negative regulation of catalytic activity
+Biomin,204,303,GO:0044092,1,0.95409834,0,1,negative regulation of molecular function,BP,1,negative regulation of catalytic activity
+Biomin,208,310,GO:0045859,1,0.95409834,0,1,regulation of protein kinase activity,BP,1,negative regulation of catalytic activity
+Biomin,209,311,GO:0045860,1,0.95409834,0,1,positive regulation of protein kinase activity,BP,1,negative regulation of catalytic activity
+Biomin,226,333,GO:0051338,1,0.95409834,0,1,regulation of transferase activity,BP,1,negative regulation of catalytic activity
+Biomin,227,334,GO:0051341,1,0.95409834,0,1,regulation of oxidoreductase activity,BP,1,negative regulation of catalytic activity
+Biomin,228,335,GO:0051347,1,0.95409834,0,1,positive regulation of transferase activity,BP,1,negative regulation of catalytic activity
+Biomin,229,336,GO:0051354,1,0.95409834,0,1,negative regulation of oxidoreductase activity,BP,1,negative regulation of catalytic activity
+Biomin,254,377,GO:0071900,1,0.95409834,0,1,regulation of protein serine/threonine kinase activity,BP,1,negative regulation of catalytic activity
+Biomin,255,378,GO:0071902,1,0.95409834,0,1,positive regulation of protein serine/threonine kinase activity,BP,1,negative regulation of catalytic activity
+Biomin,457,636,GO:0043087,1,0.949413007,0,1,regulation of GTPase activity,BP,1,negative regulation of catalytic activity
+Biomin,458,637,GO:0043547,1,0.949413007,0,1,positive regulation of GTPase activity,BP,1,negative regulation of catalytic activity
+Biomin,467,646,GO:0051336,1,0.949413007,0,1,regulation of hydrolase activity,BP,1,negative regulation of catalytic activity
+Biomin,468,647,GO:0051345,1,0.949413007,0,1,positive regulation of hydrolase activity,BP,1,negative regulation of catalytic activity
+Biomin,776,1085,GO:0043085,1,0.905829776,0,2,positive regulation of catalytic activity,BP,1,negative regulation of catalytic activity
+Biomin,777,1086,GO:0044093,1,0.905829776,0,2,positive regulation of molecular function,BP,1,negative regulation of catalytic activity
+Biomin,778,1087,GO:0050790,1,0.905829776,0,2,regulation of catalytic activity,BP,1,negative regulation of catalytic activity
+Biomin,779,1088,GO:0065009,1,0.905829776,0,2,regulation of molecular function,BP,1,negative regulation of catalytic activity
+Biomin,107,155,GO:0010771,1,0.941795499,0,1,negative regulation of cell morphogenesis involved in differentiation,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,445,613,GO:0010720,1,0.949413007,0,1,positive regulation of cell development,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,459,638,GO:0045597,1,0.949413007,0,1,positive regulation of cell differentiation,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,464,643,GO:0051094,1,0.949413007,0,1,positive regulation of developmental process,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,606,823,GO:0010721,1,0.894148367,0,2,negative regulation of cell development,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,612,829,GO:0045595,1,0.894148367,0,2,regulation of cell differentiation,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,613,830,GO:0045596,1,0.894148367,0,2,negative regulation of cell differentiation,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,621,838,GO:0051093,1,0.894148367,0,2,negative regulation of developmental process,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,625,842,GO:0060284,1,0.894148367,0,2,regulation of cell development,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,672,907,GO:0050793,1,0.821909502,0,4,regulation of developmental process,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,673,908,GO:2000026,1,0.821909502,0,4,regulation of multicellular organismal development,BP,1,negative regulation of cell morphogenesis involved in differentiation
+Biomin,295,438,GO:0000122,1,0.968963242,0,1,negative regulation of transcription by RNA polymerase II,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,300,444,GO:0010558,1,0.968963242,0,1,negative regulation of macromolecule biosynthetic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,303,447,GO:0045892,1,0.968963242,0,1,"negative regulation of transcription, DNA-templated",BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,304,448,GO:0045934,1,0.968963242,0,1,negative regulation of nucleobase-containing compound metabolic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,306,450,GO:0051253,1,0.968963242,0,1,negative regulation of RNA metabolic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,308,452,GO:1902679,1,0.968963242,0,1,negative regulation of RNA biosynthetic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,309,453,GO:1903507,1,0.968963242,0,1,negative regulation of nucleic acid-templated transcription,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,310,454,GO:2000113,1,0.968963242,0,1,negative regulation of cellular macromolecule biosynthetic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,426,592,GO:0048523,1,0.793998544,0,5,negative regulation of cellular process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,440,606,GO:0048519,1,0.753452651,0,6,negative regulation of biological process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,470,649,GO:0051490,1,0.949413007,0,1,negative regulation of filopodium assembly,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,478,658,GO:0120033,1,0.949413007,0,1,negative regulation of plasma membrane bounded cell projection assembly,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,600,817,GO:0009892,1,0.877286185,0,3,negative regulation of metabolic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,602,819,GO:0010605,1,0.877286185,0,3,negative regulation of macromolecule metabolic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,610,827,GO:0031345,1,0.894148367,0,2,negative regulation of cell projection organization,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,622,839,GO:0051129,1,0.894148367,0,2,negative regulation of cellular component organization,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,708,1009,GO:0010629,1,0.919498324,0,2,negative regulation of gene expression,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,758,1064,GO:0009890,1,0.924483986,0,2,negative regulation of biosynthetic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,761,1067,GO:0031324,1,0.924483986,0,2,negative regulation of cellular metabolic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,763,1069,GO:0031327,1,0.924483986,0,2,negative regulation of cellular biosynthetic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,765,1071,GO:0051172,1,0.924483986,0,2,negative regulation of nitrogen compound metabolic process,BP,1,negative regulation of nucleobase-containing compound metabolic process
+Biomin,12,12,GO:0001932,1,0.911583627,0,2,regulation of protein phosphorylation,BP,1,negative regulation of protein metabolic process
+Biomin,15,17,GO:0019220,1,0.911583627,0,2,regulation of phosphate metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,17,19,GO:0031399,1,0.911583627,0,2,regulation of protein modification process,BP,1,negative regulation of protein metabolic process
+Biomin,18,20,GO:0032268,1,0.911583627,0,2,regulation of cellular protein metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,19,21,GO:0042325,1,0.911583627,0,2,regulation of phosphorylation,BP,1,negative regulation of protein metabolic process
+Biomin,22,25,GO:0051174,1,0.911583627,0,2,regulation of phosphorus metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,96,141,GO:0070372,1,0.955443239,0,1,regulation of ERK1 and ERK2 cascade,BP,1,negative regulation of protein metabolic process
+Biomin,144,202,GO:0001934,1,0.95409834,0,1,positive regulation of protein phosphorylation,BP,1,negative regulation of protein metabolic process
+Biomin,166,229,GO:0010562,1,0.95409834,0,1,positive regulation of phosphorus metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,177,267,GO:0031400,1,0.95409834,0,1,negative regulation of protein modification process,BP,1,negative regulation of protein metabolic process
+Biomin,178,268,GO:0031401,1,0.95409834,0,1,positive regulation of protein modification process,BP,1,negative regulation of protein metabolic process
+Biomin,181,273,GO:0032269,1,0.95409834,0,1,negative regulation of cellular protein metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,182,274,GO:0032270,1,0.95409834,0,1,positive regulation of cellular protein metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,184,278,GO:0033135,1,0.95409834,0,1,regulation of peptidyl-serine phosphorylation,BP,1,negative regulation of protein metabolic process
+Biomin,185,279,GO:0033138,1,0.95409834,0,1,positive regulation of peptidyl-serine phosphorylation,BP,1,negative regulation of protein metabolic process
+Biomin,196,293,GO:0042327,1,0.95409834,0,1,positive regulation of phosphorylation,BP,1,negative regulation of protein metabolic process
+Biomin,211,313,GO:0045937,1,0.95409834,0,1,positive regulation of phosphate metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,225,332,GO:0051248,1,0.95409834,0,1,negative regulation of protein metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,288,430,GO:2000479,1,0.95409834,0,1,regulation of cAMP-dependent protein kinase activity,BP,1,negative regulation of protein metabolic process
+Biomin,670,905,GO:0051247,1,0.905391075,0,2,positive regulation of protein metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,711,1012,GO:0051246,1,0.865043397,0,3,regulation of protein metabolic process,BP,1,negative regulation of protein metabolic process
+Biomin,146,206,GO:0002119,1,0.95409834,0,1,nematode larval development,BP,1,nematode larval development
+Biomin,515,710,GO:0009886,1,0.950589347,0,2,post-embryonic animal morphogenesis,BP,1,nematode larval development
+Biomin,516,714,GO:0048563,1,0.950589347,0,2,post-embryonic animal organ morphogenesis,BP,1,nematode larval development
+Biomin,647,871,GO:0002164,1,0.944199277,0,2,larval development,BP,1,nematode larval development
+Biomin,661,896,GO:0009791,1,0.860648028,0,4,post-embryonic development,BP,1,nematode larval development
+Biomin,103,150,GO:0006935,1,0.941795499,0,1,chemotaxis,BP,1,neuron projection guidance
+Biomin,105,152,GO:0007411,1,0.941795499,0,1,axon guidance,BP,1,neuron projection guidance
+Biomin,118,168,GO:0042330,1,0.941795499,0,1,taxis,BP,1,neuron projection guidance
+Biomin,136,193,GO:0097485,1,0.941795499,0,1,neuron projection guidance,BP,1,neuron projection guidance
+Biomin,398,564,GO:0040011,1,0.819439423,0,4,locomotion,BP,1,neuron projection guidance
+Biomin,407,573,GO:0040012,1,0.853098169,0,3,regulation of locomotion,BP,1,neuron projection guidance
+Biomin,456,634,GO:0040013,1,0.949413007,0,1,negative regulation of locomotion,BP,1,neuron projection guidance
+Biomin,775,1084,GO:0040017,1,0.905829776,0,2,positive regulation of locomotion,BP,1,neuron projection guidance
+Biomin,488,668,GO:0008037,1,0.932023874,0,2,cell recognition,BP,1,neuron recognition
+Biomin,489,669,GO:0008038,1,0.932023874,0,2,neuron recognition,BP,1,neuron recognition
+Biomin,53,65,GO:0019362,1,0.947950792,0,1,pyridine nucleotide metabolic process,BP,1,nicotinamide nucleotide metabolic process
+Biomin,65,78,GO:0046496,1,0.947950792,0,1,nicotinamide nucleotide metabolic process,BP,1,nicotinamide nucleotide metabolic process
+Biomin,75,92,GO:0072524,1,0.947950792,0,1,pyridine-containing compound metabolic process,BP,1,nicotinamide nucleotide metabolic process
+Biomin,388,554,GO:1901360,1,0.843290383,0,4,organic cyclic compound metabolic process,BP,1,nicotinamide nucleotide metabolic process
+Biomin,333,477,GO:0006996,1,0.786226733,0,6,organelle organization,BP,1,organelle organization
+Biomin,415,581,GO:0031334,1,0.956973618,0,1,positive regulation of protein-containing complex assembly,BP,1,organelle organization
+Biomin,417,583,GO:0043254,1,0.956973618,0,1,regulation of protein-containing complex assembly,BP,1,organelle organization
+Biomin,419,585,GO:0044089,1,0.956973618,0,1,positive regulation of cellular component biogenesis,BP,1,organelle organization
+Biomin,427,593,GO:0051130,1,0.913043865,0,2,positive regulation of cellular component organization,BP,1,organelle organization
+Biomin,523,722,GO:0044087,1,0.908559821,0,2,regulation of cellular component biogenesis,BP,1,organelle organization
+Biomin,536,735,GO:0022607,1,0.852833732,0,4,cellular component assembly,BP,1,organelle organization
+Biomin,537,736,GO:0044085,1,0.852833732,0,4,cellular component biogenesis,BP,1,organelle organization
+Biomin,547,747,GO:0016043,1,0.705803253,0,9,cellular component organization,BP,1,organelle organization
+Biomin,565,765,GO:0071840,1,0.705803253,0,9,cellular component organization or biogenesis,BP,1,organelle organization
+Biomin,587,798,GO:0022411,1,0.989625492,0,1,cellular component disassembly,BP,1,organelle organization
+Biomin,650,874,GO:0051128,1,0.808392596,0,5,regulation of cellular component organization,BP,1,organelle organization
+Biomin,718,1019,GO:0007015,1,0.990215516,0,1,actin filament organization,BP,1,organelle organization
+Biomin,744,1049,GO:0070925,1,0.990215516,0,1,organelle assembly,BP,1,organelle organization
+Biomin,747,1052,GO:0097435,1,0.990215516,0,1,supramolecular fiber organization,BP,1,organelle organization
+Biomin,171,241,GO:0018958,1,0.95409834,0,1,phenol-containing compound metabolic process,BP,1,organic hydroxy compound metabolic process
+Biomin,272,403,GO:1901615,1,0.95409834,0,1,organic hydroxy compound metabolic process,BP,1,organic hydroxy compound metabolic process
+Biomin,663,898,GO:0055114,1,0.904817754,0,2,oxidation-reduction process,BP,1,oxidation-reduction process
+Biomin,28,32,GO:0006766,1,0.982563925,0,1,vitamin metabolic process,BP,1,oxoacid metabolic process
+Biomin,29,33,GO:0006767,1,0.982563925,0,1,water-soluble vitamin metabolic process,BP,1,oxoacid metabolic process
+Biomin,38,46,GO:0006082,1,0.947950792,0,1,organic acid metabolic process,BP,1,oxoacid metabolic process
+Biomin,39,47,GO:0006520,1,0.947950792,0,1,cellular amino acid metabolic process,BP,1,oxoacid metabolic process
+Biomin,46,54,GO:0009069,1,0.947950792,0,1,serine family amino acid metabolic process,BP,1,oxoacid metabolic process
+Biomin,50,60,GO:0016259,1,0.947950792,0,1,selenocysteine metabolic process,BP,1,oxoacid metabolic process
+Biomin,54,66,GO:0019752,1,0.947950792,0,1,carboxylic acid metabolic process,BP,1,oxoacid metabolic process
+Biomin,63,76,GO:0043436,1,0.947950792,0,1,oxoacid metabolic process,BP,1,oxoacid metabolic process
+Biomin,80,97,GO:1901605,1,0.947950792,0,1,alpha-amino acid metabolic process,BP,1,oxoacid metabolic process
+Biomin,155,218,GO:0009187,1,0.95409834,0,1,cyclic nucleotide metabolic process,BP,1,oxoacid metabolic process
+Biomin,212,314,GO:0046068,1,0.95409834,0,1,cGMP metabolic process,BP,1,oxoacid metabolic process
+Biomin,432,598,GO:0006753,1,0.904434578,0,2,nucleoside phosphate metabolic process,BP,1,oxoacid metabolic process
+Biomin,435,601,GO:0009117,1,0.904434578,0,2,nucleotide metabolic process,BP,1,oxoacid metabolic process
+Biomin,437,603,GO:0055086,1,0.904434578,0,2,nucleobase-containing small molecule metabolic process,BP,1,oxoacid metabolic process
+Biomin,700,1000,GO:0044281,1,0.888662216,0,3,small molecule metabolic process,BP,1,oxoacid metabolic process
+Biomin,92,132,GO:0043171,1,0.955443239,0,1,peptide catabolic process,BP,1,peptide catabolic process
+Biomin,783,1092,GO:0006518,1,0.905709581,0,2,peptide metabolic process,BP,1,peptide catabolic process
+Biomin,786,1095,GO:0043603,1,0.905709581,0,2,cellular amide metabolic process,BP,1,peptide catabolic process
+Biomin,680,939,GO:0018149,1,0.960555294,0,1,peptide cross-linking,BP,1,peptide cross-linking
+Biomin,16,18,GO:0031325,1,0.911583627,0,2,positive regulation of cellular metabolic process,BP,1,positive regulation of biological process
+Biomin,25,29,GO:0048518,1,0.715603165,0,7,positive regulation of biological process,BP,1,positive regulation of biological process
+Biomin,495,675,GO:0048522,1,0.754115563,0,6,positive regulation of cellular process,BP,1,positive regulation of biological process
+Biomin,558,758,GO:0050789,1,0.56097635,0,13,regulation of biological process,BP,1,positive regulation of biological process
+Biomin,559,759,GO:0050794,1,0.56097635,0,13,regulation of cellular process,BP,1,positive regulation of biological process
+Biomin,562,762,GO:0065007,1,0.480329192,0,18,biological regulation,BP,1,positive regulation of biological process
+Biomin,669,904,GO:0051173,1,0.905391075,0,2,positive regulation of nitrogen compound metabolic process,BP,1,positive regulation of biological process
+Biomin,709,1010,GO:0009893,1,0.865043397,0,3,positive regulation of metabolic process,BP,1,positive regulation of biological process
+Biomin,710,1011,GO:0010604,1,0.865043397,0,3,positive regulation of macromolecule metabolic process,BP,1,positive regulation of biological process
+Biomin,26,30,GO:0010646,1,0.756674206,0,6,regulation of cell communication,BP,1,positive regulation of cell communication
+Biomin,214,316,GO:0048167,1,0.95409834,0,1,regulation of synaptic plasticity,BP,1,positive regulation of cell communication
+Biomin,402,568,GO:0010647,1,0.878260306,0,3,positive regulation of cell communication,BP,1,positive regulation of cell communication
+Biomin,502,682,GO:0007267,1,0.951165903,0,1,cell-cell signaling,BP,1,positive regulation of cell communication
+Biomin,503,683,GO:0007268,1,0.951165903,0,1,chemical synaptic transmission,BP,1,positive regulation of cell communication
+Biomin,504,684,GO:0007271,1,0.951165903,0,1,"synaptic transmission, cholinergic",BP,1,positive regulation of cell communication
+Biomin,505,689,GO:0032228,1,0.951165903,0,1,"regulation of synaptic transmission, GABAergic",BP,1,positive regulation of cell communication
+Biomin,509,699,GO:0098916,1,0.951165903,0,1,anterograde trans-synaptic signaling,BP,1,positive regulation of cell communication
+Biomin,510,700,GO:0099536,1,0.951165903,0,1,synaptic signaling,BP,1,positive regulation of cell communication
+Biomin,511,701,GO:0099537,1,0.951165903,0,1,trans-synaptic signaling,BP,1,positive regulation of cell communication
+Biomin,542,741,GO:0007154,1,0.639511609,0,9,cell communication,BP,1,positive regulation of cell communication
+Biomin,657,887,GO:0050804,1,0.907502332,0,2,modulation of chemical synaptic transmission,BP,1,positive regulation of cell communication
+Biomin,659,894,GO:0099177,1,0.907502332,0,2,regulation of trans-synaptic signaling,BP,1,positive regulation of cell communication
+Biomin,794,1108,GO:0010648,1,0.916461386,0,2,negative regulation of cell communication,BP,1,positive regulation of cell communication
+Biomin,13,13,GO:0008277,1,0.911583627,0,2,regulation of G protein-coupled receptor signaling pathway,BP,1,positive regulation of signal transduction
+Biomin,27,31,GO:0023051,1,0.756674206,0,6,regulation of signaling,BP,1,positive regulation of signal transduction
+Biomin,205,307,GO:0045744,1,0.95409834,0,1,negative regulation of G protein-coupled receptor signaling pathway,BP,1,positive regulation of signal transduction
+Biomin,352,508,GO:0007167,1,0.948953234,0,1,enzyme linked receptor protein signaling pathway,BP,1,positive regulation of signal transduction
+Biomin,353,509,GO:0007169,1,0.948953234,0,1,transmembrane receptor protein tyrosine kinase signaling pathway,BP,1,positive regulation of signal transduction
+Biomin,401,567,GO:0009967,1,0.878260306,0,3,positive regulation of signal transduction,BP,1,positive regulation of signal transduction
+Biomin,403,569,GO:0023056,1,0.878260306,0,3,positive regulation of signaling,BP,1,positive regulation of signal transduction
+Biomin,409,575,GO:0007165,1,0.748308022,0,6,signal transduction,BP,1,positive regulation of signal transduction
+Biomin,521,720,GO:0009966,1,0.79553769,0,5,regulation of signal transduction,BP,1,positive regulation of signal transduction
+Biomin,574,777,GO:0023052,1,0.711748243,0,7,signaling,BP,1,positive regulation of signal transduction
+Biomin,646,870,GO:0007166,1,0.865639151,0,3,cell surface receptor signaling pathway,BP,1,positive regulation of signal transduction
+Biomin,790,1102,GO:1902533,1,0.917753316,0,2,positive regulation of intracellular signal transduction,BP,1,positive regulation of signal transduction
+Biomin,793,1107,GO:0009968,1,0.916461386,0,2,negative regulation of signal transduction,BP,1,positive regulation of signal transduction
+Biomin,795,1109,GO:0023057,1,0.916461386,0,2,negative regulation of signaling,BP,1,positive regulation of signal transduction
+Biomin,797,1112,GO:1902532,1,0.916461386,0,2,negative regulation of intracellular signal transduction,BP,1,positive regulation of signal transduction
+Biomin,271,402,GO:1901160,1,0.95409834,0,1,primary amino compound metabolic process,BP,1,primary amino compound metabolic process
+Biomin,1,1,GO:0006508,1,0.908087561,0,3,proteolysis,BP,1,protein processing
+Biomin,4,4,GO:0044267,1,0.798434733,0,7,cellular protein metabolic process,BP,1,protein processing
+Biomin,89,120,GO:0016485,1,0.955443239,0,1,protein processing,BP,1,protein processing
+Biomin,95,138,GO:0051604,1,0.955443239,0,1,protein maturation,BP,1,protein processing
+Biomin,548,748,GO:0019538,1,0.749539387,0,9,protein metabolic process,BP,1,protein processing
+Biomin,566,766,GO:1901564,1,0.677877301,0,11,organonitrogen compound metabolic process,BP,1,protein processing
+Biomin,68,81,GO:0051259,1,0.947950792,0,1,protein complex oligomerization,BP,1,protein-containing complex assembly
+Biomin,69,82,GO:0051262,1,0.947950792,0,1,protein tetramerization,BP,1,protein-containing complex assembly
+Biomin,71,84,GO:0065003,1,0.947950792,0,1,protein-containing complex assembly,BP,1,protein-containing complex assembly
+Biomin,651,875,GO:0043933,1,0.938674768,0,2,protein-containing complex subunit organization,BP,1,protein-containing complex assembly
+Biomin,731,1035,GO:0034728,1,0.990215516,0,1,nucleosome organization,BP,1,protein-containing complex assembly
+Biomin,746,1051,GO:0071824,1,0.990215516,0,1,protein-DNA complex subunit organization,BP,1,protein-containing complex assembly
+Biomin,147,207,GO:0006163,1,0.95409834,0,1,purine nucleotide metabolic process,BP,1,purine nucleotide metabolic process
+Biomin,154,217,GO:0009150,1,0.95409834,0,1,purine ribonucleotide metabolic process,BP,1,purine nucleotide metabolic process
+Biomin,257,380,GO:0072521,1,0.95409834,0,1,purine-containing compound metabolic process,BP,1,purine nucleotide metabolic process
+Biomin,431,597,GO:0006139,1,0.904434578,0,2,nucleobase-containing compound metabolic process,BP,1,purine nucleotide metabolic process
+Biomin,699,999,GO:0006725,1,0.888662216,0,3,cellular aromatic compound metabolic process,BP,1,purine nucleotide metabolic process
+Biomin,701,1001,GO:0046483,1,0.888662216,0,3,heterocycle metabolic process,BP,1,purine nucleotide metabolic process
+Biomin,61,74,GO:0042743,1,0.947950792,0,1,hydrogen peroxide metabolic process,BP,1,reactive oxygen species metabolic process
+Biomin,62,75,GO:0042744,1,0.947950792,0,1,hydrogen peroxide catabolic process,BP,1,reactive oxygen species metabolic process
+Biomin,76,93,GO:0072593,1,0.947950792,0,1,reactive oxygen species metabolic process,BP,1,reactive oxygen species metabolic process
+Biomin,283,419,GO:1903426,1,0.95409834,0,1,regulation of reactive oxygen species biosynthetic process,BP,1,reactive oxygen species metabolic process
+Biomin,284,420,GO:1903427,1,0.95409834,0,1,negative regulation of reactive oxygen species biosynthetic process,BP,1,reactive oxygen species metabolic process
+Biomin,286,428,GO:2000377,1,0.95409834,0,1,regulation of reactive oxygen species metabolic process,BP,1,reactive oxygen species metabolic process
+Biomin,287,429,GO:2000378,1,0.95409834,0,1,negative regulation of reactive oxygen species metabolic process,BP,1,reactive oxygen species metabolic process
+Biomin,589,800,GO:0031099,1,0.989625492,0,1,regeneration,BP,1,regeneration
+Biomin,98,144,GO:0001558,1,0.941795499,0,1,regulation of cell growth,BP,1,regulation of axon extension involved in axon guidance
+Biomin,108,156,GO:0016049,1,0.941795499,0,1,cell growth,BP,1,regulation of axon extension involved in axon guidance
+Biomin,120,176,GO:0048588,1,0.941795499,0,1,developmental cell growth,BP,1,regulation of axon extension involved in axon guidance
+Biomin,121,177,GO:0048675,1,0.941795499,0,1,axon extension,BP,1,regulation of axon extension involved in axon guidance
+Biomin,123,179,GO:0048841,1,0.941795499,0,1,regulation of axon extension involved in axon guidance,BP,1,regulation of axon extension involved in axon guidance
+Biomin,124,180,GO:0048846,1,0.941795499,0,1,axon extension involved in axon guidance,BP,1,regulation of axon extension involved in axon guidance
+Biomin,137,194,GO:1902284,1,0.941795499,0,1,neuron projection extension involved in neuron projection guidance,BP,1,regulation of axon extension involved in axon guidance
+Biomin,140,197,GO:1990138,1,0.941795499,0,1,neuron projection extension,BP,1,regulation of axon extension involved in axon guidance
+Biomin,193,290,GO:0040009,1,0.95409834,0,1,regulation of growth rate,BP,1,regulation of axon extension involved in axon guidance
+Biomin,194,291,GO:0040010,1,0.95409834,0,1,positive regulation of growth rate,BP,1,regulation of axon extension involved in axon guidance
+Biomin,210,312,GO:0045927,1,0.95409834,0,1,positive regulation of growth,BP,1,regulation of axon extension involved in axon guidance
+Biomin,293,436,GO:0040008,1,0.859892964,0,3,regulation of growth,BP,1,regulation of axon extension involved in axon guidance
+Biomin,490,670,GO:0040007,1,0.932023874,0,2,growth,BP,1,regulation of axon extension involved in axon guidance
+Biomin,491,671,GO:0048589,1,0.932023874,0,2,developmental growth,BP,1,regulation of axon extension involved in axon guidance
+Biomin,492,672,GO:0060560,1,0.932023874,0,2,developmental growth involved in morphogenesis,BP,1,regulation of axon extension involved in axon guidance
+Biomin,791,1105,GO:0048638,1,0.901269575,0,2,regulation of developmental growth,BP,1,regulation of axon extension involved in axon guidance
+Biomin,104,151,GO:0007409,1,0.941795499,0,1,axonogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,106,154,GO:0010769,1,0.941795499,0,1,regulation of cell morphogenesis involved in differentiation,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,109,157,GO:0022604,1,0.941795499,0,1,regulation of cell morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,125,181,GO:0050770,1,0.941795499,0,1,regulation of axonogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,361,517,GO:0010171,1,0.948953234,0,1,body morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,386,551,GO:0048667,1,0.8985614,0,2,cell morphogenesis involved in neuron differentiation,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,395,561,GO:0000902,1,0.819439423,0,4,cell morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,396,562,GO:0000904,1,0.819439423,0,4,cell morphogenesis involved in differentiation,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,513,703,GO:0048646,1,0.851324534,0,5,anatomical structure formation involved in morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,534,733,GO:0032989,1,0.811419008,0,5,cellular component morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,545,745,GO:0009653,1,0.656393365,0,10,anatomical structure morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,611,828,GO:0032990,1,0.894148367,0,2,cell part morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,616,833,GO:0048812,1,0.894148367,0,2,neuron projection morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,617,834,GO:0048858,1,0.894148367,0,2,cell projection morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,627,844,GO:0120039,1,0.894148367,0,2,plasma membrane bounded cell projection morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,636,854,GO:0001736,1,0.904643096,0,2,establishment of planar polarity,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,639,858,GO:0007164,1,0.904643096,0,2,establishment of tissue polarity,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,641,862,GO:0022603,1,0.904643096,0,2,regulation of anatomical structure morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,677,916,GO:0001763,1,0.960555294,0,1,morphogenesis of a branching structure,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,687,964,GO:0048859,1,0.960555294,0,1,formation of anatomical boundary,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,689,970,GO:0061138,1,0.960555294,0,1,morphogenesis of a branching epithelium,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,721,1023,GO:0010927,1,0.990215516,0,1,cellular component assembly involved in morphogenesis,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,729,1033,GO:0030239,1,0.990215516,0,1,myofibril assembly,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,745,1050,GO:0071689,1,0.990215516,0,1,muscle thin filament assembly,BP,1,regulation of cell morphogenesis involved in differentiation
+Biomin,141,198,GO:0000820,1,0.95409834,0,1,regulation of glutamine family amino acid metabolic process,BP,1,regulation of glutamine family amino acid metabolic process
+Biomin,148,208,GO:0006521,1,0.95409834,0,1,regulation of cellular amino acid metabolic process,BP,1,regulation of glutamine family amino acid metabolic process
+Biomin,186,280,GO:0033238,1,0.95409834,0,1,regulation of cellular amine metabolic process,BP,1,regulation of glutamine family amino acid metabolic process
+Biomin,187,281,GO:0033239,1,0.95409834,0,1,negative regulation of cellular amine metabolic process,BP,1,regulation of glutamine family amino acid metabolic process
+Biomin,206,308,GO:0045763,1,0.95409834,0,1,negative regulation of cellular amino acid metabolic process,BP,1,regulation of glutamine family amino acid metabolic process
+Biomin,93,133,GO:0043408,1,0.955443239,0,1,regulation of MAPK cascade,BP,1,regulation of intracellular signal transduction
+Biomin,294,437,GO:1902531,1,0.83131678,0,4,regulation of intracellular signal transduction,BP,1,regulation of intracellular signal transduction
+Biomin,425,591,GO:0035556,1,0.911960585,0,2,intracellular signal transduction,BP,1,regulation of intracellular signal transduction
+Biomin,442,609,GO:0007264,1,0.949413007,0,1,small GTPase mediated signal transduction,BP,1,regulation of intracellular signal transduction
+Biomin,443,610,GO:0007265,1,0.949413007,0,1,Ras protein signal transduction,BP,1,regulation of intracellular signal transduction
+Biomin,444,611,GO:0007266,1,0.949413007,0,1,Rho protein signal transduction,BP,1,regulation of intracellular signal transduction
+Biomin,463,642,GO:0051056,1,0.949413007,0,1,regulation of small GTPase mediated signal transduction,BP,1,regulation of intracellular signal transduction
+Biomin,683,952,GO:0035329,1,0.960555294,0,1,hippo signaling,BP,1,regulation of intracellular signal transduction
+Biomin,684,953,GO:0035330,1,0.960555294,0,1,regulation of hippo signaling,BP,1,regulation of intracellular signal transduction
+Biomin,685,955,GO:0035332,1,0.960555294,0,1,positive regulation of hippo signaling,BP,1,regulation of intracellular signal transduction
+Biomin,21,24,GO:0044057,1,0.911583627,0,2,regulation of system process,BP,1,regulation of muscle system process
+Biomin,23,26,GO:0090257,1,0.911583627,0,2,regulation of muscle system process,BP,1,regulation of muscle system process
+Biomin,85,105,GO:0003013,1,0.955443239,0,1,circulatory system process,BP,1,regulation of muscle system process
+Biomin,87,111,GO:0008015,1,0.955443239,0,1,blood circulation,BP,1,regulation of muscle system process
+Biomin,152,214,GO:0007605,1,0.95409834,0,1,sensory perception of sound,BP,1,regulation of muscle system process
+Biomin,218,322,GO:0050905,1,0.95409834,0,1,neuromuscular process,BP,1,regulation of muscle system process
+Biomin,220,325,GO:0050954,1,0.95409834,0,1,sensory perception of mechanical stimulus,BP,1,regulation of muscle system process
+Biomin,508,694,GO:0050953,1,0.951165903,0,1,sensory perception of light stimulus,BP,1,regulation of muscle system process
+Biomin,654,881,GO:0007600,1,0.907502332,0,2,sensory perception,BP,1,regulation of muscle system process
+Biomin,658,888,GO:0050877,1,0.907502332,0,2,nervous system process,BP,1,regulation of muscle system process
+Biomin,712,1013,GO:0003008,1,0.867060717,0,3,system process,BP,1,regulation of muscle system process
+Biomin,5,5,GO:0051960,1,0.855669539,0,3,regulation of nervous system development,BP,1,regulation of nervous system development
+Biomin,408,574,GO:0051241,1,0.853098169,0,3,negative regulation of multicellular organismal process,BP,1,regulation of nervous system development
+Biomin,411,577,GO:0051239,1,0.74921708,0,6,regulation of multicellular organismal process,BP,1,regulation of nervous system development
+Biomin,461,640,GO:0050769,1,0.949413007,0,1,positive regulation of neurogenesis,BP,1,regulation of nervous system development
+Biomin,471,650,GO:0051962,1,0.949413007,0,1,positive regulation of nervous system development,BP,1,regulation of nervous system development
+Biomin,607,824,GO:0010975,1,0.894148367,0,2,regulation of neuron projection development,BP,1,regulation of nervous system development
+Biomin,608,825,GO:0010977,1,0.894148367,0,2,negative regulation of neuron projection development,BP,1,regulation of nervous system development
+Biomin,614,831,GO:0045664,1,0.894148367,0,2,regulation of neuron differentiation,BP,1,regulation of nervous system development
+Biomin,615,832,GO:0045665,1,0.894148367,0,2,negative regulation of neuron differentiation,BP,1,regulation of nervous system development
+Biomin,618,835,GO:0050767,1,0.894148367,0,2,regulation of neurogenesis,BP,1,regulation of nervous system development
+Biomin,619,836,GO:0050768,1,0.894148367,0,2,negative regulation of neurogenesis,BP,1,regulation of nervous system development
+Biomin,624,841,GO:0051961,1,0.894148367,0,2,negative regulation of nervous system development,BP,1,regulation of nervous system development
+Biomin,774,1080,GO:0051240,1,0.907106742,0,2,positive regulation of multicellular organismal process,BP,1,regulation of nervous system development
+Biomin,447,625,GO:0030031,1,0.949413007,0,1,cell projection assembly,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,448,626,GO:0030032,1,0.949413007,0,1,lamellipodium assembly,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,452,630,GO:0031268,1,0.949413007,0,1,pseudopodium organization,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,453,631,GO:0031269,1,0.949413007,0,1,pseudopodium assembly,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,460,639,GO:0046847,1,0.949413007,0,1,filopodium assembly,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,469,648,GO:0051489,1,0.949413007,0,1,regulation of filopodium assembly,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,472,651,GO:0060491,1,0.949413007,0,1,regulation of cell projection assembly,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,475,655,GO:0097581,1,0.949413007,0,1,lamellipodium organization,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,476,656,GO:0120031,1,0.949413007,0,1,plasma membrane bounded cell projection assembly,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,477,657,GO:0120032,1,0.949413007,0,1,regulation of plasma membrane bounded cell projection assembly,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,485,665,GO:0030030,1,0.810935365,0,5,cell projection organization,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,486,666,GO:0120036,1,0.810935365,0,5,plasma membrane bounded cell projection organization,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,609,826,GO:0031344,1,0.894148367,0,2,regulation of cell projection organization,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,626,843,GO:0120035,1,0.894148367,0,2,regulation of plasma membrane bounded cell projection organization,BP,1,regulation of plasma membrane bounded cell projection organization
+Biomin,114,163,GO:0032101,1,0.941795499,0,1,regulation of response to external stimulus,BP,1,regulation of response to external stimulus
+Biomin,126,183,GO:0050920,1,0.941795499,0,1,regulation of chemotaxis,BP,1,regulation of response to external stimulus
+Biomin,138,195,GO:1902667,1,0.941795499,0,1,regulation of axon guidance,BP,1,regulation of response to external stimulus
+Biomin,179,269,GO:0031668,1,0.95409834,0,1,cellular response to extracellular stimulus,BP,1,regulation of response to external stimulus
+Biomin,180,270,GO:0031669,1,0.95409834,0,1,cellular response to nutrient levels,BP,1,regulation of response to external stimulus
+Biomin,188,284,GO:0033273,1,0.95409834,0,1,response to vitamin,BP,1,regulation of response to external stimulus
+Biomin,249,369,GO:0071496,1,0.95409834,0,1,cellular response to external stimulus,BP,1,regulation of response to external stimulus
+Biomin,334,478,GO:0009605,1,0.819447728,0,4,response to external stimulus,BP,1,regulation of response to external stimulus
+Biomin,577,780,GO:0007584,1,0.910686025,0,2,response to nutrient,BP,1,regulation of response to external stimulus
+Biomin,578,781,GO:0009991,1,0.910686025,0,2,response to extracellular stimulus,BP,1,regulation of response to external stimulus
+Biomin,579,782,GO:0031667,1,0.910686025,0,2,response to nutrient levels,BP,1,regulation of response to external stimulus
+Biomin,20,23,GO:0043949,1,0.911583627,0,2,regulation of cAMP-mediated signaling,BP,1,regulation of response to stimulus
+Biomin,203,302,GO:0043951,1,0.95409834,0,1,negative regulation of cAMP-mediated signaling,BP,1,regulation of response to stimulus
+Biomin,216,319,GO:0050848,1,0.95409834,0,1,regulation of calcium-mediated signaling,BP,1,regulation of response to stimulus
+Biomin,217,320,GO:0050849,1,0.95409834,0,1,negative regulation of calcium-mediated signaling,BP,1,regulation of response to stimulus
+Biomin,244,357,GO:0070884,1,0.95409834,0,1,regulation of calcineurin-NFAT signaling cascade,BP,1,regulation of response to stimulus
+Biomin,258,381,GO:0080134,1,0.95409834,0,1,regulation of response to stress,BP,1,regulation of response to stimulus
+Biomin,269,393,GO:0106056,1,0.95409834,0,1,regulation of calcineurin-mediated signaling,BP,1,regulation of response to stimulus
+Biomin,404,570,GO:0048584,1,0.878260306,0,3,positive regulation of response to stimulus,BP,1,regulation of response to stimulus
+Biomin,410,576,GO:0048583,1,0.74921708,0,6,regulation of response to stimulus,BP,1,regulation of response to stimulus
+Biomin,796,1110,GO:0048585,1,0.916461386,0,2,negative regulation of response to stimulus,BP,1,regulation of response to stimulus
+Biomin,2,2,GO:0031323,1,0.883286818,0,3,regulation of cellular metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,168,231,GO:0010565,1,0.95409834,0,1,regulation of cellular ketone metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,239,352,GO:0062012,1,0.95409834,0,1,regulation of small molecule metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,240,353,GO:0062014,1,0.95409834,0,1,negative regulation of small molecule metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,368,533,GO:0019222,1,0.794549714,0,5,regulation of metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,369,534,GO:0080090,1,0.794549714,0,5,regulation of primary metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,601,818,GO:0010468,1,0.877286185,0,3,regulation of gene expression,BP,1,regulation of small molecule metabolic process
+Biomin,652,876,GO:0051171,1,0.838189001,0,4,regulation of nitrogen compound metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,653,877,GO:0060255,1,0.838189001,0,4,regulation of macromolecule metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,754,1060,GO:0006355,1,0.924483986,0,2,"regulation of transcription, DNA-templated",BP,1,regulation of small molecule metabolic process
+Biomin,755,1061,GO:0006357,1,0.924483986,0,2,regulation of transcription by RNA polymerase II,BP,1,regulation of small molecule metabolic process
+Biomin,757,1063,GO:0009889,1,0.924483986,0,2,regulation of biosynthetic process,BP,1,regulation of small molecule metabolic process
+Biomin,759,1065,GO:0010556,1,0.924483986,0,2,regulation of macromolecule biosynthetic process,BP,1,regulation of small molecule metabolic process
+Biomin,760,1066,GO:0019219,1,0.924483986,0,2,regulation of nucleobase-containing compound metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,762,1068,GO:0031326,1,0.924483986,0,2,regulation of cellular biosynthetic process,BP,1,regulation of small molecule metabolic process
+Biomin,766,1072,GO:0051252,1,0.924483986,0,2,regulation of RNA metabolic process,BP,1,regulation of small molecule metabolic process
+Biomin,767,1073,GO:1903506,1,0.924483986,0,2,regulation of nucleic acid-templated transcription,BP,1,regulation of small molecule metabolic process
+Biomin,768,1074,GO:2000112,1,0.924483986,0,2,regulation of cellular macromolecule biosynthetic process,BP,1,regulation of small molecule metabolic process
+Biomin,769,1075,GO:2001141,1,0.924483986,0,2,regulation of RNA biosynthetic process,BP,1,regulation of small molecule metabolic process
+Biomin,145,204,GO:0002028,1,0.95409834,0,1,regulation of sodium ion transport,BP,1,regulation of vesicle-mediated transport
+Biomin,169,237,GO:0010959,1,0.95409834,0,1,regulation of metal ion transport,BP,1,regulation of vesicle-mediated transport
+Biomin,173,261,GO:0030100,1,0.95409834,0,1,regulation of endocytosis,BP,1,regulation of vesicle-mediated transport
+Biomin,191,288,GO:0034762,1,0.95409834,0,1,regulation of transmembrane transport,BP,1,regulation of vesicle-mediated transport
+Biomin,192,289,GO:0034765,1,0.95409834,0,1,regulation of ion transmembrane transport,BP,1,regulation of vesicle-mediated transport
+Biomin,200,299,GO:0043269,1,0.95409834,0,1,regulation of ion transport,BP,1,regulation of vesicle-mediated transport
+Biomin,201,300,GO:0043270,1,0.95409834,0,1,positive regulation of ion transport,BP,1,regulation of vesicle-mediated transport
+Biomin,207,309,GO:0045807,1,0.95409834,0,1,positive regulation of endocytosis,BP,1,regulation of vesicle-mediated transport
+Biomin,223,330,GO:0051049,1,0.95409834,0,1,regulation of transport,BP,1,regulation of vesicle-mediated transport
+Biomin,224,331,GO:0051050,1,0.95409834,0,1,positive regulation of transport,BP,1,regulation of vesicle-mediated transport
+Biomin,234,345,GO:0051924,1,0.95409834,0,1,regulation of calcium ion transport,BP,1,regulation of vesicle-mediated transport
+Biomin,235,346,GO:0051928,1,0.95409834,0,1,positive regulation of calcium ion transport,BP,1,regulation of vesicle-mediated transport
+Biomin,238,351,GO:0060627,1,0.95409834,0,1,regulation of vesicle-mediated transport,BP,1,regulation of vesicle-mediated transport
+Biomin,280,412,GO:1902305,1,0.95409834,0,1,regulation of sodium ion transmembrane transport,BP,1,regulation of vesicle-mediated transport
+Biomin,285,422,GO:1904062,1,0.95409834,0,1,regulation of cation transmembrane transport,BP,1,regulation of vesicle-mediated transport
+Biomin,406,572,GO:0032879,1,0.853098169,0,3,regulation of localization,BP,1,regulation of vesicle-mediated transport
+Biomin,24,28,GO:0009611,1,0.908996353,0,3,response to wounding,BP,1,response to axon injury
+Biomin,44,52,GO:0006979,1,0.947950792,0,1,response to oxidative stress,BP,1,response to axon injury
+Biomin,57,69,GO:0034599,1,0.947950792,0,1,cellular response to oxidative stress,BP,1,response to axon injury
+Biomin,67,80,GO:0048678,1,0.947950792,0,1,response to axon injury,BP,1,response to axon injury
+Biomin,405,571,GO:0042060,1,0.958910204,0,2,wound healing,BP,1,response to axon injury
+Biomin,14,14,GO:0009612,1,0.911583627,0,2,response to mechanical stimulus,BP,1,response to decreased oxygen levels
+Biomin,58,71,GO:0036296,1,0.947950792,0,1,response to increased oxygen levels,BP,1,response to decreased oxygen levels
+Biomin,70,83,GO:0055093,1,0.947950792,0,1,response to hyperoxia,BP,1,response to decreased oxygen levels
+Biomin,74,90,GO:0071453,1,0.947950792,0,1,cellular response to oxygen levels,BP,1,response to decreased oxygen levels
+Biomin,84,101,GO:0001666,1,0.955443239,0,1,response to hypoxia,BP,1,response to decreased oxygen levels
+Biomin,91,129,GO:0036293,1,0.955443239,0,1,response to decreased oxygen levels,BP,1,response to decreased oxygen levels
+Biomin,157,220,GO:0009266,1,0.95409834,0,1,response to temperature stimulus,BP,1,response to decreased oxygen levels
+Biomin,158,221,GO:0009409,1,0.95409834,0,1,response to cold,BP,1,response to decreased oxygen levels
+Biomin,571,774,GO:0009628,1,0.864129457,0,3,response to abiotic stimulus,BP,1,response to decreased oxygen levels
+Biomin,787,1096,GO:0070482,1,0.905709581,0,2,response to oxygen levels,BP,1,response to decreased oxygen levels
+Biomin,34,40,GO:0000302,1,0.947950792,0,1,response to reactive oxygen species,BP,1,response to reactive oxygen species
+Biomin,35,41,GO:0000305,1,0.947950792,0,1,response to oxygen radical,BP,1,response to reactive oxygen species
+Biomin,142,200,GO:0001101,1,0.95409834,0,1,response to acid chemical,BP,1,response to reactive oxygen species
+Biomin,159,222,GO:0009415,1,0.95409834,0,1,response to water,BP,1,response to reactive oxygen species
+Biomin,260,383,GO:0097305,1,0.95409834,0,1,response to alcohol,BP,1,response to reactive oxygen species
+Biomin,261,384,GO:0097306,1,0.95409834,0,1,cellular response to alcohol,BP,1,response to reactive oxygen species
+Biomin,273,404,GO:1901654,1,0.95409834,0,1,response to ketone,BP,1,response to reactive oxygen species
+Biomin,274,405,GO:1901655,1,0.95409834,0,1,cellular response to ketone,BP,1,response to reactive oxygen species
+Biomin,278,409,GO:1901701,1,0.95409834,0,1,cellular response to oxygen-containing compound,BP,1,response to reactive oxygen species
+Biomin,438,604,GO:1901700,1,0.904434578,0,2,response to oxygen-containing compound,BP,1,response to reactive oxygen species
+Biomin,156,219,GO:0009259,1,0.95409834,0,1,ribonucleotide metabolic process,BP,1,ribose phosphate metabolic process
+Biomin,172,242,GO:0019693,1,0.95409834,0,1,ribose phosphate metabolic process,BP,1,ribose phosphate metabolic process
+Biomin,433,599,GO:0006793,1,0.904434578,0,2,phosphorus metabolic process,BP,1,ribose phosphate metabolic process
+Biomin,434,600,GO:0006796,1,0.904434578,0,2,phosphate-containing compound metabolic process,BP,1,ribose phosphate metabolic process
+Biomin,436,602,GO:0019637,1,0.904434578,0,2,organophosphate metabolic process,BP,1,ribose phosphate metabolic process
+Biomin,289,432,GO:0007423,1,0.784362224,0,5,sensory organ development,BP,1,sensory organ development
+Biomin,428,594,GO:0001654,1,0.820952711,0,4,eye development,BP,1,sensory organ development
+Biomin,430,596,GO:0090596,1,0.820952711,0,4,sensory organ morphogenesis,BP,1,sensory organ development
+Biomin,496,676,GO:0072359,1,0.811739648,0,6,circulatory system development,BP,1,sensory organ development
+Biomin,498,678,GO:0048608,1,0.899556868,0,2,reproductive structure development,BP,1,sensory organ development
+Biomin,499,679,GO:0061458,1,0.899556868,0,2,reproductive system development,BP,1,sensory organ development
+Biomin,507,692,GO:0048593,1,0.951165903,0,1,camera-type eye morphogenesis,BP,1,sensory organ development
+Biomin,514,705,GO:0003007,1,0.950589347,0,2,heart morphogenesis,BP,1,sensory organ development
+Biomin,517,715,GO:0048569,1,0.950589347,0,2,post-embryonic animal organ development,BP,1,sensory organ development
+Biomin,533,732,GO:0048592,1,0.860458635,0,3,eye morphogenesis,BP,1,sensory organ development
+Biomin,555,755,GO:0048513,1,0.626509095,0,11,animal organ development,BP,1,sensory organ development
+Biomin,556,756,GO:0048731,1,0.578036545,0,13,system development,BP,1,sensory organ development
+Biomin,573,776,GO:0009887,1,0.770947223,0,6,animal organ morphogenesis,BP,1,sensory organ development
+Biomin,580,783,GO:0048732,1,0.910686025,0,2,gland development,BP,1,sensory organ development
+Biomin,585,792,GO:0007419,1,0.989625492,0,1,ventral cord development,BP,1,sensory organ development
+Biomin,648,872,GO:0048562,1,0.944199277,0,2,embryonic organ morphogenesis,BP,1,sensory organ development
+Biomin,649,873,GO:0048568,1,0.944199277,0,2,embryonic organ development,BP,1,sensory organ development
+Biomin,656,886,GO:0043010,1,0.907502332,0,2,camera-type eye development,BP,1,sensory organ development
+Biomin,660,895,GO:0007417,1,0.852646717,0,4,central nervous system development,BP,1,sensory organ development
+Biomin,675,910,GO:0048565,1,0.886287555,0,3,digestive tract development,BP,1,sensory organ development
+Biomin,676,911,GO:0055123,1,0.886287555,0,3,digestive system development,BP,1,sensory organ development
+Biomin,698,998,GO:2000027,1,0.960555294,0,1,regulation of animal organ morphogenesis,BP,1,sensory organ development
+Biomin,703,1004,GO:0007507,1,0.899342759,0,4,heart development,BP,1,sensory organ development
+Biomin,750,1056,GO:0007399,1,0.771320878,0,6,nervous system development,BP,1,sensory organ development
+Biomin,751,1057,GO:0022008,1,0.771320878,0,6,neurogenesis,BP,1,sensory organ development
+Biomin,752,1058,GO:0030182,1,0.771320878,0,6,neuron differentiation,BP,1,sensory organ development
+Biomin,753,1059,GO:0048699,1,0.771320878,0,6,generation of neurons,BP,1,sensory organ development
+Biomin,313,457,GO:0007276,1,0.880329061,0,3,gamete generation,BP,1,sexual reproduction
+Biomin,314,458,GO:0007283,1,0.880329061,0,3,spermatogenesis,BP,1,sexual reproduction
+Biomin,315,459,GO:0019953,1,0.880329061,0,3,sexual reproduction,BP,1,sexual reproduction
+Biomin,317,461,GO:0044703,1,0.880329061,0,3,multi-organism reproductive process,BP,1,sexual reproduction
+Biomin,318,462,GO:0048232,1,0.880329061,0,3,male gamete generation,BP,1,sexual reproduction
+Biomin,535,734,GO:0051704,1,0.853000904,0,4,multi-organism process,BP,1,sexual reproduction
+Biomin,43,51,GO:0006790,1,0.947950792,0,1,sulfur compound metabolic process,BP,1,sulfur compound metabolic process
+Biomin,10,10,GO:0034330,1,0.947044771,0,2,cell junction organization,BP,1,synapse organization
+Biomin,11,11,GO:0045216,1,0.947044771,0,2,cell-cell junction organization,BP,1,synapse organization
+Biomin,83,100,GO:0050808,1,0.944762259,0,2,synapse organization,BP,1,synapse organization
+Biomin,413,579,GO:0007043,1,0.956973618,0,1,cell-cell junction assembly,BP,1,synapse organization
+Biomin,414,580,GO:0008582,1,0.956973618,0,1,regulation of synaptic growth at neuromuscular junction,BP,1,synapse organization
+Biomin,416,582,GO:0034329,1,0.956973618,0,1,cell junction assembly,BP,1,synapse organization
+Biomin,418,584,GO:0043297,1,0.956973618,0,1,apical junction assembly,BP,1,synapse organization
+Biomin,421,587,GO:0070830,1,0.956973618,0,1,bicellular tight junction assembly,BP,1,synapse organization
+Biomin,424,590,GO:1904396,1,0.956973618,0,1,regulation of neuromuscular junction development,BP,1,synapse organization
+Biomin,720,1022,GO:0007528,1,0.990215516,0,1,neuromuscular junction development,BP,1,synapse organization
+Biomin,518,717,GO:0060562,1,0.950589347,0,2,epithelial tube morphogenesis,BP,1,tube development
+Biomin,570,773,GO:0035239,1,0.902060923,0,3,tube morphogenesis,BP,1,tube development
+Biomin,591,804,GO:0035148,1,0.989625492,0,1,tube formation,BP,1,tube development
+Biomin,594,810,GO:0072175,1,0.989625492,0,1,epithelial tube formation,BP,1,tube development
+Biomin,634,852,GO:0035295,1,0.794429916,0,6,tube development,BP,1,tube development
+Biomin,150,210,GO:0006897,1,0.95409834,0,1,endocytosis,BP,1,vesicle-mediated transport
+Biomin,170,240,GO:0016192,1,0.95409834,0,1,vesicle-mediated transport,BP,1,vesicle-mediated transport
+Biomin,213,315,GO:0046903,1,0.95409834,0,1,secretion,BP,1,vesicle-mediated transport
+Biomin,264,387,GO:0098657,1,0.95409834,0,1,import into cell,BP,1,vesicle-mediated transport
+Biomin,561,761,GO:0051179,1,0.599141026,0,11,localization,BP,1,vesicle-mediated transport
+Biomin,603,820,GO:0006810,1,0.729035929,0,7,transport,BP,1,vesicle-mediated transport
+Biomin,631,849,GO:0071702,1,0.800562037,0,5,organic substance transport,BP,1,vesicle-mediated transport
+Biomin,702,1003,GO:0051234,1,0.686581564,0,8,establishment of localization,BP,1,vesicle-mediated transport

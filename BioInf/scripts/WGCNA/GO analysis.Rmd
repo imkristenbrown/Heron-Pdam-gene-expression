@@ -1,16 +1,24 @@
 ---
-title: "R Notebook"
-output:
-  pdf_document: default
-  html_notebook: default
+title: "WGCNA GO Analysis"
+author: "Kristen Brown, modified ZD"
+date: "1/29/2024"
+output: html_document
 ---
-```{r}
-rm(list=ls())
+
+# WGCNA GO Analysis
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r}
+sessionInfo() #provides list of loaded packages and version of R. 
+```
+
+First, load the necessary packages.
+
 ```{r load_libraries, include = TRUE}
-# load libraries - notes show the install command needed to install (pre installed)
-library(goseq)#
+library(goseq)
 library(dplyr)
 library(forcats)
 library(ggplot2)
@@ -21,72 +29,77 @@ library(reshape2)
 library(Rmisc)
 library(ggpubr)
 library(tibble)
-#library(hrbrthemes)#
 library(gridExtra)
 library(tidyr)
 library(zoo)
 library(ComplexHeatmap)
 library(circlize)
-library(GSEABase)#
+library(GSEABase)
 library(data.table)
 library(stringr)
 library(GenomicRanges)
+library(rtracklayer)
 library(rrvgo)
 ```
 
-#Load in data
+## Load in data
 ```{r}
 library(rtracklayer)
-gff<-rtracklayer::import("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Pocillopora_acuta_HIv2.genes_fixed.gff3")
+gff<-rtracklayer::import("../../data/Pocillopora_acuta_HIv2.genes_fixed.gff3")
 gff<-as.data.frame(gff)
 dim(gff) # 478988     9
 names(gff) 
-gff
+
 transcripts <- subset(gff, type == "transcript")
 transcripts_gr <- makeGRangesFromDataFrame(transcripts, keep.extra.columns=TRUE) #extract length information
 transcript_lengths <- width(transcripts_gr) #isolate length of each gene
 seqnames<-transcripts_gr$ID #extract list of gene id 
 lengths<-cbind(seqnames, transcript_lengths)
 lengths<-as.data.frame(lengths) #convert to data frame
-transcripts
+
+dim(transcripts) #33730    13
 ```
+
 ```{r}
-kegg<-read.delim("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Pocillopora_acuta_HIv2.genes.KEGG_results (1).txt.gz")
-kegg<-as.data.frame(kegg)
-kegg<- plyr::rename(kegg, c("Pocillopora_acuta_HIv2___RNAseq.g24143.t1a"="KEGG_new"))
-kegg <- cbind(rownames(kegg),kegg)
-rownames(kegg) <- NULL
-colnames(kegg) <- c(names(kegg)) #to not write all the column names
+kegg <- read.delim("../../data/Pocillopora_acuta_HIv2.genes.KEGG_results.txt",header = FALSE)
+kegg <- as.data.frame(kegg)
 colnames(kegg)[1] <- "gene_id" 
-names(kegg)
-kegg
+colnames(kegg)[2] <- "KEGG_new"
+head(kegg)
 ```
 
 
 ```{r}
-eggnog<-read.delim("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Pocillopora_acuta_HIv2.genes.EggNog_results.txt")#this file contains all of the go terms, descriptions, kegg, etc
+eggnog<-read.delim("../../data/Pocillopora_acuta_HIv2.genes.EggNog_results.txt")#this file contains all of the go terms, descriptions, kegg, etc
 eggnog<- plyr::rename(eggnog, c("X.query"="gene_id"))
-eggnog
+head(eggnog,2)
 ```
 
 ```{r}
-gogene<- merge(transcripts, eggnog, by=c("gene_id"), all=T)
-gogene<- merge(gogene, kegg, by=c("gene_id"), all=T)
-gogene
+gogene <- merge(transcripts, eggnog, by=c("gene_id"), all=T)
+gogene <- merge(gogene, kegg, by=c("gene_id"), all=T)
+head(gogene,2)
 ```
 
+
 ```{r}
-geneInfo<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/WGCNA_ModulMembership.csv") #this file was generated from the WGCNA analyses and contains the modules of interest
+geneInfo <- read.csv("../../output/WGCNA/WGCNA_ModuleMembership.csv") #this file was generated from the WGCNA analyses and contains the modules of interest
 geneInfo<- plyr::rename(geneInfo, c("X"="gene_id"))
-dim(geneInfo)
-geneInfo # there are 9012 genes in our gene info file
+dim(geneInfo) # there are 9012 genes in our gene info file
 ```
+
 ```{r}
-geneInfo<- merge(gogene, geneInfo, by=c("gene_id"), all=T)
-geneInfo
+geneInfo <- merge(gogene, geneInfo, by=c("gene_id"), all=T)
 ```
 
+Format GO terms to remove dashes and quotes and separate by semicolons (replace , with ;) in  GOs column
+```{r}
+geneInfo$GOs <- gsub(",", ";", geneInfo$GOs)
+geneInfo$GOs <- gsub('"', "", geneInfo$GOs)
+geneInfo$GOs <- gsub("-", NA, geneInfo$GOs)
 
+geneInfo$KEGG_new[geneInfo$KEGG_new == ""] <- NA
+```
 
 ```{r}
 unique(geneInfo$moduleColor)
@@ -94,11 +107,11 @@ unique(geneInfo$moduleColor)
 
 ```{r}
 geneInfo$Length<-lengths$transcript_lengths[match(geneInfo$gene_id, lengths$seqnames)]
-geneInfo
 ```
 
-#Run the GOSeq function by module color to test for GO term enrichment. Due to high number of enriched GO terms, I am using an adjusted p-value threshold of <0.001 and using `rrvgo` package to reduce redundancy in list of GO terms.      
-##Calcification
+## Run the GOSeq function by module color to test for GO term enrichment. Due to high number of enriched GO terms, I am using an adjusted p-value threshold of <0.001 and using `rrvgo` package to reduce redundancy in list of GO terms.   
+
+## Calcification
 
 ```{r}
 ### Generate vector with names of all genes 
@@ -110,23 +123,69 @@ ALL.vector <- c(geneInfo$gene_id)
 LENGTH.vector <- as.integer(geneInfo$Length)
 ```
 
+
+
+```{r}
+calc_up_mods <- c("brown", "red", "black", "pink", "salmon", "blue")
+
+nrow(geneInfo %>% dplyr::filter(moduleColor=="brown")) #942
+nrow(geneInfo %>% dplyr::filter(moduleColor=="red")) #425
+nrow(geneInfo %>% filter(moduleColor=="black")) #396
+nrow(geneInfo %>% filter(moduleColor=="pink")) #220
+nrow(geneInfo %>% filter(moduleColor=="salmon")) #154
+nrow(geneInfo %>% filter(moduleColor=="blue")) #1989
+
+sum(nrow(geneInfo %>% dplyr::filter(moduleColor=="brown")), nrow(geneInfo %>% dplyr::filter(moduleColor=="red")), nrow(geneInfo %>% filter(moduleColor=="black")), nrow(geneInfo %>% filter(moduleColor=="pink")), nrow(geneInfo %>% filter(moduleColor=="salmon")), nrow(geneInfo %>% filter(moduleColor=="blue")))
+
+# 4126
+
+calc_down_mods <- c("turquoise","magenta","lightcyan","tan")
+
+nrow(geneInfo %>% dplyr::filter(moduleColor=="turquoise")) #2558
+nrow(geneInfo %>% dplyr::filter(moduleColor=="magenta")) #219
+nrow(geneInfo %>% filter(moduleColor=="lightcyan")) #65
+nrow(geneInfo %>% filter(moduleColor=="tan")) #170
+
+sum(nrow(geneInfo %>% dplyr::filter(moduleColor=="turquoise")), nrow(geneInfo %>% dplyr::filter(moduleColor=="magenta")), nrow(geneInfo %>% filter(moduleColor=="lightcyan")),nrow(geneInfo %>% filter(moduleColor=="tan")))
+
+# 3012
+
+other_mods <- c("green","yellow", "purple", "midnightblue","cyan")
+
+sum(nrow(geneInfo %>% dplyr::filter(moduleColor=="green")), nrow(geneInfo %>% dplyr::filter(moduleColor=="yellow")), nrow(geneInfo %>% filter(moduleColor=="purple")), nrow(geneInfo %>% filter(moduleColor=="midnightblue")), nrow(geneInfo %>% filter(moduleColor=="cyan")))
+
+# 1874
+
+# 4126 + 3012 + 1874 = 9012, which represents all of our genes
+```
+
+4126 genes are in the 6 modules significantly upregulated by calcification.
+
 ```{r}
 ### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor==c("blue","pink","magenta","lightcyan","purple","brown"))%>%
-  #get_rows(.data[[module]]))%>%
+# ID.vector <- geneInfo %>%
+#   filter(moduleColor==c("brown", "red", "black", "pink", "salmon", "green")) %>%
+#   #get_rows(.data[[module]]))%>%
+#   pull(gene_id)
+
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("brown", "red", "black", "pink", "salmon", "blue")) %>%
   pull(gene_id)
+
+length(ID.vector) #2700
+
 ##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor==c("blue","pink","magenta","lightcyan","purple","brown"))%>%
+GO.terms <- geneInfo %>%
+  filter(moduleColor %in% c("brown", "red", "black", "pink", "salmon", "blue")) %>%
   #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
+  dplyr::select(GOs,gene_id) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #2700    2
 ```
 
 ```{r}
 ##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
 split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
 colnames(split2) <- c("gene", "GO.terms")
 GO.terms<-split2
@@ -160,12 +219,7 @@ GO <- GO %>%
         dplyr::arrange(., ontology, bh_adjust)
    
 #Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_calcification.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
+write.csv(GO, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv")
 ```
 
 ```{r}
@@ -174,7 +228,7 @@ keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbios
 ```
 
 ```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_calcification.csv")
+go_results <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv")
 go_results
 ```
 
@@ -184,7 +238,8 @@ go_results
       filter(bh_adjust != "NA") %>%
       filter(numInCat>10)%>%
       arrange(., bh_adjust)
-go_results
+dim(go_results)
+head(go_results)
 ```
 
 ```{r}
@@ -203,7 +258,7 @@ reducedTerms <- reduceSimMatrix(simMatrix,
                                 scores,
                                 threshold=0.7,
                                 orgdb="org.Ce.eg.db")
-reducedTerms
+dim(reducedTerms)
 ```
 
 ```{r}
@@ -212,11 +267,10 @@ go_results<-go_results%>%
   filter(GOterm %in% reducedTerms$go)
  #add in parent terms to list of go terms 
 go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
 ```
 
 ```{r}
-write.csv(go_results, "goseq_pattern_calcification_filtered.csv")
+write.csv(go_results, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
 ```
 
 
@@ -234,8 +288,11 @@ write.csv(go_results, "goseq_pattern_calcification_filtered.csv")
     axis.title.x = element_blank(),
     axis.title.y = element_blank())
 GO.plot_calcification
+
+ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_calcification.png", plot=GO.plot_calcification, dpi=300, height=100, units="in", limitsize=FALSE)
 ```
-###Count number of GOterms by ParentTerm for the upregulation of calcification
+
+### Count number of GOterms by ParentTerm for the upregulation of calcification
 ```{r}
 library(dplyr)
 
@@ -247,7 +304,9 @@ result <- go_results %>%
 print(result)
 ```
 
-##Calcification - down
+## Calcification - down
+
+3012 genes are in the 4 modules significantly downregulated by calcification.
 
 ```{r}
 ### Generate vector with names of all genes 
@@ -262,20 +321,22 @@ LENGTH.vector <- as.integer(geneInfo$Length)
 ```{r}
 ### Generate vector with names in just the module we are analyzing
 ID.vector <- geneInfo%>%
-  filter(moduleColor==c("black","red"))%>%
-  #get_rows(.data[[module]]))%>%
+  filter(moduleColor %in% c("turquoise","magenta","lightcyan","tan"))%>%
   pull(gene_id)
+
+length(ID.vector) #3012
+
 ##Get a list of GO Terms for each module
 GO.terms <- geneInfo%>%
-  filter(moduleColor==c("black","red"))%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
+  filter(moduleColor %in% c("turquoise","magenta","lightcyan","tan"))%>%
+  dplyr::select(GOs,gene_id) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #3012    2
 ```
 
 ```{r}
 ##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
 split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
 colnames(split2) <- c("gene", "GO.terms")
 GO.terms<-split2
@@ -309,31 +370,22 @@ GO <- GO %>%
         dplyr::arrange(., ontology, bh_adjust)
    
 #Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_calcification_down.csv")
+write.csv(GO, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv")
 ```
 
 ```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
+go_results <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv")
 ```
 
 ```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification_down","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_calcification_down.csv")
-go_results
-```
-
-```{r}
- go_results<-go_results%>%
+go_results<-go_results%>%
       filter(ontology=="BP")%>%
       filter(bh_adjust != "NA") %>%
       filter(numInCat>10)%>%
       arrange(., bh_adjust)
-go_results
+
+dim(go_results)
+head(go_results)
 ```
 
 ```{r}
@@ -352,7 +404,7 @@ reducedTerms <- reduceSimMatrix(simMatrix,
                                 scores,
                                 threshold=0.7,
                                 orgdb="org.Ce.eg.db")
-reducedTerms
+dim(reducedTerms)
 ```
 
 ```{r}
@@ -361,11 +413,10 @@ go_results<-go_results%>%
   filter(GOterm %in% reducedTerms$go)
  #add in parent terms to list of go terms 
 go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
 ```
 
 ```{r}
-write.csv(go_results, "goseq_pattern_calcification_down_filtered.csv")
+write.csv(go_results, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
 ```
 
 
@@ -383,9 +434,13 @@ write.csv(go_results, "goseq_pattern_calcification_down_filtered.csv")
     axis.title.x = element_blank(),
     axis.title.y = element_blank())
 GO.plot_calcification_down
+
+
+ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_calcification_down.png", plot=GO.plot_calcification_down, dpi=300, height=100, units="in", limitsize=FALSE)
 ```
 
-###Count number of GOterms by ParentTerm for the downregulation of calcification
+### Count number of GOterms by ParentTerm for the downregulation of calcification
+
 ```{r}
 library(dplyr)
 
@@ -397,39 +452,51 @@ result_down <- go_results %>%
 print(result_down)
 ```
 
-###Merge the frequency of GOterms for both up- and down-regulation of calcification
+### Merge the frequency of GOterms for both up- and down-regulation of calcification
+
 ```{r}
 cal_freq_terms<- merge(result,result_down, by=c("ParentTerm","Number.of.terms","Calcification.direction"),all=T)
-cal_freq_terms
 ```
 
 ```{r}
-cal_biomin_terms <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Biomineralizationgo terms.csv")
-cal_biomin_terms
+cal_biomin_terms <-read.csv("../../output/Biomineralization_goterms.csv")
+head(cal_biomin_terms)
 ```
+
 ```{r}
-cal_up_terms <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_pattern_calcification_filtered.csv")
+cal_up_terms <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
 cal_up_terms<- cal_up_terms %>%
   mutate(Factor = "Up")
-cal_up_terms
+head(cal_up_terms)
 ```
 
 ```{r}
-cal_down_terms <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_pattern_calcification_down_filtered.csv")
+cal_down_terms <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
 cal_down_terms<-cal_down_terms %>%
   mutate(Factor = "Down")
-cal_down_terms
+head(cal_down_terms)
 ```
+
 ```{r}
 colnames(cal_biomin_terms)
+colnames(cal_up_terms)
+colnames(cal_down_terms)
+
+colnames(cal_freq_terms)
 ```
+
 ###Merge biomineralization, up and down-regulation of calcification GOterms
 ```{r}
 all_terms<- merge(cal_up_terms,cal_down_terms, by=c("Factor","GOterm","X.1","X","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm"),all=T)
+
+
 all_terms<- merge(all_terms,cal_biomin_terms, by=c("Factor","GOterm","X.1","X","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm"),all=T)
+
 all_terms$GOterm<-as.factor(all_terms$GOterm)
-all_terms
+head(all_terms)
+tail(all_terms)
 ```
+
 ```{r}
 goterms_shared <- all_terms %>%
   group_by(GOterm) %>%
@@ -437,10 +504,11 @@ goterms_shared <- all_terms %>%
     ParentTerm = paste(unique(ParentTerm), collapse = ", "),
     Factor = paste(unique(Factor), collapse = ", ")
   )
-goterms_shared
+dim(goterms_shared)
 ```
+
 ```{r}
-#write.csv(goterms_shared, "Merged GOterms by factor and ParentTerm.csv")
+write.csv(goterms_shared, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm.csv")
 ```
 
 ```{r}
@@ -448,23 +516,21 @@ result_unique <- goterms_shared %>%
   group_by(ParentTerm,Factor) %>%
   dplyr::summarise(SharedGOterms = n_distinct(GOterm))%>%
   arrange(-SharedGOterms)
-result_unique
 ```
+
 ```{r}
 result_filtered_up<- result_unique %>%
   dplyr::filter(Factor=="Biomin, Down, Up" | Factor=="Biomin, Up")
  #dplyr::filter(SharedGOterms>=5) 
-result_filtered_up
 ```
 
 ```{r}
 result_filtered_down<- result_unique %>%
   dplyr::filter(Factor=="Biomin, Down, Up" | Factor=="Biomin, Down")
  #dplyr::filter(SharedGOterms>=5) 
-result_filtered_down
 ```
 
-###Calculate the percentage of shared GOterms upregulation of calcification
+### Calculate the percentage of shared GOterms upregulation of calcification
 ```{r}
 merged_up <- result_filtered_up %>%
   tidyr::separate_rows(ParentTerm, sep = ", ") %>%
@@ -473,10 +539,11 @@ merged_up <- result_filtered_up %>%
   left_join(result, by = "ParentTerm") %>%
   mutate(Proportion.of.shared.GO.terms.with.biomineralization.genes = Sum_of_SharedGOterms / Number.of.terms)%>%
   mutate(Percentage.of.shared.GO.terms.with.biomineralization.genes = Proportion.of.shared.GO.terms.with.biomineralization.genes * 100)
-merged_up_clean<- na.omit(merged_up)
+merged_up_clean <- na.omit(merged_up)
 merged_up_clean
 ```
-###Calculate the percentage of shared GOterms downregulation of calcification
+
+### Calculate the percentage of shared GOterms downregulation of calcification
 ```{r}
 merged_down <- result_filtered_down %>%
   tidyr::separate_rows(ParentTerm, sep = ", ") %>%
@@ -496,7 +563,8 @@ cal_freq_terms_filtered_up <- merged_up_clean %>%
   filter(Calcification.direction=="Up")
 cal_freq_terms_filtered_up
 ```
-####Figure
+
+#### Figure
 ```{r}
 #counts$Direction.of.flat.origin<- factor(counts$Direction.of.flat.origin, levels =c("up","no pattern","down"))
 #counts$Module<- factor(counts$Module, levels=c("Blue","Brown","Greenyellow","Cyan","Pink","Magenta","Lightcyan","Midnight blue","Purple","Turquiose","Red","Black"))
@@ -506,7 +574,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,50))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
@@ -521,6 +589,8 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
         axis.title.y = element_blank(),
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 ###Frequency >10 down
 ```{r}
@@ -529,15 +599,16 @@ cal_freq_terms_filtered_down <- merged_down_clean %>%
   #filter(Calcification.direction=="Down")
 cal_freq_terms_filtered_down
 ```
+
 ####Figure
-```{r}
+```{r} 
 freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes))+
   #facet_wrap(~Calcification.direction, nrow = 1)+
   geom_point(size=5, alpha=1, pch=21,color="black")+
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,50))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
@@ -553,12 +624,14 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
         axis.title.y = element_blank(),
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 ```{r}
 compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, nrow=2, align="v")
 compare_figs
 ```
-###All terms up
+### All terms up
 ```{r}
 cal_freq_terms_filtered_up_all <- merged_up_clean %>%
   filter(Calcification.direction=="Up")
@@ -574,7 +647,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up_all, aes(y=Number.of.terms,x=reor
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,50))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,100))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
@@ -605,7 +678,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down_all, aes(y=Number.of.terms,x=
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,50))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,100))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
@@ -626,7 +699,7 @@ freq_fig_down
 compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, ncol=2, align="h")
 compare_figs
 ```
-##Black
+## Green
 
 ```{r}
 ### Generate vector with names of all genes 
@@ -639,22 +712,27 @@ LENGTH.vector <- as.integer(geneInfo$Length)
 ```
 
 ```{r}
+nrow(geneInfo %>% dplyr::filter(moduleColor=="green")) #563
+
 ### Generate vector with names in just the module we are analyzing
 ID.vector <- geneInfo%>%
-  filter(moduleColor=="black")%>%
+  filter(moduleColor %in% "green")%>%
   #get_rows(.data[[module]]))%>%
   pull(gene_id)
+
+length(ID.vector)
+
 ##Get a list of GO Terms for each module
 GO.terms <- geneInfo%>%
-  filter(moduleColor=="black")%>%
+  filter(moduleColor %in% "green")%>%
   #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
+  dplyr::select(GOs,gene_id) %>% rename(GOs = "GO.terms")
+dim(GO.terms)
 ```
 
 ```{r}
 ##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
 split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
 colnames(split2) <- c("gene", "GO.terms")
 GO.terms<-split2
@@ -688,23 +766,13 @@ GO <- GO %>%
         dplyr::arrange(., ontology, bh_adjust)
    
 #Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_black.csv")
+write.csv(GO, file = "../../output/WGCNA/GO_analysis/goseq_pattern_green.csv")
 ```
 
 ```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
+go_results <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_green.csv")
 ```
 
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_black.csv")
-go_results
-```
 ```{r}
  go_results<-go_results%>%
       filter(ontology=="BP")%>%
@@ -732,6 +800,7 @@ reducedTerms <- reduceSimMatrix(simMatrix,
                                 orgdb="org.Ce.eg.db")
 reducedTerms
 ```
+
 ```{r}
 #keep only the goterms from the reduced list
 go_results<-go_results%>%
@@ -740,14 +809,14 @@ go_results<-go_results%>%
 go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
 go_results
 ```
+
 ```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
+#go_results<-go_results %>% filter(grepl(paste(keywords, collapse="|"), ParentTerm))
 ```
 
 ```{r}
 #plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_black <-  ggplot(go_results, aes(x = ontology, y = term)) + 
+ GO.plot_green <-  ggplot(go_results, aes(x = ontology, y = term)) + 
     geom_point(aes(size=bh_adjust)) + 
     scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
     facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
@@ -758,7 +827,7 @@ go_results<-go_results%>%
     axis.text = element_text(size = 8),
     axis.title.x = element_blank(),
     axis.title.y = element_blank())
-GO.plot_black
+GO.plot_green
 ```
 ```{r}
 length(colnames(go_results)[go_results$ParentTerm=="cation transport"])
@@ -770,7 +839,7 @@ length(colnames(go_results)[go_results$ParentTerm=="regulation of cellular respo
 ```{r}
  ##Get a list of GO Terms for each module
 KO.terms <- geneInfo%>%
-  filter(moduleColor=="black")%>%
+  filter(moduleColor %in% "green") %>%
   dplyr::select(gene_id, KEGG_new)
 KO.terms
 ```
@@ -796,1069 +865,15 @@ KO.terms
         dplyr::arrange(., bh_adjust)
     
     #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_black.csv")
+    write.csv(KO, "../../output/WGCNA/GO_analysis/goseq_KEGG_pattern_green.csv")
     
 ```
 
 ```{r}
-ko_results_black<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_black.csv") 
-ko_results_black
+ko_results_green<-read.csv("../../output/WGCNA/GO_analysis/goseq_KEGG_pattern_green.csv") 
+head(ko_results_green)
 ```
-```{r}
-ko_results_black<-ko_results_black%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_black
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.black <-  ggplot(ko_results_black, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.black
-```
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="black")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_black.csv")
-    
-```
-
-```{r}
-ko_results_black<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_black.csv") 
-ko_results_black
-```
-```{r}
-ko_results_black<-ko_results_black%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_black
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.black <-  ggplot(ko_results_black, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.black
-```
-
-##Blue
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="blue")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="blue")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.0001
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_blue.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis", "regulation", "developmental", "localization", "multicellular","response to stimulus")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_blue.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>100)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_blue <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 20, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_blue
-```
-
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="organic substance transport"])
-length(colnames(go_results)[go_results$ParentTerm=="response to stress"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of cell death"])
-```
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="blue")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_blue.csv")
-    
-```
-
-```{r}
-ko_results_blue<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_blue.csv") 
-ko_results_blue
-```
-```{r}
-ko_results_blue<-ko_results_blue%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_blue
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.blue <-  ggplot(ko_results_blue, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.blue
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="blue")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_blue.csv")
-    
-```
-
-```{r}
-ko_results_blue<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_blue.csv") 
-ko_results_blue
-```
-```{r}
-ko_results_blue<-ko_results_blue%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_blue
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.blue <-  ggplot(ko_results_blue, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "blue"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.blue
-```
-##Brown
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="brown")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="brown")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_brown.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_brown.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>100)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_brown <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_brown
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="organic substance transport"])
-length(colnames(go_results)[go_results$ParentTerm=="response to stress"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of cell death"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of cell communication"])
-```
-
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="brown")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_brown.csv")
-    
-```
 
-```{r}
-ko_results_brown<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_brown.csv") 
-ko_results_brown
-```
-```{r}
-ko_results_brown<-ko_results_brown%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_brown
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.brown <-  ggplot(ko_results_brown, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "brown"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.brown
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="brown")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_brown.csv")
-    
-```
-
-```{r}
-ko_results_brown<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_brown.csv") 
-ko_results_brown
-```
-```{r}
-ko_results_brown<-ko_results_brown%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_brown
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.brown <-  ggplot(ko_results_brown, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "brown"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.brown
-```
-
-##Cyan
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="cyan")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="cyan")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.0001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_cyan.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_cyan.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_cyan <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_cyan
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="regulation of neuron death"])
-length(colnames(go_results)[go_results$ParentTerm=="glucose homeostasis"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of transmembrane transport"])
-```
-
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="cyan")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_cyan.csv")
-    
-```
-
-```{r}
-ko_results_cyan<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_cyan.csv") 
-ko_results_cyan
-```
-```{r}
-ko_results_cyan<-ko_results_cyan%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_cyan
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.cyan <-  ggplot(ko_results_cyan, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "cyan"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.cyan
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="cyan")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_cyan.csv")
-    
-```
-
-```{r}
-ko_results_cyan<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_cyan.csv") 
-ko_results_cyan
-```
-```{r}
-ko_results_cyan<-ko_results_cyan%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_cyan
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.cyan <-  ggplot(ko_results_cyan, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "cyan"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.cyan
-```
-##Green
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="green")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="green")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.0001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_green.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_green.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_green <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_green
-```
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="green")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_green.csv")
-    
-```
-
-```{r}
-ko_results_green<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_green.csv") 
-ko_results_green
-```
 ```{r}
 ko_results_green<-ko_results_green%>%
       filter(bh_adjust != "NA") %>%
@@ -1885,716 +900,96 @@ KO.plot.green <-  ggplot(ko_results_green, aes(x = X, y = KEGGterm)) +
 KO.plot.green
 ```
 
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="green")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
 
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_green.csv")
-    
-```
-
-```{r}
-ko_results_green<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_green.csv") 
-ko_results_green
-```
-```{r}
-ko_results_green<-ko_results_green%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_green
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.green <-  ggplot(ko_results_green, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "green"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.green
-```
-
-##Greenyellow
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="greenyellow")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="greenyellow")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.0001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_greenyellow.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_greenyellow.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
+## by module
 
 ```{r}
 library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
 
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
+# Define the unique module colors
+module_colors <- na.omit(unique(geneInfo$moduleColor))
 
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_greenyellow <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_greenyellow
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="regulation of cell death"])
-length(colnames(go_results)[go_results$ParentTerm=="positive regulation of cell communication"])
-length(colnames(go_results)[go_results$ParentTerm=="response to stress"])
-```
-
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="greenyellow")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_greenyellow.csv")
-    
-```
-
-```{r}
-ko_results_greenyellow<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_greenyellow.csv") 
-ko_results_greenyellow
-```
-```{r}
-ko_results_greenyellow<-ko_results_greenyellow%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_greenyellow
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.greenyellow <-  ggplot(ko_results_greenyellow, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "greenyellow"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.greenyellow
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="greenyellow")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_greenyellow.csv")
-    
-```
-
-```{r}
-ko_results_greenyellow<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_greenyellow.csv") 
-ko_results_greenyellow
-```
-```{r}
-ko_results_greenyellow<-ko_results_greenyellow%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_greenyellow
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.greenyellow <-  ggplot(ko_results_greenyellow, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "greenyellow"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.greenyellow
-```
-##Lightcyan
-
-```{r}
-### Generate vector with names of all genes 
+# Generate vector with names of all genes 
 ALL.vector <- c(geneInfo$gene_id)
-```
 
-```{r}
-### Generate length vector for all genes 
+# Generate length vector for all genes 
 LENGTH.vector <- as.integer(geneInfo$Length)
-```
 
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="lightcyan")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="lightcyan")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
+ 
+# Loop over each unique module color
+for (color in module_colors) {
+ # Filter geneInfo based on the current color
+  color_filtered <- geneInfo %>% filter(moduleColor == color)
 
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_lightcyan.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_lightcyan.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_lightcyan <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_lightcyan
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="response to stress"])
-```
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="lightcyan")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
+  # Generate vector with names in just the module we are analyzing
+  ID.vector <- color_filtered$gene_id
   
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_lightcyan.csv")
-    
-```
+  length(ID.vector)
 
-```{r}
-ko_results_lightcyan<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_lightcyan.csv") 
-ko_results_lightcyan
-```
-```{r}
-ko_results_lightcyan<-ko_results_lightcyan%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_lightcyan
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.lightcyan <-  ggplot(ko_results_lightcyan, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "lightcyan"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.lightcyan
-```
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="lightcyan")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
+  # Get a list of GO Terms for each module
+  GO.terms <- color_filtered %>%
+    dplyr::select(GOs, gene_id) %>%
+    rename(GOs = "GO.terms")
   
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_lightcyan.csv")
-    
-```
+  dim(GO.terms)
 
-```{r}
-ko_results_lightcyan<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_lightcyan.csv") 
-ko_results_lightcyan
-```
-```{r}
-ko_results_lightcyan<-ko_results_lightcyan%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_lightcyan
-```
+  ## Format to have one GO term per row with gene ID repeated
+  split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+  split2 <- data.frame(v1 = rep.int(GO.terms$gene_id, sapply(split, length)), v2 = unlist(split)) 
+  colnames(split2) <- c("gene", "GO.terms")
+  GO.terms <- split2
 
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.lightcyan <-  ggplot(ko_results_lightcyan, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "lightcyan"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.lightcyan
-```
-##Magenta
+  ## Construct list of genes with 1 for genes in module and 0 for genes not in the module
+  gene.vector <- as.integer(ALL.vector %in% ID.vector) 
+  names(gene.vector) <- ALL.vector # set names
+  # Weight gene vector by bias for length of gene 
+  pwf <- nullp(gene.vector, ID.vector, bias.data = LENGTH.vector) 
 
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
+  # Run goseq using Wallenius method for all categories of GO terms 
+  GO.wall <- goseq(pwf, ID.vector, gene2cat = GO.terms, test.cats = c("GO:BP", "GO:MF", "GO:CC"), method = "Wallenius", use_genes_without_cat = TRUE)
+  GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+  colnames(GO)[1] <- "GOterm"
 
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
+  # Adjust p-values 
+  GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method = "BH") 
 
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="magenta")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="magenta")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+  # Filtering for p < 0.01
+  GO <- GO %>%
+    dplyr::filter(bh_adjust < 0.00001) %>%
+    dplyr::arrange(., ontology, bh_adjust)
    
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_magenta.csv")
-```
+  # Write file of results 
+  write.csv(GO, file = paste0("../../output/WGCNA/GO_analysis/goseq_pattern_", color, ".csv"))
 
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
+  go_results <- GO
 
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_magenta.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
+  go_results<-go_results%>%
       filter(ontology=="BP")%>%
       filter(bh_adjust != "NA") %>%
       filter(numInCat>100)%>%
       arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
+  
+  #Reduce/collapse GO term set with the rrvgo package 
+  simMatrix <- calculateSimMatrix(go_results$GOterm,
                                 orgdb="org.Ce.eg.db", #c. elegans database
                                 ont="BP",
                                 method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
+  
+   #calculate similarity 
+  scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
+  reducedTerms <- reduceSimMatrix(simMatrix,
                                 scores,
                                 threshold=0.7,
                                 orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_magenta <-  ggplot(go_results, aes(x = ontology, y = term)) + 
+  
+  #keep only the goterms from the reduced list
+  go_results <- go_results %>% filter(GOterm %in% reducedTerms$go)
+  
+  #add in parent terms to list of go terms 
+  go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+  
+  #plot significantly enriched GO terms by Slim Category faceted by slim term 
+ GO.plot <-  ggplot(go_results, aes(x = ontology, y = term)) + 
     geom_point(aes(size=bh_adjust)) + 
     scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
     facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
@@ -2605,2001 +1000,22 @@ go_results<-go_results%>%
     axis.text = element_text(size = 8),
     axis.title.x = element_blank(),
     axis.title.y = element_blank())
-GO.plot_magenta
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="cell death"])
-length(colnames(go_results)[go_results$ParentTerm=="cellular ion homeostasis"])
-length(colnames(go_results)[go_results$ParentTerm=="ion transport"])
-```
-
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="magenta")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_magenta.csv")
-    
-```
-
-```{r}
-ko_results_magenta<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_magenta.csv") 
-ko_results_magenta
-```
-```{r}
-ko_results_magenta<-ko_results_magenta%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_magenta
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.magenta <-  ggplot(ko_results_magenta, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "magenta"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.magenta
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="magenta")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_magenta.csv")
-    
-```
-
-```{r}
-ko_results_magenta<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_magenta.csv") 
-ko_results_magenta
-```
-```{r}
-ko_results_magenta<-ko_results_magenta%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_magenta
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.magenta <-  ggplot(ko_results_magenta, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "magenta"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.magenta
-```
-##Midnightblue
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="midnightblue")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="midnightblue")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.0001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_midnightblue.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_midnightblue.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_midnightblue <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_midnightblue
-```
-
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="response to stress"])
-```
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="midnightblue")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_midnightblue.csv")
-    
-```
-
-```{r}
-ko_results_midnightblue<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_midnightblue.csv") 
-ko_results_midnightblue
-```
-```{r}
-ko_results_midnightblue<-ko_results_midnightblue%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_midnightblue
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.midnightblue <-  ggplot(ko_results_midnightblue, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "midnightblue"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.midnightblue
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="midnightblue")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_midnightblue.csv")
-    
-```
-
-```{r}
-ko_results_midnightblue<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_midnightblue.csv") 
-ko_results_midnightblue
-```
-```{r}
-ko_results_midnightblue<-ko_results_midnightblue%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_midnightblue
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.midnightblue <-  ggplot(ko_results_midnightblue, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "midnightblue"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.midnightblue
-```
-##Pink
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="pink")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="pink")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_pink.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_pink.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>100)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_pink <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_pink
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="cell death"])
-length(colnames(go_results)[go_results$ParentTerm=="chemical homeostasis"])
-length(colnames(go_results)[go_results$ParentTerm=="ion transmembrane transport"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of cellular response to stress"])
-```
-
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="pink")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_pink.csv")
-    
-```
-
-```{r}
-ko_results_pink<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_pink.csv") 
-ko_results_pink
-```
-```{r}
-ko_results_pink<-ko_results_pink%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_pink
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.pink <-  ggplot(ko_results_pink, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "pink"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.pink
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="pink")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_pink.csv")
-    
-```
-
-```{r}
-ko_results_pink<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_pink.csv") 
-ko_results_pink
-```
-```{r}
-ko_results_pink<-ko_results_pink%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_pink
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.pink <-  ggplot(ko_results_pink, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "pink"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.pink
-```
-##Purple
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="purple")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="purple")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_purple.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_purple.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>100)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_purple <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_purple
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="cellular cation homeostasis"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of cell death"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of response to stress"])
-```
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="purple")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_purple.csv")
-    
-```
-
-```{r}
-ko_results_purple<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_purple.csv") 
-ko_results_purple
-```
-```{r}
-ko_results_purple<-ko_results_purple%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_purple
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.purple <-  ggplot(ko_results_purple, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "purple"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.purple
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="purple")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_purple.csv")
-    
-```
-
-```{r}
-ko_results_purple<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_purple.csv") 
-ko_results_purple
-```
-```{r}
-ko_results_purple<-ko_results_purple%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_purple
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.purple <-  ggplot(ko_results_purple, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "purple"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.purple
-```
-##Red
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="red")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="red")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.0001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_red.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_red.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_red <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_red
-```
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="regulation of neuron death"])
-length(colnames(go_results)[go_results$ParentTerm=="cellular calcium ion homeostasis"])
-length(colnames(go_results)[go_results$ParentTerm=="ion transmembrane transport"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of metal ion transport"])
-length(colnames(go_results)[go_results$ParentTerm=="receptor protein tyrosine kinase signaling"])
-```
-
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="red")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_red.csv")
-    
-```
-
-```{r}
-ko_results_red<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_red.csv") 
-ko_results_red
-```
-```{r}
-ko_results_red<-ko_results_red%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_red
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.red <-  ggplot(ko_results_red, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "red"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.red
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="red")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_red.csv")
-    
-```
-
-```{r}
-ko_results_red<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_red.csv") 
-ko_results_red
-```
-```{r}
-ko_results_red<-ko_results_red%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_red
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.red <-  ggplot(ko_results_red, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "red"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.red
-```
-
-##Salmon
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="salmon")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="salmon")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.0001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_salmon.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_salmon.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-go_results
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_salmon <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_salmon
-```
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="salmon")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_salmon.csv")
-    
-```
-
-```{r}
-ko_results_salmon<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_salmon.csv") 
-ko_results_salmon
-```
-```{r}
-ko_results_salmon<-ko_results_salmon%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_salmon
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.salmon <-  ggplot(ko_results_salmon, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "salmon"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.salmon
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="salmon")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_salmon.csv")
-    
-```
-
-```{r}
-ko_results_salmon<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_salmon.csv") 
-ko_results_salmon
-```
-```{r}
-ko_results_salmon<-ko_results_salmon%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_salmon
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.salmon <-  ggplot(ko_results_salmon, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "salmon"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.salmon
-```
-##Tan
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="tan")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="tan")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
 
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+ GO.plot
+ 
+  length(colnames(go_results)[go_results$ParentTerm=="cation transport"])
+  length(colnames(go_results)[go_results$ParentTerm=="inorganic ion homeostasis"])
+  length(colnames(go_results)[go_results$ParentTerm=="regulation of cellular response to stress"])
+}
 ```
 
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.0001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_tan.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_tan.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_tan <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_tan
-```
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="tan")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_tan.csv")
-    
-```
-
-```{r}
-ko_results_tan<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_tan.csv") 
-ko_results_tan
-```
-
-```{r}
-ko_results_tan<-ko_results_tan%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_tan
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.tan <-  ggplot(ko_results_tan, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "tan"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.tan
-```
-
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="tan")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_tan.csv")
-    
-```
-
-```{r}
-ko_results_tan<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_tan.csv") 
-ko_results_tan
-```
-
-```{r}
-ko_results_tan<-ko_results_tan%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_tan
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.tan <-  ggplot(ko_results_tan, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "tan"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.tan
-```
-
-
-##Turquoise
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-```{r}
-### Generate vector with names in just the module we are analyzing
-ID.vector <- geneInfo%>%
-  filter(moduleColor=="turquoise")%>%
-  #get_rows(.data[[module]]))%>%
-  pull(gene_id)
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor=="turquoise")%>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GO.terms,gene_id)
-GO.terms
-```
-```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ",") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-```
-
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-gene.vector=as.integer(ALL.vector %in% ID.vector) 
-names(gene.vector)<-ALL.vector#set names
-#weight gene vector by bias for length of gene 
-pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-```
-
-```{r}
-#run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
-GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-colnames(GO)[1] <- "GOterm"
-```
-
-```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
-#Filtering for p < 0.01
-GO <- GO %>%
-        dplyr::filter(bh_adjust<0.0001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
-#Write file of results 
-write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_turquoise.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
-```
-
-```{r}
-#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
-keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
-```
-
-```{r}
-go_results <-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_turquoise.csv")
-go_results
-```
-```{r}
- go_results<-go_results%>%
-      filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
-go_results
-```
-
-```{r}
-library(rrvgo)
-#Reduce/collapse GO term set with the rrvgo package 
-simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-```
-```{r}
-simMatrix
-```
-
-
-```{r}
- #calculate similarity 
-scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-reducedTerms
-```
-```{r}
-#keep only the goterms from the reduced list
-go_results<-go_results%>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
-go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-go_results
-```
-```{r}
-go_results<-go_results%>%
-      filter(grepl(paste(keywords, collapse="|"), ParentTerm))
-```
-
-```{r}
-#plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot_turquoise <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
-GO.plot_turquoise
-```
-
-```{r}
-length(colnames(go_results)[go_results$ParentTerm=="organic substance transport"])
-length(colnames(go_results)[go_results$ParentTerm=="regulation of cell death"])
-length(colnames(go_results)[go_results$ParentTerm=="response to stress"])
-```
-
-###KEGG KO
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="turquoise")%>%
-  dplyr::select(gene_id, KEGG_new)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_turquoise.csv")
-    
-```
-
-```{r}
-ko_results_turquoise<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_turquoise.csv") 
-ko_results_turquoise
-```
-```{r}
-ko_results_turquoise<-ko_results_turquoise%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_turquoise
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.turquoise <-  ggplot(ko_results_turquoise, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "turquoise"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.turquoise
-```
-
-###KEGG Pathway
-```{r}
- ##Get a list of GO Terms for each module
-KO.terms <- geneInfo%>%
-  filter(moduleColor=="turquoise")%>%
-  dplyr::select(gene_id, KEGG_Pathway)
-```
-
-```{r}
-##Construct list of genes with 1 for genes in module and 0 for genes not in the module
-    gene.vector=as.integer(ALL.vector %in% ID.vector) 
-    names(gene.vector)<-ALL.vector#set names
-    #weight gene vector by bias for length of gene 
-    pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
-    
-    #run goseq using Wallenius method for all categories of GO terms 
-    KO.wall<-goseq(pwf, ID.vector, gene2cat=KO.terms, test.cats=c("KEGG"), method="Wallenius", use_genes_without_cat=TRUE)
-    KO <- KO.wall[order(KO.wall$over_represented_pvalue),]
-    colnames(KO)[1] <- "KEGGterm"
-    
-    #adjust p-values 
-    KO$bh_adjust <-  p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-    #Filtering for p < 0.01
-    KO <- KO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., bh_adjust)
-    
-    #Write file of results 
-    write.csv(KO, "goseq_KEGG_pattern_turquoise.csv")
-    
-```
-
-```{r}
-ko_results_turquoise<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/goseq_KEGG_pattern_turquoise.csv") 
-ko_results_turquoise
-```
-```{r}
-ko_results_turquoise<-ko_results_turquoise%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat >10)%>%
-      arrange(., bh_adjust)
-ko_results_turquoise
-```
-
-```{r}
-#plot significantly enriched KO terms 
-KO.plot.turquoise <-  ggplot(ko_results_turquoise, aes(x = X, y = KEGGterm)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse")+
-    theme_bw() + 
-  theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "turquoise"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank()) 
-    #axis.ticks.x = element_blank(), 
-    #axis.text.x = element_blank())
-KO.plot.turquoise
-```
+## Frequency of GO terms within slim categories
 
 ```{r}
 # GOslim
 slim <- getOBOCollection("http://current.geneontology.org/ontology/subsets/goslim_generic.obo") #get GO database - # call goslim_generic.obo terms as 'slim'
 ```
 
-
-#Frequency of GO terms within slim categories
 ```{r}
 counts<-read.csv("/Users/imkri/Desktop/Penn postdoc/Heron experiment/Significant GO term counts by module .csv", strip.white=T)
 counts$Module <-as.factor(counts$Module)
@@ -5211,11 +1627,6 @@ GO <- GO %>%
    
 #Write file of results 
 write.csv(GO, file = "/Users/imkri/Desktop/Penn Postdoc/Heron experiment/R figures/goseq_pattern_biomin.csv")
-```
-
-```{r}
-module_vector<-c(levels(geneInfo$moduleColor))
-ontologies<-c("BP", "MF")
 ```
 
 ```{r}
