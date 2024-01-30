@@ -2707,7 +2707,7 @@ merged_down_clean<- na.omit(merged_down)
 merged_down_clean
 ```
 
-###Frequency >10 up
+### Frequency >10 up
 ```{r}
 cal_freq_terms_filtered_up <- merged_up_clean %>%
   filter(Number.of.terms>=10) %>%
@@ -2744,7 +2744,7 @@ freq_fig_up
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 
-###Frequency >10 down
+### Frequency >10 down
 ```{r}
 cal_freq_terms_filtered_down <- merged_down_clean %>%
   filter(Number.of.terms>=10)
@@ -2778,6 +2778,83 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
 freq_fig_down
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
+```
+```{r}
+compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, nrow=2, align="v")
+compare_figs
+```
+
+### Frequency >20 up
+```{r}
+cal_freq_terms_filtered_up <- merged_up_clean %>%
+  filter(Number.of.terms>=20) %>%
+  filter(Calcification.direction=="Up")
+cal_freq_terms_filtered_up
+```
+
+#### Figure
+```{r}
+#counts$Direction.of.flat.origin<- factor(counts$Direction.of.flat.origin, levels =c("up","no pattern","down"))
+#counts$Module<- factor(counts$Module, levels=c("Blue","Brown","Greenyellow","Cyan","Pink","Magenta","Lightcyan","Midnight blue","Purple","Turquiose","Red","Black"))
+freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
+  #facet_wrap(~Calcification.direction, nrow = 1)+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
+  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
+ #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
+  theme_classic()+
+   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig_up
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_gr20.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
+```
+
+### Frequency >20 down
+```{r}
+cal_freq_terms_filtered_down <- merged_down_clean %>%
+  filter(Number.of.terms>=20)
+  #filter(Calcification.direction=="Down")
+cal_freq_terms_filtered_down
+```
+
+#### Figure
+```{r} 
+freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reorder(ParentTerm, Number.of.terms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes))+
+  #facet_wrap(~Calcification.direction, nrow = 1)+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
+  #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
+  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
+  scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
+  #scale_fill_gradientn(colours=c("#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(10, 40))+ 
+ #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
+  theme_classic()+
+   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95, size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig_down
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_gr20.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 ```{r}
 compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, nrow=2, align="v")
