@@ -1578,8 +1578,8 @@ dev.off()</code></pre>
 <div id="step-7-specify-the-cut-line-for-the-dendrogram-module---calc-module-eigengenes-mergemes" class="section level3">
 <h3>Step 7: Specify the cut line for the dendrogram (module) - Calc
 MODULE EIGENGENES (mergeMEs)</h3>
-<div id="we-had-17-modules-before-merging-and-9-modules-after-merging" class="section level4">
-<h4>We had 17 modules before merging, and 9 modules after merging</h4>
+<div id="we-had-17-modules-before-merging-and-15-modules-after-merging" class="section level4">
+<h4>We had 17 modules before merging, and 15 modules after merging</h4>
 <pre class="r"><code>MEDissThres = 0.15 # **Merge modules with &gt;85% eigengene similarity.** Most studies use somewhere between 80-90% similarity. I will use 85% similarity as my merging threshold.
 # Plot the cut line into the dendrogram
 #abline(h=MEDissThres, col = &quot;red&quot;)
@@ -2130,7 +2130,7 @@ ht=Heatmap(moduleTraitCor_both, name = &quot;Eigengene&quot;, column_title = &qu
         column_dend_height = unit(1.25, &quot;in&quot;),
         row_gap = unit(2.5, &quot;mm&quot;), border = TRUE,
         cell_fun = function(j, i, x, y, w, h, col) {
-        if(heatmappval[i, j] &lt;= 0.05) {
+        if(heatmappval[i, j] &lt; 0.05) {
             grid.text(sprintf(&quot;%s&quot;, heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = &quot;bold&quot;))
         }
         else {

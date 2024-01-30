@@ -801,7 +801,7 @@ ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait
         column_dend_height = unit(1.25, "in"),
         row_gap = unit(2.5, "mm"), border = TRUE,
         cell_fun = function(j, i, x, y, w, h, col) {
-        if(heatmappval[i, j] <= 0.05) {
+        if(heatmappval[i, j] < 0.05) {
             grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = "bold"))
         }
         else {
