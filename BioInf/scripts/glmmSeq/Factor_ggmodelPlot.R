@@ -33,10 +33,9 @@ Factor_ggmodelPlot <- function(object, geneName = NULL, x1var = NULL, x2var = NU
   shapes <- rep_len(shapes, maxX2)
   if (addPoints) {
     p <- ggplot(df_long, aes_string(x = "x", y = "y", group = "id", 
-                                    shape = "x2", color = "x2")) + geom_point(size = markerSize, 
-                                                                              alpha = alpha, colour = colours[df_long$x2]) +
-                                      geom_line(alpha = alpha) +
-                                      geom_label(aes(label=id),position = position_dodge(width=.5),size=2)
+                                    shape = "x2", color = "x2")) + geom_point(size = markerSize,
+                                    alpha = alpha, colour = colours[df_long$x2]) + geom_line(alpha = alpha) +
+                                    geom_label(aes(label=id),position = position_dodge(width=.5),size=2) #added labels to points
   }
   else {
     p <- ggplot()
@@ -49,22 +48,19 @@ Factor_ggmodelPlot <- function(object, geneName = NULL, x1var = NULL, x2var = NU
                                                                                                                               x1var], breaks = if (x2shift < xdiff) {
                                                                                                                                 modelData[, x1var]
                                                                                                                                }
-                                                                                                            else {
-                                                                                                              #modelData[, x1var] + (as.numeric(modelData[, x2var]) -1) * x2shift
-                                                                                                              as.numeric(factor(modelData[, x1var])) + (as.numeric(modelData[, x2var])-1) * x2shift
-                                                                                                              }) +
-                                                                                              coord_cartesian(clip = "off") +
-                                                                                                  scale_color_manual(values = lineColours)
+  else { #modelData[, x1var] + (as.numeric(modelData[, x2var]) -1) * x2shift
+    as.numeric(factor(modelData[, x1var])) + (as.numeric(modelData[, x2var]) - 1) * x2shift #modified line above to have first var also be as.numeric(factor())
+    }) + coord_cartesian(clip = "off") + scale_color_manual(values = lineColours)
+
   if (addBox) {
     p <- p + geom_boxplot(mapping = aes_string(x = "x", 
                                                y = "y", group = "x"), inherit.aes = FALSE, alpha = alpha * 
                             0.7, outlier.shape = NA, width = xdiff/6)
   }
   if (x2shift >= xdiff) {
-    p <- p + geom_text(data = data.frame(label = x2labs, 
-                                         #x = x2shift * (seq_along(x2labs) - 1) + xdiff/2, 
-                                         x = x2shift * (seq_along(x2labs) - 1) + xdiff/2 + 1,
-                                         y = min(c(modelData$LCI, df_long$y), na.rm = TRUE)), 
+    p <- p + geom_text(data = data.frame(label = x2labs,
+         x = x2shift * (seq_along(x2labs) - 1) + xdiff/2 + 1, #added +1 to work with the 0,1 factor data
+         y = min(c(modelData$LCI, df_long$y), na.rm = TRUE)), 
                        size = rel(4), mapping = aes_string(label = "label", 
                                                            x = "x", y = "y"), hjust = 0.5, nudge_x = 0, 
                        vjust = x2Offset, inherit.aes = FALSE) + theme(axis.title.x = element_text(vjust = -6))
@@ -91,6 +87,7 @@ Factor_ggmodelPlot <- function(object, geneName = NULL, x1var = NULL, x2var = NU
   return(p)
 }
 
+#Pulled in formPlot code below from the source code file modelPlot.R, edited with comments as below:
 
 formPlot <- function(object, geneName, x1var, x2var, x2shift) {
   if (!x1var %in% colnames(object@modelData)) {
@@ -109,13 +106,15 @@ formPlot <- function(object, geneName, x1var, x2var, x2shift) {
   IDColumn <- object@vars$id
   id <- object@metadata[, IDColumn]
   y <- maindata[geneName, ]
-  #x <- object@metadata[, x1var]
-  x <- as.numeric(factor(object@metadata[, x1var]))
+  #x <- object@metadata[, x1var] #commented out
+  x <- as.numeric(factor(object@metadata[, x1var])) #make x1var as a factor and then as a 0,1 numeric to be able to plot
   xdiff <- diff(range(x, na.rm = TRUE))
   if (!is.null(x2var)) {
     x2 <- as.numeric(factor(object@metadata[, x2var]))
     nsegments <- length(unique(x)) -1
-    if (is.null(x2shift)) {x2shift <- max(x, na.rm = TRUE) + xdiff / nsegments}
+    if (is.null(x2shift)) {
+      x2shift <- max(x, na.rm = TRUE) + xdiff / nsegments
+      }
     x <- x + (x2-1) * x2shift
   } else {
     x2 <- 1
@@ -129,7 +128,7 @@ formPlot <- function(object, geneName, x1var, x2var, x2shift) {
   s <- nrow(modelData)
   modelx <- if (!is.null(x2var)) {
     #modelData[, x1var] + (as.numeric(modelData[, x2var])-1) * x2shift
-    as.numeric(factor(modelData[, x1var])) + (as.numeric(modelData[, x2var])-1) * x2shift
+    as.numeric(factor(modelData[, x1var])) + (as.numeric(modelData[, x2var])-1) * x2shift #modified line above to have first var also be as.numeric(factor())
   } else modelData[, x1var]
   df_model <- data.frame(x = modelx,
                          y = preds[1:s],

@@ -268,8 +268,6 @@ I changed the function to allow for discrete values on the X axis:
 ```{r}
 source(file = "../Factor_ggmodelPlot.R")
 
-#I changed their code a lot and need to document all the changes
-
 formPlot(results,geneName = "Pocillopora_acuta_HIv2___RNAseq.g14176.t1",x1var = "Treatment",x2var="Origin",x2shift=NULL) #the plotting code is based of off these matrices, made using their function "formPlot"
 
 plotColours <- c("skyblue","mediumseagreen")

@@ -116,7 +116,8 @@ fixed_ylim_maPlot <- function (object, x1var, x2var, x1Values = NULL, x2Values =
     plotData <- plotData[order(plotData$col), ]
     ma1 <- ggplot(data = plotData, aes_string(x = "meanexp", 
                                               y = "x", color = "col")) + geom_point() + theme_minimal() + 
-      scale_color_manual(values = colours, name = "") + scale_y_continuous(limits = c(-4.2,4.2), breaks = seq(-4,4, 2)) +
+      scale_color_manual(values = colours, name = "") +
+      scale_y_continuous(limits = c(-4.2,4.2), breaks = seq(-4,4, 2)) + #adding limits to y scale and breaks
       labs(x = bquote(paste("Mean log"[2], "(gene expression + 1)")), 
            y = yLab, title = paste0("MA plot (", x2var, 
                                     " = ", x2Values[1], ")")) + geom_hline(yintercept = 0, 
@@ -131,7 +132,8 @@ fixed_ylim_maPlot <- function (object, x1var, x2var, x1Values = NULL, x2Values =
     ma2 <- ggplot(data = plotData, aes_string(x = "meanexp", 
                                               y = "y", color = "col")) + geom_point() + theme_minimal() + 
       scale_color_manual(values = colours, breaks = colLevels, 
-                         name = "") + scale_y_continuous(limits = c(-4.2,4.2), breaks = seq(-4,4, 2)) +
+                         name = "") +
+                         scale_y_continuous(limits = c(-4.2,4.2), breaks = seq(-4,4, 2)) + #adding limits to y scale and breaks
                     labs(x = bquote(paste("Mean log"[2], 
                                                             "(gene expression + 1)")), y = yLab, title = paste0("MA plot (", 
                                                                                                                 x2var, " = ", x2Values[2], ")")) + geom_hline(yintercept = 0, 
