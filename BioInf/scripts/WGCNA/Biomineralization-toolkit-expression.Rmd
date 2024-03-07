@@ -134,7 +134,7 @@ unique(red_genes_data_DE_Origin$Gene)
 ### Carbonic Anhydrase (STPCA2-1)
 ```{r}
 biomin_all_filtered_long_g12304 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___TS.g12304.t1")
+  filter(Gene == "Pocillopora_acuta_HIv2___TS.g12304.t1") %>% dplyr::select(Origin, Colony, Expression, Treatment2) %>% distinct()
 biomin_all_filtered_long_g12304  
 ```
 
@@ -297,7 +297,7 @@ g25351_fig
 ### vitellogenin-like protein
 ```{r}
 biomin_all_filtered_long_g13222 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___TS.g13222.t1b")
+  filter(Gene == "Pocillopora_acuta_HIv2___TS.g13222.t1b") %>% dplyr::select(Origin, Colony, Expression, Treatment2) %>% distinct()
 biomin_all_filtered_long_g13222  
 ```
 
