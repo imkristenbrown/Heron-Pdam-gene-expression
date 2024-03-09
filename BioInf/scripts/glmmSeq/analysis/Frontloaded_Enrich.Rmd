@@ -153,16 +153,16 @@ GO_05 <- GO %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
 #Filtering for p < 0.05
-GO_001 <- GO %>%
-        dplyr::filter(over_represented_pvalue<0.001) %>%
+GO_01 <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.01) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
 
 dim(GO_05)
 head(GO_05)
 
-dim(GO_001)
-GO_001
+dim(GO_01)
+head(GO_01)
 ```
 
 Plotting!
@@ -229,11 +229,21 @@ BP_terms <- GO_05 %>% dplyr::filter(ontology=="BP") %>% dplyr::select(GOterm) %>
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 
-pdf(file = "../../../output/glmmseq/Frontloaded_GOSeq/Frontloadeds_P05_GOSEM.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), method = "kmeans")
+pdf(file = "../../../output/glmmseq/Frontloaded_GOSeq/Frontloadeds_P05_GOSEM_kmeans_10max.pdf", width = 7, height = 10)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), method = "kmeans", max_words=10)
 dev.off()
 ```
 
+```{r}
+library(simplifyEnrichment)
+BP_terms <- GO_01 %>% dplyr::filter(ontology=="BP") %>% dplyr::select(GOterm) %>% unlist()
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+
+pdf(file = "../../../output/glmmseq/Frontloaded_GOSeq/Frontloadeds_P01_GOSEM_kmeans_10max.pdf", width = 7, height = 10)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), method = "kmeans", max_words=10)
+dev.off()
+```
 
 ### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
 
@@ -270,7 +280,7 @@ ggsave("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P05_orderedpval.pdf", G
 
 ```{r}
 #ordered by p-value
-GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
+GO_plot_all_pval <- GO_01 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
   mutate(term = fct_reorder(term, ontology)) %>%
   ggplot( aes(x=term, y=numDEInCat) ) +
   geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
@@ -294,7 +304,7 @@ GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(t
 
 GO_plot_all_pval
 
-ggsave("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P001_orderedpval.pdf", GO_plot_all_pval)
+ggsave("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P01_orderedpval.pdf", GO_plot_all_pval)
 ```
 
 
