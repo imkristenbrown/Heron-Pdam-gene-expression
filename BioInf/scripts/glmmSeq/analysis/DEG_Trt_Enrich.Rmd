@@ -30,6 +30,7 @@ library(rrvgo)
 library(GO.db)
 library(tidyr)
 library(forcats)
+library(simplifyEnrichment)
 sessionInfo() #list of packages after library-ing these packages
 ```
 
@@ -51,81 +52,9 @@ nrow(Treatment_DEGs)
 genes <- rownames(DEGs)
 ```
 
-## **Generate files for Functional Enrichment**  
-
-Based off of [Ariana's script](https://github.com/AHuffmyer/EarlyLifeHistory_Energetics/blob/master/Mcap2020/Scripts/TagSeq/Genome_V3/1_WGCNA_Mcap_V3.Rmd)
-
-Functional annotation file obtained from: http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.genes.EggNog_results.txt.gz on April 3, 2023.  
-
-
+## Now onto Enrichment! Read in file generated in DEG_Enrich.Rmd script
 ```{r}
-Pacuta.annot <- read.delim("../../../data/Pocillopora_acuta_HIv2.genes.EggNog_results.txt") %>% dplyr::rename("query" = X.query)
-
-dim(Pacuta.annot)
-head(Pacuta.annot)
-```
-
-```{r}
-genes2annot = match(genes, Pacuta.annot$query) #match genes in DEGs (all genes after filtering) to genes in annotation file
-
-sum(is.na(genes2annot)) #number of genes without EggNog annotation
-missing<-as.data.frame(genes[which(is.na(genes2annot))]) #dataframe of genes without EggNog annotation
-head(missing)
-```
-
-2812/9011 genes without eggnog annotation
-
-```{r}
-names(Pacuta.annot)
-
-geneInfo0 = data.frame(gene_id = genes, #add gene id
-  Accession = Pacuta.annot$seed_ortholog[genes2annot], #add accession number
-  Bitscore = Pacuta.annot$score[genes2annot], #add bitscore
-  eValue = Pacuta.annot$evalue[genes2annot], #add e value
-  Description = Pacuta.annot$Description[genes2annot], #add description of gene
-  Annotation.GO.ID = Pacuta.annot$GOs[genes2annot], #add GO ID's
-  q_Origin = DEGs$Origin, #add Origin adjusted p-value
-  q_Treatment = DEGs$Treatment, #add Treatment adjusted p-value
-  q_Interaction = DEGs$Treatment.Origin, #add Treatment:Origin adjusted p-value
-  Stable_OriginFC = DEGs$Stable_OriginFC, #add fold change for Slope vs Flat in the stable treatment
-  Variable_OriginFC = DEGs$Variable_OriginFC, #add fold change for Slope vs Flat in the variable treatment
-  maxGroupFC = DEGs$maxGroupFC, #add max group fold change (was FC bigger in stable of variable treatment)
-  col = DEGs$col) #add qualitative significance info
-
-dim(geneInfo0)
-head(geneInfo0,2)
-```
-
-Add KEGG annotation information.  Downloaded from: http://cyanophora.rutgers.edu/Pocillopora_acuta/Pocillopora_acuta_HIv2.genes.KEGG_results.txt.gz on April 3, 2023.  
-
-```{r}
-kegg<-read.table("../../../data/Pocillopora_acuta_HIv2.genes.KEGG_results.txt", sep="", quote="", na.strings=c("","NA"), blank.lines.skip = FALSE, header=FALSE)
-
-dim(kegg)
-head(kegg)
-```
-
-Add KEGG annotations to each gene.  
-```{r}
-geneInfo0$KEGG <- kegg$V2[match(geneInfo0$gene_id, kegg$V1)]
-
-sum(is.na(geneInfo0$KEGG)) #number of genes without KEGG annotation
-
-missing_KEGG <- as.data.frame(genes[which(is.na(geneInfo0$KEGG))]) #dataframe of genes without EggNog annotation
-head(missing_KEGG)
-```
-
-Order geneInfo0 by significance of Treatment, q_Treatment (adjusted p value)
-```{r}
-geneInfo <- geneInfo0[order(geneInfo0[, 'q_Treatment']), ]
-
-#write.csv(geneInfo, file = "../../../output/glmmseq/geneInfo.csv") #gene info for reference/supplement
-```
-
-
-## Now onto Enrichment!
-```{r}
-#geneInfo<-read.csv("../../../output/glmmseq/geneInfo.csv")
+geneInfo<-read.csv("../../../output/glmmseq/geneInfo.csv")
 
 dim(geneInfo)
 
@@ -244,7 +173,7 @@ for (category in ontologies) {
     go_results<-go_results%>%
       filter(ontology==category)%>%
       filter(over_represented_pvalue != "NA") %>%
-      filter(numInCat>10)%>%
+      #filter(numInCat>10)%>%
       arrange(., over_represented_pvalue)
     
       #Reduce/collapse GO term set with the rrvgo package 
@@ -265,6 +194,9 @@ for (category in ontologies) {
     
     #add in parent terms to list of go terms 
     go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+    
+    filename <-  paste0("../../../output/glmmseq/GOSeq/Treatment/GOseq_TreatmentDEGs_filtered_P05_", category, ".csv")
+    write.csv(go_results, filename)
    
     #plot significantly enriched GO terms by Slim Category faceted by slim term 
   GO.plot <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
@@ -285,35 +217,24 @@ ggsave(filename=paste0("../../../output/glmmseq/GOSeq/Treatment/TreatmentDEGs_P0
 }
 ```
 
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- GO_05 %>% dplyr::filter(ontology=="BP") %>% dplyr::select(GOterm) %>% unlist()
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+
+pdf(file = "../../../output/glmmseq/GOSeq/Treatment/TreatmentDEGs_P05_GOSEM.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), method = "kmeans")
+dev.off()
+```
+
+
 ### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
 
 ```{r}
-GO_plot_all <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, numDEInCat)) %>%
-  mutate(term = fct_reorder(term, ontology)) %>%
-  ggplot( aes(x=term, y=numDEInCat) ) +
-  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
-  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
-  geom_point(size=1, aes(colour = ontology)) +
-  coord_flip() +
-  ylim(0,305) +
-  theme(
-    panel.grid.minor.y = element_blank(),
-    panel.grid.major.y = element_blank(),
-    legend.position="bottom"
-  ) +
-  xlab("") +
-  ylab("") +
-  theme_bw() + #Set background color 
-  theme(panel.border = element_blank(), # Set border
-        panel.grid.major = element_blank(), #Set major gridlines
-        panel.grid.minor = element_blank(), #Set minor gridlines
-        axis.line = element_line(colour = "black"), #Set axes color
-        plot.background=element_blank()) #Set the plot background #set title attributes
-
-GO_plot_all
-
-ggsave("../../../output/glmmseq/GOSeq/Treatment/TreatmentDEGs_P05.pdf", GO_plot_all)
-
 #ordered by p-value
 GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
   mutate(term = fct_reorder(term, ontology)) %>%
@@ -322,14 +243,14 @@ GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(te
   geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
   geom_point(size=1, aes(colour = ontology)) +
   coord_flip() +
-  ylim(0,305) +
+  ylim(0,4) +
   theme(
     panel.grid.minor.y = element_blank(),
     panel.grid.major.y = element_blank(),
     legend.position="bottom"
   ) +
   xlab("") +
-  ylab("") +
+  ylab("Number of Differentially Expressed Genes in GO Term") +
   theme_bw() + #Set background color 
   theme(panel.border = element_blank(), # Set border
         panel.grid.major = element_blank(), #Set major gridlines
@@ -339,62 +260,7 @@ GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(te
 
 GO_plot_all_pval
 
-ggsave("../../../output/glmmseq/GOSeq/Treatment/TreatmentDEGs_P05_orderedpval.pdf", GO_plot_all_pval)
-```
-
-```{r}
-GO_plot_all <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, numDEInCat)) %>%
-  mutate(term = fct_reorder(term, ontology)) %>%
-  ggplot( aes(x=term, y=numDEInCat) ) +
-  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
-  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
-  geom_point(size=1, aes(colour = ontology)) +
-  coord_flip() +
-  ylim(0,305) +
-  theme(
-    panel.grid.minor.y = element_blank(),
-    panel.grid.major.y = element_blank(),
-    legend.position="bottom"
-  ) +
-  xlab("") +
-  ylab("") +
-  theme_bw() + #Set background color 
-  theme(panel.border = element_blank(), # Set border
-        panel.grid.major = element_blank(), #Set major gridlines
-        panel.grid.minor = element_blank(), #Set minor gridlines
-        axis.line = element_line(colour = "black"), #Set axes color
-        plot.background=element_blank()) #Set the plot background #set title attributes
-
-GO_plot_all
-
-ggsave("../../../output/glmmseq/GOSeq/Treatment/TreatmentDEGs_P05.pdf", GO_plot_all, width = 12, height = 24, units = c("in"), dpi=300, limitsize=FALSE)
-
-#ordered by p-value
-GO_plot_all_pval <- GO_05 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
-  mutate(term = fct_reorder(term, ontology)) %>%
-  ggplot( aes(x=term, y=numDEInCat) ) +
-  geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
-  geom_text(aes(label = over_represented_pvalue), hjust = -1, vjust = 0, size = 2) +
-  geom_point(size=1, aes(colour = ontology)) +
-  coord_flip() +
-  ylim(0,305) +
-  theme(
-    panel.grid.minor.y = element_blank(),
-    panel.grid.major.y = element_blank(),
-    legend.position="bottom"
-  ) +
-  xlab("") +
-  ylab("") +
-  theme_bw() + #Set background color 
-  theme(panel.border = element_blank(), # Set border
-        panel.grid.major = element_blank(), #Set major gridlines
-        panel.grid.minor = element_blank(), #Set minor gridlines
-        axis.line = element_line(colour = "black"), #Set axes color
-        plot.background=element_blank()) #Set the plot background #set title attributes
-
-GO_plot_all_pval
-
-ggsave("../../../output/glmmseq/GOSeq/Treatment/TreatmentDEGs_P05_orderedpval.pdf", GO_plot_all_pval, width = 12, height = 24, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../../output/glmmseq/GOSeq/Treatment/TreatmentDEGs_P05_orderedpval.pdf", GO_plot_all_pval, width = 9, height = 7, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ### KEGG enrichment

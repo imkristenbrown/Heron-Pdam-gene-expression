@@ -1,0 +1,5 @@
+"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","ParentTerm"
+"1","GO:0071020",0.0069272071949338,0.999982954792856,1,4,"post-spliceosomal complex","CC","post-spliceosomal complex"
+"2","GO:0071012",0.02349859784843,0.999757160810419,1,13,"catalytic step 1 spliceosome","CC","post-spliceosomal complex"
+"3","GO:0071014",0.0253172547902628,0.999716254843978,1,14,"post-mRNA release spliceosomal complex","CC","post-spliceosomal complex"
+"4","GO:0000974",0.0405992406083519,0.99924576151139,1,22,"Prp19 complex","CC","Prp19 complex"
