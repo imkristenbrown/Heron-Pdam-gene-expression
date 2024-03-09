@@ -657,7 +657,7 @@ for (color in module_colors) {
   go_results<-go_results%>%
       filter(ontology=="BP")%>%
       filter(bh_adjust != "NA") %>%
-      filter(numInCat>100)%>%
+      #filter(numInCat>100)%>%
       arrange(., bh_adjust)
   
   #Reduce/collapse GO term set with the rrvgo package 
@@ -2754,12 +2754,16 @@ biomin_compare_figs
 
 ## Merge the frequency of GOterms for both up- and down-regulation of calcification
 
+
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.0001) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
+
 ```{r}
-cal_up_terms <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
-cal_up_terms<- cal_up_terms %>%
-  mutate(Factor = "Up")
+cal_up_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
+cal_up_terms <- cal_up_terms %>% mutate(Factor = "Up") 
 head(cal_up_terms)
 ```
+
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.0001) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 cal_down_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
@@ -2768,19 +2772,25 @@ cal_down_terms<-cal_down_terms %>%
 head(cal_down_terms)
 ```
 
-```{r}
-colnames(cal_up_terms)
-colnames(cal_down_terms)
-```
-
 ### Merge up and down-regulation of calcification GOterms
+
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.0001) within the modules that were upregulated *or* downregulated for calcification. The list has been further reduced by using the package rrvgo.
+
 ```{r}
-all_terms<- merge(cal_up_terms,cal_down_terms, by=c("Factor","GOterm","X.1","X","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm"),all=T)
+all_terms <- rbind(cal_down_terms,cal_up_terms)
+
+all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm")]
 
 all_terms$GOterm<-as.factor(all_terms$GOterm)
 head(all_terms)
 tail(all_terms)
+
+dim(all_terms)
+
+length(unique(all_terms$GOterm))
 ```
+
+This is collapsing the list from 3273 rows to only 1809, representing the 1809 unique GO terms in the list above. It collapses the information in the columns "ParentTerm" and "Factor" so that for each GO term we get the parent terms associated and if this was enriched in modules upregulated for calcification, downregulated for calcification, or both.
 
 ```{r}
 goterms_shared <- all_terms %>%
@@ -2796,15 +2806,17 @@ dim(goterms_shared)
 write.csv(goterms_shared, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm.csv")
 ```
 
+
+For each parent term in this list, how many are "Up" by calcification, "Down", or both
 ```{r}
 result_unique <- goterms_shared %>%
   group_by(ParentTerm,Factor) %>%
-  dplyr::summarise(SharedGOterms = n_distinct(GOterm))%>%
+  dplyr::summarise(SharedGOterms = n_distinct(GOterm)) %>%
   arrange(-SharedGOterms)
 ```
 
 ```{r}
-result_filtered_up<- result_unique %>%
+result_filtered_up <- result_unique %>%
   dplyr::filter(Factor=="Up" | Factor=="Down, Up")
  #dplyr::filter(SharedGOterms>=5) 
 ```
@@ -2817,12 +2829,12 @@ result_filtered_down<- result_unique %>%
 
 ### Count number of GOterms by ParentTerm for the upregulation of calcification
 ```{r}
-result <- cal_up_terms %>%
+result_up <- cal_up_terms %>%
   dplyr::group_by(ParentTerm) %>%
   dplyr::summarize(Number.of.terms = n_distinct(term))%>%
   mutate(Calcification.direction = "Up")
 
-print(result)
+print(result_up)
 ```
 
 ```{r}
@@ -2830,7 +2842,7 @@ merged_up <- result_filtered_up %>%
   tidyr::separate_rows(ParentTerm, sep = ", ") %>%
   dplyr::group_by(ParentTerm) %>%
   dplyr::summarize(Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE)) %>%
-  left_join(result, by = "ParentTerm") #join with result from above to get the Number.of.Terms column
+  left_join(result_up, by = "ParentTerm") #join with result from above to get the Number.of.Terms column
 
 merged_up_clean <- na.omit(merged_up)
 head(merged_up_clean)
