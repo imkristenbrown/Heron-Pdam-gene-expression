@@ -258,6 +258,9 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+
+#compare_clustering_methods(Mat, plot_type = "heatmap")
+
 pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), max_words=20)
 dev.off()
@@ -373,7 +376,7 @@ CalcUpMods_GO_P00001_reduced <- go_results_BP_reduced %>%
         legend.position="none")
 
 CalcUpMods_GO_P00001_reduced
-ggsave("../../output/WGCNA/GO_analysis/CalcUpMods_GO_P00001_reduced.pdf", CalcUpMods_GO_P00001, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../output/WGCNA/GO_analysis/CalcUpMods_GO_P00001_reduced.pdf", CalcUpMods_GO_P00001_reduced, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ## Calcification - down
@@ -508,7 +511,7 @@ CalcDownMods_GO_P00001 <- go_results_BP %>%
         legend.position="none")
 
 CalcDownMods_GO_P00001
-ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P00001.pdf", CalcUpMods_GO_P00001, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P00001.pdf", CalcDownMods_GO_P00001, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ```{r}
@@ -590,7 +593,7 @@ CalcDownMods_GO_P00001_reduced <- go_results_BP_reduced %>%
         legend.position="none")
 
 CalcDownMods_GO_P00001_reduced
-ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P00001_reduced.pdf", CalcUpMods_GO_P00001, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P00001_reduced.pdf", CalcDownMods_GO_P00001_reduced, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ## code for by module
