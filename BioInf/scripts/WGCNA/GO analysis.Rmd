@@ -2823,17 +2823,79 @@ goterms_shared_full <- goterms_shared %>%
   dplyr::select(-c("bh_adjust", "Factor.y")) %>% #remove the unique columns so that we can collapse the dataframe
   group_by(GOterm, ParentTerm, Factor.x, term) %>% #group by the repeated columns for the non-unique GO terms
   dplyr::summarize(bh_adjust_Up = na.omit(bh_adjust_Up)[1], #carry over the p-value for the term in the up direction, by taking the first non-NA value.
-            bh_adjust_Down = na.omit(bh_adjust_Down)[1]) #carry over the p-value for the term in the down direction, by taking the first non-NA value.
+            bh_adjust_Down = na.omit(bh_adjust_Down)[1]) %>% #carry over the p-value for the term in the down direction, by taking the first non-NA value.
+  rename(Factor.x = "Factor") #rename column 
 ```
 
 ```{r}
 write.csv(goterms_shared_full, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm.csv")
 ```
 
+### GOSlim
+
+I downloaded the GOSlim terms list from the following website on 4/5/2024: http://www.informatics.jax.org/gotools/data/input/map2MGIslim.txt
+
+I did so by going to [this link](http://www.informatics.jax.org/gotools/MGI_GO_Slim.html) and right clicking "here" at "Tab-delimited file mapping GO_ids to MGI GO_Slim category available for download _here_" and saying "Save link as..." , and I saved it as "map2MGIslim.txt". I then converted this to CSV and uploaded to this github repository [here](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/data/map2MGIslim.csv).
 
 
+Add slim terms to dataset 
+```{r}
+GOslim <- read.csv("../../data/map2MGIslim.csv") %>% dplyr::select(-term)
+```
 
-For each parent term in this list, how many are "Up" by calcification, "Down", or both
+Based off of Jill's code at https://github.com/fscucchia/Hawaii2022_pH_Temp_Mcap_Pacu/blob/main/scripts/Functional_Enrichment.Rmd
+
+```{r}
+goterms_shared_full_slim <- goterms_shared_full %>%
+  inner_join(GOslim, by = c("GOterm" = "GO_id"))
+
+goterms_up_slim <- goterms_shared_full_slim %>% dplyr::filter(Factor=="Up" | Factor=="Down, Up")
+
+goterms_up_full_slim_plot <- goterms_up_slim %>%
+      ggplot(aes(x=bh_adjust_Up, 
+               y=term)) +
+        geom_point(size = 0.5) +
+        expand_limits(x=0) +
+        facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
+      labs(x="Over-represented p-value", y="") +
+      theme_bw() + 
+      theme(
+        strip.text.y = element_text(size = 5, colour = "black", angle = 0, face = "bold"),
+        axis.text = element_text(size = 1, colour = "black"),
+        axis.title.x = element_text(size = 5, colour = "black"),
+        legend.text=element_text(size = 5),
+        legend.title = element_text(size = 5)
+      ); goterms_up_full_slim_plot
+
+ggsave("../../output/WGCNA/GO_analysis/Calc_Up_GOSlim.png", goterms_up_full_slim_plot, width = 10, height = 35)
+ggsave("../../output/WGCNA/GO_analysis/Calc_Up_GOSlim.pdf", goterms_up_full_slim_plot, width = 10, height = 35)
+```
+
+```{r}
+goterms_down_slim <- goterms_shared_full_slim %>% dplyr::filter(Factor=="Down" | Factor=="Down, Up")
+
+goterms_down_full_slim_plot <- goterms_down_slim %>%
+      ggplot(aes(x=bh_adjust_Down, 
+               y=term)) +
+        geom_point(size = 2) +
+        expand_limits(x=0) +
+        facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
+      labs(x="Over-represented p-value", y="") +
+      theme_bw() + 
+      theme(
+        strip.text.y = element_text(size = 5, colour = "black", angle = 0, face = "bold"),
+        axis.text = element_text(size = 5, colour = "black"),
+        axis.title.x = element_text(size = 5, colour = "black"),
+        legend.text=element_text(size = 5),
+        legend.title = element_text(size = 5)
+      ); goterms_down_full_slim_plot
+
+ggsave("../../output/WGCNA/GO_analysis/Calc_Down_GOSlim.png", goterms_down_full_slim_plot, width = 10, height = 35)
+ggsave("../../output/WGCNA/GO_analysis/Calc_Down_GOSlim.pdf", goterms_down_full_slim_plot, width = 10, height = 35)
+```
+
+
+### For each parent term in this list, how many are "Up" by calcification, "Down", or both
 
 SharedGOterms = # of GO terms within the parent term that are in the list for "Down", "Up", or "Down, Up"
 ```{r}
