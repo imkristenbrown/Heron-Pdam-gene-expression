@@ -2769,7 +2769,7 @@ biomin_compare_figs
 
 ## Merge the frequency of GOterms for both up- and down-regulation of calcification
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.0001) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 cal_up_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
@@ -2777,12 +2777,11 @@ cal_up_terms <- cal_up_terms %>% mutate(Factor = "Up")
 head(cal_up_terms)
 ```
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.0001) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 cal_down_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
-cal_down_terms<-cal_down_terms %>%
-  mutate(Factor = "Down")
+cal_down_terms<-cal_down_terms %>% mutate(Factor = "Down")
 head(cal_down_terms)
 ```
 
@@ -2796,13 +2795,14 @@ all_terms <- rbind(cal_down_terms,cal_up_terms)
 all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm")]
 
 all_terms$GOterm<-as.factor(all_terms$GOterm)
-head(all_terms)
-tail(all_terms)
 
-dim(all_terms)
+dim(all_terms) #3273 reduced terms 
 
-length(unique(all_terms$GOterm))
+length(unique(all_terms$GOterm)) #this represents 1809 unique terms between the two lists of reduced terms
+length(unique(all_terms$ParentTerm)) #this represents 139 unique terms between the two lists of reduced terms
 ```
+
+### Unique terms
 
 This is collapsing the list from 3273 rows to only 1809, representing the 1809 unique GO terms in the list above. It collapses the information in the columns "ParentTerm" and "Factor" so that for each GO term we get the parent terms associated and if this was enriched in modules upregulated for calcification, downregulated for calcification, or both.
 
@@ -2811,32 +2811,45 @@ goterms_shared <- all_terms %>%
   group_by(GOterm) %>%
   dplyr::summarise(
     ParentTerm = paste(unique(ParentTerm), collapse = ", "),
-    Factor = paste(unique(Factor), collapse = ", ")
+    Factor = paste(unique(Factor), collapse = ", "),
+    term = paste(unique(term), collapse = ", ")
   )
 dim(goterms_shared)
+
+goterms_shared_full <- goterms_shared %>% left_join(dplyr::select(all_terms,GOterm, Factor, bh_adjust), by = "GOterm") %>%
+  mutate(bh_adjust_Up = ifelse(Factor.y == "Up", bh_adjust, NA)) %>%
+  mutate(bh_adjust_Down = ifelse(Factor.y == "Down", bh_adjust, NA)) %>%
+  dplyr::select(-c("bh_adjust", "Factor.y")) %>%
+  group_by(GOterm, ParentTerm, Factor.x, term) %>%
+  dplyr::summarize(bh_adjust_Up = na.omit(bh_adjust_Up)[1],
+            bh_adjust_Down = na.omit(bh_adjust_Down)[1])
 ```
 
 ```{r}
-write.csv(goterms_shared, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm.csv")
+write.csv(goterms_shared_full, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm.csv")
 ```
+
+
 
 
 For each parent term in this list, how many are "Up" by calcification, "Down", or both
+
+SharedGOterms = # of GO terms within the parent term that are in the list for "Down", "Up", or "Down, Up"
 ```{r}
-result_unique <- goterms_shared %>%
+result_parent_unique <- goterms_shared %>%
   group_by(ParentTerm,Factor) %>%
   dplyr::summarise(SharedGOterms = n_distinct(GOterm)) %>%
   arrange(-SharedGOterms)
 ```
 
 ```{r}
-result_filtered_up <- result_unique %>%
+parent_filtered_up <- result_parent_unique %>%
   dplyr::filter(Factor=="Up" | Factor=="Down, Up")
  #dplyr::filter(SharedGOterms>=5) 
 ```
 
 ```{r}
-result_filtered_down<- result_unique %>%
+parent_filtered_down <- result_parent_unique %>%
   dplyr::filter(Factor=="Down" | Factor=="Down, Up")
  #dplyr::filter(SharedGOterms>=5) 
 ```
@@ -2848,11 +2861,12 @@ result_up <- cal_up_terms %>%
   dplyr::summarize(Number.of.terms = n_distinct(term))%>%
   mutate(Calcification.direction = "Up")
 
-print(result_up)
+head(result_up)
+dim(result_up)
 ```
 
 ```{r}
-merged_up <- result_filtered_up %>%
+merged_up <- parent_filtered_up %>%
   tidyr::separate_rows(ParentTerm, sep = ", ") %>%
   dplyr::group_by(ParentTerm) %>%
   dplyr::summarize(Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE)) %>%
@@ -2860,6 +2874,8 @@ merged_up <- result_filtered_up %>%
 
 merged_up_clean <- na.omit(merged_up)
 head(merged_up_clean)
+
+dim(merged_up_clean)
 ```
 
 ### Count number of GOterms by ParentTerm for the downregulation of calcification
@@ -2870,11 +2886,12 @@ result_down <- cal_down_terms %>%
   dplyr::summarize(Number.of.terms = n_distinct(term))%>%
   mutate(Calcification.direction = "Down")
 
-print(result_down)
+dim(result_down)
+head(result_down)
 ```
 
 ```{r}
-merged_down <- result_filtered_down %>%
+merged_down <- parent_filtered_down %>%
   tidyr::separate_rows(ParentTerm, sep = ", ") %>%
   dplyr::group_by(ParentTerm) %>%
   dplyr::summarize(Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE)) %>%
@@ -2889,7 +2906,7 @@ head(merged_down_clean)
 cal_freq_terms_filtered_up <- merged_up_clean %>%
   filter(Number.of.terms>=10) %>%
   filter(Calcification.direction=="Up")
-cal_freq_terms_filtered_up
+dim(cal_freq_terms_filtered_up)
 ```
 
 #### Figure
