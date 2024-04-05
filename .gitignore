@@ -6,4 +6,4 @@ BioInf/data/Pocillopora_acuta_HIv2.genes_fixed.gff3
 .Rproj
 BioInf/scripts/glmmSeq/Slope_Base/Slope_Base.Rproj
 BioInf/output/WGCNA/TOM_sign.Rdata
-output/WGCNA/GO_analysis_ZD
+BioInf/output/WGCNA/GO_analysis_ZD
