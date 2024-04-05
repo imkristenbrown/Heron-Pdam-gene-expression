@@ -1,4 +1,4 @@
-"","GOterm","ParentTerm","Factor.x","term","bh_adjust_Up","bh_adjust_Down"
+"","GOterm","ParentTerm","Factor","term","bh_adjust_Up","bh_adjust_Down"
 "1","GO:0000003","reproduction","Down, Up","reproduction",1.82810160859898e-160,1.8113603676584e-152
 "2","GO:0000028","cellular component biogenesis","Down","ribosomal small subunit assembly",NA,4.85598849569905e-06
 "3","GO:0000041","monoatomic ion transport","Down, Up","transition metal ion transport",6.53671393612769e-08,5.69380054421509e-07
