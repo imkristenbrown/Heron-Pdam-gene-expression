@@ -8,3 +8,5 @@ BioInf/scripts/glmmSeq/Slope_Base/Slope_Base.Rproj
 BioInf/output/WGCNA/TOM_sign.Rdata
 BioInf/output/WGCNA/GO_analysis_ZD
 BioInf/output/WGCNA/GO_analysis_ZD/*
+BioInf/scripts/WGCNA/GO analysis_ZD.Rmd
+BioInf/scripts/WGCNA/GO-analysis_ZD.html
