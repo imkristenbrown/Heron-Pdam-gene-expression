@@ -2816,13 +2816,14 @@ goterms_shared <- all_terms %>%
   )
 dim(goterms_shared)
 
-goterms_shared_full <- goterms_shared %>% left_join(dplyr::select(all_terms,GOterm, Factor, bh_adjust), by = "GOterm") %>%
-  mutate(bh_adjust_Up = ifelse(Factor.y == "Up", bh_adjust, NA)) %>%
-  mutate(bh_adjust_Down = ifelse(Factor.y == "Down", bh_adjust, NA)) %>%
-  dplyr::select(-c("bh_adjust", "Factor.y")) %>%
-  group_by(GOterm, ParentTerm, Factor.x, term) %>%
-  dplyr::summarize(bh_adjust_Up = na.omit(bh_adjust_Up)[1],
-            bh_adjust_Down = na.omit(bh_adjust_Down)[1])
+goterms_shared_full <- goterms_shared %>%
+  left_join(dplyr::select(all_terms,GOterm, Factor, bh_adjust), by = "GOterm") %>% #select 3 columns GOterm, Factor, bh_adjust from all_terms and left join by GOterm, turns this dataframe from 1809 rows back to the 3273 in all_terms
+  mutate(bh_adjust_Up = ifelse(Factor.y == "Up", bh_adjust, NA)) %>% #add a column that is the p-value for the Up factor
+  mutate(bh_adjust_Down = ifelse(Factor.y == "Down", bh_adjust, NA)) %>% #add a column that is the p-value for the Down factor
+  dplyr::select(-c("bh_adjust", "Factor.y")) %>% #remove the unique columns so that we can collapse the dataframe
+  group_by(GOterm, ParentTerm, Factor.x, term) %>% #group by the repeated columns for the non-unique GO terms
+  dplyr::summarize(bh_adjust_Up = na.omit(bh_adjust_Up)[1], #carry over the p-value for the term in the up direction, by taking the first non-NA value.
+            bh_adjust_Down = na.omit(bh_adjust_Down)[1]) #carry over the p-value for the term in the down direction, by taking the first non-NA value.
 ```
 
 ```{r}
