@@ -810,6 +810,27 @@ ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait
         column_names_gp =  gpar(fontsize = 30), row_names_gp = gpar(fontsize = 25, alpha = 0.75, border = TRUE, fill = htmap.colors))
 ht
 dev.off()
+
+pdf("../../output/WGCNA/Both_with phys and pHi_heatmap_new_row_clust.pdf", height = 40, width = 40)
+ht=Heatmap(moduleTraitCor_both, name = "Eigengene", column_title = "Module-Trait Eigengene Correlation", 
+        col = blueWhiteRed(50), 
+        row_names_side = "left",
+        cluster_rows = row_dend,
+        row_dend_width = unit(2, "in"),
+        width = unit(20, "in"), height = unit(20, "in"), 
+        cluster_columns = column_dend,
+        column_dend_height = unit(1.25, "in"),
+        row_gap = unit(2.5, "mm"), border = TRUE,
+        cell_fun = function(j, i, x, y, w, h, col) {
+        if(heatmappval[i, j] < 0.05) {
+            grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = "bold"))
+        }
+        else {
+            #grid.text(sprintf("%s", heatmappval[i, j]), x, y, gp = gpar(fontsize = 25, fontface = "plain"))
+        }},
+        column_names_gp =  gpar(fontsize = 30), row_names_gp = gpar(fontsize = 25, alpha = 0.75, border = TRUE, fill = htmap.colors))
+draw(ht)
+dev.off()
 ```
 
 #### Module eigengene -  MEs boxplots by treatment group
