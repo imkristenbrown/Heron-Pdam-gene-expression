@@ -2840,10 +2840,8 @@ I did so by going to [this link](http://www.informatics.jax.org/gotools/MGI_GO_S
 
 Add slim terms to dataset 
 ```{r}
-GOslim <- read.csv("../../data/map2MGIslim.csv") %>% dplyr::select(-term)
+GOslim <- read.csv("../../data/map2MGIslim.csv") %>% dplyr::select(-c(term,aspect))
 ```
-
-Based off of Jill's code at https://github.com/fscucchia/Hawaii2022_pH_Temp_Mcap_Pacu/blob/main/scripts/Functional_Enrichment.Rmd
 
 ```{r}
 goterms_shared_full_slim <- goterms_shared_full %>%
@@ -2861,14 +2859,27 @@ goterms_up_full_slim_plot <- goterms_up_slim %>%
       theme_bw() + 
       theme(
         strip.text.y = element_text(size = 5, colour = "black", angle = 0, face = "bold"),
-        axis.text = element_text(size = 1, colour = "black"),
+        axis.text.y = element_text(size = 1, colour = "black"),
         axis.title.x = element_text(size = 5, colour = "black"),
-        legend.text=element_text(size = 5),
-        legend.title = element_text(size = 5)
       ); goterms_up_full_slim_plot
 
-ggsave("../../output/WGCNA/GO_analysis/Calc_Up_GOSlim.png", goterms_up_full_slim_plot, width = 10, height = 35)
-ggsave("../../output/WGCNA/GO_analysis/Calc_Up_GOSlim.pdf", goterms_up_full_slim_plot, width = 10, height = 35)
+ggsave("../../output/WGCNA/GO_analysis/Calc_Up_GOSlim.pdf", goterms_up_full_slim_plot, width = 5, height = 35)
+
+goterms_up_full_slim_plot <- goterms_up_slim %>%
+      ggplot(aes(x=log10(bh_adjust_Up), 
+               y=term)) +
+        geom_point(size = 0.5) +
+        expand_limits(x=0) +
+        facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
+      labs(x="Log 10(Over-represented p-value)", y="") +
+      theme_bw() + 
+      theme(
+        strip.text.y = element_text(size = 5, colour = "black", angle = 0, face = "bold"),
+        axis.text.y = element_text(size = 1, colour = "black"),
+        axis.title.x = element_text(size = 5, colour = "black"),
+      ); goterms_up_full_slim_plot
+
+ggsave("../../output/WGCNA/GO_analysis/Calc_Up_GOSlim_Log.pdf", goterms_up_full_slim_plot, width = 5, height = 35)
 ```
 
 ```{r}
@@ -2877,21 +2888,38 @@ goterms_down_slim <- goterms_shared_full_slim %>% dplyr::filter(Factor=="Down" |
 goterms_down_full_slim_plot <- goterms_down_slim %>%
       ggplot(aes(x=bh_adjust_Down, 
                y=term)) +
-        geom_point(size = 2) +
+        geom_point(size = 0.5) +
         expand_limits(x=0) +
         facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
       labs(x="Over-represented p-value", y="") +
       theme_bw() + 
       theme(
         strip.text.y = element_text(size = 5, colour = "black", angle = 0, face = "bold"),
-        axis.text = element_text(size = 5, colour = "black"),
+        axis.text = element_text(size = 1, colour = "black"),
         axis.title.x = element_text(size = 5, colour = "black"),
         legend.text=element_text(size = 5),
         legend.title = element_text(size = 5)
       ); goterms_down_full_slim_plot
 
-ggsave("../../output/WGCNA/GO_analysis/Calc_Down_GOSlim.png", goterms_down_full_slim_plot, width = 10, height = 35)
-ggsave("../../output/WGCNA/GO_analysis/Calc_Down_GOSlim.pdf", goterms_down_full_slim_plot, width = 10, height = 35)
+ggsave("../../output/WGCNA/GO_analysis/Calc_Down_GOSlim.pdf", goterms_down_full_slim_plot, width = 5, height = 35)
+
+goterms_down_full_slim_plot <- goterms_down_slim %>%
+      ggplot(aes(x=log10(bh_adjust_Down), 
+               y=term)) +
+        geom_point(size = 0.5) +
+        expand_limits(x=0) +
+        facet_grid(GOSlim_bin ~ ., scales = "free", space='free', labeller = label_wrap_gen(width = 55, multi_line = TRUE)) +
+      labs(x="Log 10(Over-represented p-value)", y="") +
+      theme_bw() + 
+      theme(
+        strip.text.y = element_text(size = 5, colour = "black", angle = 0, face = "bold"),
+        axis.text = element_text(size = 1, colour = "black"),
+        axis.title.x = element_text(size = 5, colour = "black"),
+        legend.text=element_text(size = 5),
+        legend.title = element_text(size = 5)
+      ); goterms_down_full_slim_plot
+
+ggsave("../../output/WGCNA/GO_analysis/Calc_Down_GOSlim_Log.pdf", goterms_down_full_slim_plot, width = 5, height = 35)
 ```
 
 
@@ -2999,6 +3027,9 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
 freq_fig_up
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
+
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up.pdf", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 
 ### Frequency >10 down
@@ -3035,6 +3066,9 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
 freq_fig_down
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
+
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down.pdf", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 ```{r}
 compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, nrow=2, align="v")
@@ -3076,6 +3110,9 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
 freq_fig_up
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_gr20.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
+
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_gr20.pdf", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 
 ### Frequency >20 down
@@ -3112,6 +3149,8 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
 freq_fig_down
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_gr20.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_gr20.pdf", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 
 ```{r}
@@ -3153,6 +3192,8 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up_all, aes(y=Number.of.terms,x=reor
 freq_fig_up
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_ALL.png", plot=freq_fig_up, dpi=300, height=17, units="in", limitsize=FALSE)
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_ALL.pdf", plot=freq_fig_up, dpi=300, height=17, units="in", limitsize=FALSE)
 ```
 
 ### All terms down
@@ -3188,6 +3229,8 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down_all, aes(y=Number.of.terms,x=
 freq_fig_down
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_ALL.png", plot=freq_fig_down, dpi=300, height=17, units="in", limitsize=FALSE)
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_ALL.pdf", plot=freq_fig_down, dpi=300, height=17, units="in", limitsize=FALSE)
 ```
 
 ```{r}
