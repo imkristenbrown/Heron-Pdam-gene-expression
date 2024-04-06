@@ -349,7 +349,7 @@ Plot reduced terms
     axis.title.y = element_blank())
 GO.plot_calcification
 
-ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_calcification.png", plot=GO.plot_calcification, dpi=300, height=100, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_calcification.pdf", plot=GO.plot_calcification, dpi=300, height=100, units="in", limitsize=FALSE)
 ```
 
 ```{r}
@@ -570,7 +570,7 @@ write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_c
 GO.plot_calcification_down
 
 
-ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_calcification_down.png", plot=GO.plot_calcification_down, dpi=300, height=100, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_calcification_down.pdf", plot=GO.plot_calcification_down, dpi=300, height=100, units="in", limitsize=FALSE)
 ```
 
 ```{r}
@@ -2767,12 +2767,84 @@ biomin_compare_figs
 
 
 
+
+
 ## Merge the frequency of GOterms for both up- and down-regulation of calcification
+
+### Reduce the lists together
+```{r}
+GO_00001_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
+GO_00001_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
+```
+
+```{r}
+go_results_BP_up <- GO_00001_up %>%
+      filter(ontology=="BP")%>%
+      filter(bh_adjust != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., bh_adjust)
+dim(go_results_BP_up)
+
+go_results_BP_down <- GO_00001_down %>%
+      filter(ontology=="BP")%>%
+      filter(bh_adjust != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., bh_adjust)
+dim(go_results_BP_down)
+
+all_enriched_terms_up_down <- c(go_results_BP_up$GOterm,go_results_BP_down$GOterm)
+length(all_enriched_terms_up_down)
+length(unique(all_enriched_terms_up_down))
+```
+
+By reducing the lists together, we can ensure that each GO term is given the same parent term whether the term was in the Up or Down modules.
+
+```{r}
+library(rrvgo)
+#Reduce/collapse GO term set with the rrvgo package 
+simMatrix <- calculateSimMatrix(unique(all_enriched_terms_up_down),
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont="BP",
+                                method="Rel")
+```
+
+```{r}
+#calculate similarity 
+reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores = "size",
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+dim(reducedTerms)
+```
+
+```{r}
+#keep only the goterms from the reduced list
+go_results_BP_up_reduced <- go_results_BP_up %>%
+  filter(GOterm %in% reducedTerms$go)
+ #add in parent terms to list of go terms 
+go_results_BP_up_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_up_reduced$GOterm, reducedTerms$go)]
+
+length(unique(go_results_BP_up_reduced$ParentTerm))
+
+#keep only the goterms from the reduced list
+go_results_BP_down_reduced <- go_results_BP_down %>%
+  filter(GOterm %in% reducedTerms$go)
+ #add in parent terms to list of go terms 
+go_results_BP_down_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_down_reduced$GOterm, reducedTerms$go)]
+
+length(unique(go_results_BP_down_reduced$ParentTerm))
+```
+
+```{r}
+#write.csv(go_results_BP_up_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
+#write.csv(go_results_BP_down_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
+```
 
 The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
-cal_up_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
+#cal_up_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
+cal_up_terms <- go_results_BP_up_reduced
 cal_up_terms <- cal_up_terms %>% mutate(Factor = "Up") 
 head(cal_up_terms)
 ```
@@ -2780,8 +2852,9 @@ head(cal_up_terms)
 The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
-cal_down_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
-cal_down_terms<-cal_down_terms %>% mutate(Factor = "Down")
+#cal_down_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
+cal_down_terms <- go_results_BP_down_reduced
+cal_down_terms <- cal_down_terms %>% mutate(Factor = "Down")
 head(cal_down_terms)
 ```
 
@@ -2829,6 +2902,99 @@ goterms_shared_full <- goterms_shared %>%
 
 ```{r}
 write.csv(goterms_shared_full, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm.csv")
+```
+
+### plots
+
+```{r}
+goterms_shared_full <- goterms_shared_full %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
+
+goterms_up <- goterms_shared_full %>% dplyr::filter(Factor=="Up")
+goterms_down <- goterms_shared_full %>% dplyr::filter(Factor=="Down")
+goterms_shared_only <- goterms_shared_full %>% dplyr::filter(Factor=="Down, Up")
+
+nrow(goterms_up)
+nrow(goterms_down)
+nrow(goterms_shared_only)
+
+nrow(goterms_up) + nrow(goterms_down) + nrow(goterms_shared_only) == nrow(goterms_shared_full)
+
+#how many parent terms in each
+length(unique(goterms_up$ParentTerm))
+length(unique(goterms_down$ParentTerm))
+length(unique(goterms_shared_only$ParentTerm))
+```
+  
+```{r}
+freq_fig_up_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N_in_Parent), y = bh_adjust_Up)) +
+  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = bh_adjust_Up,),linewidth=.25) +
+  geom_point(size=1.5, alpha=1, colour = "red") +
+  geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
+  coord_flip() +
+  theme_classic() +
+  ylim(0, 1e-05) + 
+  theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        axis.text.y = element_text(vjust=0.5, size=5), 
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank()) +
+  guides(color = FALSE)
+
+freq_fig_down_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N_in_Parent), y = bh_adjust_Down)) +
+  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = bh_adjust_Down),linewidth=.25) +
+  geom_point(size=1.5, alpha=1, colour = "blue") +
+  geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
+  coord_flip() +
+  theme_classic() +
+  ylim(0, 1e-05) + 
+  theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        axis.text.y = element_text(vjust=0.5, size=5), 
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank()) 
+
+compare_figs<-cowplot::plot_grid(freq_fig_up_pval, freq_fig_down_pval, nrow=1, align="v")
+compare_figs
+
+ggsave(filename="../../output/WGCNA/GO_analysis/Up_Down_Shared_ParentTerms.pdf", plot=compare_figs, dpi=300, height=10, units="in", limitsize=FALSE)
+```
+
+```{r}
+freq_fig_up_pval <- ggplot(goterms_up, aes(x = reorder(ParentTerm, -N_in_Parent), y = bh_adjust_Up)) +
+  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = bh_adjust_Up,),linewidth=.25) +
+  geom_point(size=1.5, alpha=1, colour = "red") +
+  geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
+  coord_flip() +
+  theme_classic() +
+  ylim(0, 1e-05) + 
+  theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        axis.text.y = element_text(vjust=0.5, size=5), 
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank()) +
+  guides(color = FALSE)
+
+freq_fig_down_pval <- ggplot(goterms_down, aes(x = reorder(ParentTerm, -N_in_Parent), y = bh_adjust_Down)) +
+  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = bh_adjust_Down),linewidth=.25) +
+  geom_point(size=1.5, alpha=1, colour = "blue") +
+  geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
+  coord_flip() +
+  theme_classic() +
+  ylim(0, 1e-05) + 
+  theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        axis.text.y = element_text(vjust=0.5, size=5), 
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank())
+
+compare_figs<-cowplot::plot_grid(freq_fig_up_pval, freq_fig_down_pval, nrow=1, align="v")
+compare_figs
+
+ggsave(filename="../../output/WGCNA/GO_analysis/Up_Down_Unique_ParentTerms.pdf", plot=compare_figs, dpi=300, height=10, units="in", limitsize=FALSE)
 ```
 
 ### GOSlim
@@ -3026,9 +3192,6 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
-
-
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up.pdf", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 
@@ -3064,9 +3227,6 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
         axis.title.y = element_blank(),
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
-
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
-
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down.pdf", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
@@ -3109,9 +3269,6 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_gr20.png", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
-
-
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_gr20.pdf", plot=freq_fig_up, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
 
@@ -3147,8 +3304,6 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
         axis.title.y = element_blank(),
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
-
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_gr20.png", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_gr20.pdf", plot=freq_fig_down, dpi=300, height=12, units="in", limitsize=FALSE)
 ```
@@ -3191,8 +3346,6 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up_all, aes(y=Number.of.terms,x=reor
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_ALL.png", plot=freq_fig_up, dpi=300, height=17, units="in", limitsize=FALSE)
-
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_ALL.pdf", plot=freq_fig_up, dpi=300, height=17, units="in", limitsize=FALSE)
 ```
 
@@ -3227,8 +3380,6 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down_all, aes(y=Number.of.terms,x=
         axis.title.y = element_blank(),
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
-
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_ALL.png", plot=freq_fig_down, dpi=300, height=17, units="in", limitsize=FALSE)
 
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_ALL.pdf", plot=freq_fig_down, dpi=300, height=17, units="in", limitsize=FALSE)
 ```
