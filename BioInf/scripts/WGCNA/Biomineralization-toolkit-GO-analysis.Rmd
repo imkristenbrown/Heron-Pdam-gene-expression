@@ -204,8 +204,27 @@ The reduced list of terms is 180 terms that falls under 32 parent terms.
 write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
 ```
 
+Can further reduce like so:
+
+#### Further reduce by the following keywords
+ 
 ```{r}
-#go_results_BP_reduced <- go_results_BP_reduced %>% filter(grepl(paste(keywords, collapse="|"), ParentTerm))
+#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
+keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
+```
+
+Search for these keywords in the parent terms
+
+```{r}
+go_results_BP_reduced <- go_results_BP_reduced %>%
+   filter(grepl(paste(keywords, collapse="|"), ParentTerm))
+```
+
+This is only 17 terms
+
+```{r}
+#write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomineralization_goterms.csv")
+write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered_keywords.csv")
 ```
 
 ```{r}
@@ -306,6 +325,27 @@ go_results_BP_biomin_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_resu
 
 length(unique(go_results_BP_biomin_reduced$ParentTerm))
 ```
+
+#### Further reduce by the following keywords
+ 
+```{r}
+#add vector for terms of interest to reduce number of GO terms - NOT using this to look at individual modules for exploratory purposes
+keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbiosis", "regulation of cell communication", "trans membrane transport", "transmembrane",  "organic substance transport", "inorganic substance transport","response to stress", "antioxidant", "calcification","biomineralization", "heat","transporters","proton transport","ion transport","acid-base", "homeostasis")
+```
+
+Search for these keywords in the parent terms
+
+```{r}
+go_results_BP_up_reduced <- go_results_BP_up_reduced %>%
+   filter(grepl(paste(keywords, collapse="|"), ParentTerm))
+
+go_results_BP_down_reduced <- go_results_BP_down_reduced %>%
+   filter(grepl(paste(keywords, collapse="|"), ParentTerm))
+
+go_results_BP_biomin_reduced <- go_results_BP_biomin_reduced %>%
+   filter(grepl(paste(keywords, collapse="|"), ParentTerm))
+```
+
 
 ```{r}
 #write.csv(go_results_BP_up_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
@@ -746,7 +786,7 @@ cal_freq_terms
 The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the list of biomineralization-related genes. The list has been further reduced by using the package rrvgo.
 
 ```{r}
-cal_biomin_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
+cal_biomin_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered_keywords.csv")
 
 cal_biomin_terms <- cal_biomin_terms %>% mutate(Factor = "Biomin")
 head(cal_biomin_terms)
@@ -851,7 +891,7 @@ head(merged_down_clean)
 
 ```{r}
 cal_freq_terms_filtered_up <- merged_up_clean %>%
-  filter(Number.of.terms>=10) %>%
+  #filter(Number.of.terms>=10) %>%
   filter(Calcification.direction=="Up")
 head(cal_freq_terms_filtered_up)
 ```
@@ -889,8 +929,8 @@ ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_KB.pdf", plot=freq_f
 ### Frequency >10 down
 ```{r}
 cal_freq_terms_filtered_down <- merged_down_clean %>%
-  filter(Number.of.terms>=10)
-  #filter(Calcification.direction=="Down")
+  #filter(Number.of.terms>=10)
+  filter(Calcification.direction=="Down")
 cal_freq_terms_filtered_down
 ```
 
