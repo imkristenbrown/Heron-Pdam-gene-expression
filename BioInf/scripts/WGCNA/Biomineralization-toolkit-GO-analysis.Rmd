@@ -307,6 +307,7 @@ go_results_BP_up_reduced <- go_results_BP_up %>%
  #add in parent terms to list of go terms 
 go_results_BP_up_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_up_reduced$GOterm, reducedTerms$go)]
 
+length(unique(go_results_BP_up_reduced$GOterm))
 length(unique(go_results_BP_up_reduced$ParentTerm))
 
 #keep only the goterms from the reduced list
@@ -315,6 +316,7 @@ go_results_BP_down_reduced <- go_results_BP_down %>%
  #add in parent terms to list of go terms 
 go_results_BP_down_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_down_reduced$GOterm, reducedTerms$go)]
 
+length(unique(go_results_BP_down_reduced$GOterm))
 length(unique(go_results_BP_down_reduced$ParentTerm))
 
 #keep only the goterms from the reduced list
@@ -323,6 +325,7 @@ go_results_BP_biomin_reduced <- go_results_BP_biomin %>%
  #add in parent terms to list of go terms 
 go_results_BP_biomin_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_biomin_reduced$GOterm, reducedTerms$go)]
 
+length(unique(go_results_BP_biomin_reduced$GOterm))
 length(unique(go_results_BP_biomin_reduced$ParentTerm))
 ```
 
@@ -336,22 +339,33 @@ keywords<-c("metabolism", "carbon","bicarbonate", "apoptosis", "death", "symbios
 Search for these keywords in the parent terms
 
 ```{r}
-go_results_BP_up_reduced <- go_results_BP_up_reduced %>%
+go_results_BP_up_reduced_keywords <- go_results_BP_up_reduced %>%
    filter(grepl(paste(keywords, collapse="|"), ParentTerm))
 
-go_results_BP_down_reduced <- go_results_BP_down_reduced %>%
+length(unique(go_results_BP_up_reduced_keywords$GOterm))
+length(unique(go_results_BP_up_reduced_keywords$ParentTerm))
+
+go_results_BP_down_reduced_keywords <- go_results_BP_down_reduced %>%
    filter(grepl(paste(keywords, collapse="|"), ParentTerm))
 
-go_results_BP_biomin_reduced <- go_results_BP_biomin_reduced %>%
+length(unique(go_results_BP_down_reduced_keywords$GOterm))
+length(unique(go_results_BP_down_reduced_keywords$ParentTerm))
+
+go_results_BP_biomin_reduced_keywords <- go_results_BP_biomin_reduced %>%
    filter(grepl(paste(keywords, collapse="|"), ParentTerm))
+
+length(unique(go_results_BP_biomin_reduced_keywords$GOterm))
+length(unique(go_results_BP_biomin_reduced_keywords$ParentTerm))
 ```
 
 
 ```{r}
-#write.csv(go_results_BP_up_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
-#write.csv(go_results_BP_down_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
-#write.csv(go_results_BP_biomin_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
+#write.csv(go_results_BP_up_reduced_keywords, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
+#write.csv(go_results_BP_down_reduced_keywords, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
+#write.csv(go_results_BP_biomin_reduced_keywords, "../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
 ```
+
+Won't move forward with these for now, but they are there if we need further reduced lists.
 
 The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
 
@@ -786,7 +800,7 @@ cal_freq_terms
 The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the list of biomineralization-related genes. The list has been further reduced by using the package rrvgo.
 
 ```{r}
-cal_biomin_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered_keywords.csv")
+cal_biomin_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
 
 cal_biomin_terms <- cal_biomin_terms %>% mutate(Factor = "Biomin")
 head(cal_biomin_terms)
