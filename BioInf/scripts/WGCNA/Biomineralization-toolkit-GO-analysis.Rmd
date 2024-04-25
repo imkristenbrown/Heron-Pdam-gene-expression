@@ -132,12 +132,13 @@ GO_05 <- GO %>%
         dplyr::arrange(., ontology, bh_adjust)
    
 #Filtering for p < 0.00001
-GO_00001 <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+# GO_00001 <- GO %>%
+#         dplyr::filter(bh_adjust<0.00001) %>%
+#         dplyr::arrange(., ontology, bh_adjust)
    
 #Write file of results 
-write.csv(GO_00001, file = "../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv")
+#write.csv(GO_00001, file = "../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv")
+write.csv(GO_05, file = "../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv")
 ```
 
 ```{r}
@@ -509,9 +510,8 @@ parents_shared <- result_parent_unique %>%
 
 ### Calculate the percentage of shared GOterms with Biomin. for upregulation of calcification
 ```{r}
-merged_up <- parents_shared %>%
+merged_shared <- parents_shared %>%
   dplyr::group_by(ParentTerm) %>%
-  left_join(cal_up_terms_parent_nterm, by = "ParentTerm") %>%
   mutate(
     Has_Biomin = any(Factor == "Down, Up, Biomin"),
     Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE),
@@ -524,50 +524,27 @@ merged_up <- parents_shared %>%
   mutate(Percentage.of.shared.GO.terms.with.biomineralization.genes = Proportion.of.shared.GO.terms.with.biomineralization.genes * 100) %>%
   filter((Has_Biomin == TRUE & Factor == "Down, Up, Biomin") | (Has_Biomin == FALSE & Factor == "Down, Up"))
 
-merged_up_clean <- na.omit(merged_up) #remove rows for the non-"Down, Up, Biomin" rows that don't have a percentage
-merged_up_clean
+merged_shared_clean <- na.omit(merged_shared) #remove rows for the non-"Down, Up, Biomin" rows that don't have a percentage
+head(merged_shared_clean)
 ```
 
-
-### Calculate the percentage of shared GOterms downregulation of calcification
-```{r}
-merged_down <- parents_shared %>%
-  dplyr::group_by(ParentTerm) %>%
-  left_join(cal_down_terms_parent_nterm, by = "ParentTerm") %>%
-  mutate(
-    Has_Biomin = any(Factor == "Down, Up, Biomin"),
-    Sum_of_SharedGOterms = sum(SharedGOterms, na.rm = TRUE),
-    Proportion.of.shared.GO.terms.with.biomineralization.genes = ifelse(
-      Factor %in% c("Down, Up, Biomin"),
-      SharedGOterms / Sum_of_SharedGOterms,
-      0
-    )
-  ) %>%
-  mutate(Percentage.of.shared.GO.terms.with.biomineralization.genes = Proportion.of.shared.GO.terms.with.biomineralization.genes * 100) %>%
-  filter((Has_Biomin == TRUE & Factor == "Down, Up, Biomin") | (Has_Biomin == FALSE & Factor == "Down, Up"))
-
-merged_down_clean <- na.omit(merged_down) #remove rows for the non-"Down, Up, Biomin" rows that don't have a percentage
-merged_down_clean
-```
-
-### Frequency All up
+### Frequency >10 
 
 ```{r}
-cal_freq_terms_filtered_up <- merged_up_clean %>%
-  #filter(Number.of.terms>=10) %>%
-  filter(Calcification.direction=="Up")
-cal_freq_terms_filtered_up
+cal_freq_terms_filtered_shared <- merged_shared_clean %>%
+  filter(Sum_of_SharedGOterms>=10) 
+head(cal_freq_terms_filtered_shared)
 ```
 
 #### Figure
 ```{r}
-freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Sum_of_SharedGOterms,x=reorder(ParentTerm, Sum_of_SharedGOterms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
+freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x=reorder(ParentTerm, Sum_of_SharedGOterms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
   geom_point(size=5, alpha=1, pch=21,color="black")+
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Sum_of_SharedGOterms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
   scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
-  scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
+  scale_fill_gradientn(colours=c("white","#E6E6FA","#C9A0DC","#9370DB","#663399"), na.value = "grey98",limits = c(0, 100))+ 
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
@@ -579,30 +556,29 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Sum_of_SharedGOterms,x=reo
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_sharedUpDown.pdf", plot=freq_fig_up, dpi=300, height=20, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_colored_sharedUpDown.pdf", plot=freq_fig_up, dpi=300, height=15, width=10, units="in", limitsize=FALSE)
 ```
 
-### Frequency All down
+
+### Frequency >20 
 
 ```{r}
-cal_freq_terms_filtered_down <- merged_down_clean %>%
-  #filter(Number.of.terms>=10) %>%
-  filter(Calcification.direction=="Down")
-cal_freq_terms_filtered_down
+cal_freq_terms_filtered_shared <- merged_shared_clean %>%
+  filter(Sum_of_SharedGOterms>=20) 
+head(cal_freq_terms_filtered_shared)
 ```
 
 #### Figure
-
 ```{r}
-freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Sum_of_SharedGOterms,x=reorder(ParentTerm, Sum_of_SharedGOterms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes))+
+freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x=reorder(ParentTerm, Sum_of_SharedGOterms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
   geom_point(size=5, alpha=1, pch=21,color="black")+
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Sum_of_SharedGOterms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
   scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
-  scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
+  scale_fill_gradientn(colours=c("white","#E6E6FA","#C9A0DC","#9370DB","#663399"), na.value = "grey98",limits = c(0, 100))+ 
   theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5, hjust=0.95, size=12),
+  theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
         panel.background= element_rect(fill=NA, color='black'),
         legend.title = element_blank(),
@@ -610,14 +586,61 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Sum_of_SharedGOterms,x
         axis.title.x = element_blank(),#making the axis title larger 
         axis.title.y = element_blank(),
         strip.text = element_text(size=12))#making the axis title larger 
-freq_fig_down
+freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_sharedUpDown.pdf", plot=freq_fig_down, dpi=300, height=20, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_colored_sharedUpDown_gr20.pdf", plot=freq_fig_up, dpi=300, height=7, width=10, units="in", limitsize=FALSE)
+```
+### Percentage shared >20 
+
+```{r}
+cal_freq_terms_filtered_shared <- merged_shared_clean %>%
+  filter(Percentage.of.shared.GO.terms.with.biomineralization.genes>80) 
+head(cal_freq_terms_filtered_shared)
+```
+
+#### Figure
+```{r}
+freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x=reorder(ParentTerm, Percentage.of.shared.GO.terms.with.biomineralization.genes), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Sum_of_SharedGOterms)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  #scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
+  scale_fill_gradientn(colours=c("white","#E6E6FA","#C9A0DC","#9370DB","#663399"), na.value = "grey98",limits = c(0, 100))+ 
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig_up
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_colored_sharedUpDown_80percentshared.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
 ```
 
 ```{r}
-compare_figs<-cowplot::plot_grid(freq_fig_up, freq_fig_down, nrow=2, align="v")
-compare_figs
+freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x=reorder(ParentTerm, Sum_of_SharedGOterms), fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1))+
+  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Sum_of_SharedGOterms)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  #scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
+  scale_fill_gradientn(colours=c("white","#E6E6FA","#C9A0DC","#9370DB","#663399"), na.value = "grey98",limits = c(0, 100))+ 
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
+        panel.background= element_rect(fill=NA, color='black'),
+        legend.title = element_blank(),
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_blank(),
+        strip.text = element_text(size=12))#making the axis title larger 
+freq_fig_up
+
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_colored_sharedUpDown_80percentsharedordered.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
 ```
 
 ## Plot of parent terms UNIQUE for Up and Down modules
@@ -628,14 +651,22 @@ For UNIQUE parent terms (ones that are only in Up or only in Down, whether or no
 
 
 ```{r}
+#parent_filtered_up <- result_parent_unique %>%
+#  dplyr::filter(Factor == "Up" | Factor=="Up, Biomin")
+# #dplyr::filter(SharedGOterms>=5) 
+
 parent_filtered_up <- result_parent_unique %>%
-  dplyr::filter(Factor == "Up" | Factor=="Up, Biomin")
+  dplyr::filter(Factor=="Up, Biomin")
  #dplyr::filter(SharedGOterms>=5) 
 ```
 
 ```{r}
+#parent_filtered_down <- result_parent_unique %>%
+#  dplyr::filter(Factor=="Down" | Factor=="Down, Biomin")
+# #dplyr::filter(SharedGOterms>=5) 
+
 parent_filtered_down <- result_parent_unique %>%
-  dplyr::filter(Factor=="Down" | Factor=="Down, Biomin")
+  dplyr::filter(Factor=="Down, Biomin")
  #dplyr::filter(SharedGOterms>=5) 
 ```
 
@@ -684,7 +715,7 @@ merged_down_clean <- na.omit(merged_down) #remove rows for the non-"Down, Biomin
 merged_down_clean
 ```
 
-### Frequency All up
+### Frequency >10 up
 
 ```{r}
 cal_freq_terms_filtered_up <- merged_up_clean %>%
@@ -700,7 +731,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Sum_of_UniqueGOterms,x=reo
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Sum_of_UniqueGOterms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,15))+
+  #scale_y_continuous(expression(GO~term~counts),limits=c(0,15))+
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
@@ -710,13 +741,13 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Sum_of_UniqueGOterms,x=reo
         axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
         axis.title.x = element_blank(),#making the axis title larger 
         axis.title.y = element_blank(),
-        strip.text = element_text(size=12))#making the axis title larger 
+        strip.text = element_text(size=12)) #making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_unique.pdf", plot=freq_fig_up, dpi=300, height=20, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_unique_biomin.pdf", plot=freq_fig_up, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
 ```
 
-### Frequency All down
+### Frequency >10 down
 
 ```{r}
 cal_freq_terms_filtered_down <- merged_down_clean %>%
@@ -733,8 +764,8 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Sum_of_UniqueGOterms,x
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Sum_of_UniqueGOterms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,20))+
-  scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
+  #scale_y_continuous(expression(GO~term~counts),limits=c(0,20))+
+  scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
@@ -746,7 +777,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Sum_of_UniqueGOterms,x
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_unique.pdf", plot=freq_fig_down, dpi=300, height=20, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_unique_biomin.pdf", plot=freq_fig_down, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
 ```
 
 ```{r}
@@ -905,7 +936,7 @@ head(merged_down_clean)
 
 ```{r}
 cal_freq_terms_filtered_up <- merged_up_clean %>%
-  #filter(Number.of.terms>=10) %>%
+  filter(Number.of.terms>=10) %>%
   filter(Calcification.direction=="Up")
 head(cal_freq_terms_filtered_up)
 ```
@@ -943,7 +974,7 @@ ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_KB.pdf", plot=freq_f
 ### Frequency >10 down
 ```{r}
 cal_freq_terms_filtered_down <- merged_down_clean %>%
-  #filter(Number.of.terms>=10)
+  filter(Number.of.terms>=10) %>% 
   filter(Calcification.direction=="Down")
 cal_freq_terms_filtered_down
 ```
