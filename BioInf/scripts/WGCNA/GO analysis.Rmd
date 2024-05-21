@@ -117,7 +117,7 @@ dim(geneInfo)
 write.csv(geneInfo, file = "../../output/WGCNA/GO_analysis/geneInfo_WGCNA.csv") #gene info for reference/supplement
 ```
 
-## Run the GOSeq function by module color to test for GO term enrichment. Due to high number of enriched GO terms, I am using an adjusted p-value threshold of <0.001 and using `rrvgo` package to reduce redundancy in list of GO terms.   
+## Run the GOSeq function by module color to test for GO term enrichment. Due to high number of enriched GO terms, I am using a p-value threshold of <0.05 and using `rrvgo` package to reduce redundancy in list of GO terms.   
 
 ## Calcification - Up 
 
@@ -181,13 +181,11 @@ ID.vector <- geneInfo %>%
 
 length(ID.vector) #4126
 
-##Get a list of GO Terms for each module
+##Get a list of GO Terms for the all 9012 genes
 GO.terms <- geneInfo %>%
-  filter(moduleColor %in% c("brown", "red", "black", "pink", "salmon", "blue")) %>%
-  #filter(get_rows(.data[[module]]))%>%
-  dplyr::select(GOs,gene_id) %>% rename(GOs = "GO.terms")
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
 
-dim(GO.terms) #4126    2
+dim(GO.terms) #9012    2
 ```
 
 ```{r}
@@ -215,37 +213,27 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
 #Filtering for p < 0.05
 GO_05 <- GO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 ```
 
 ```{r}
-#Filtering for p < 0.00001
-GO_00001 <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
 #Write file of results 
-write.csv(GO_00001, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv")
+write.csv(GO_05, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv")
 ```
 
 ```{r}
-GO_00001 <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv")
+GO_05 <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv")
 ```
 
 ```{r}
-go_results_BP <- GO_00001 %>%
+go_results_BP <- GO_05 %>%
       filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
+      filter(over_represented_pvalue != "NA") %>%
       #filter(numInCat>10)%>%
-      arrange(., bh_adjust)
+      arrange(., over_represented_pvalue)
 dim(go_results_BP)
 head(go_results_BP)
 ```
@@ -267,7 +255,7 @@ dev.off()
 ```
 
 ```{r}
-CalcUpMods_GO_P00001 <- go_results_BP %>% 
+CalcUpMods_GO_P05 <- go_results_BP %>% 
   mutate(term = fct_reorder(term, over_represented_pvalue, .desc = TRUE)) %>%
   ggplot(aes(x=term, y=over_represented_pvalue) ) +
       geom_segment(aes(x=term ,xend=term, y=0, yend=over_represented_pvalue), color="grey") +
@@ -279,7 +267,7 @@ CalcUpMods_GO_P00001 <- go_results_BP %>%
         legend.position="none"
       ) +
   xlab("") +
-  ylab("over_represented_pvalueover_represented_pvalue") +
+  ylab("over_represented_pvalue") +
   ggtitle("Biological Process GO Terms Enriched in Modules Upregulated in Calcification") + #add a main title
   theme(plot.title = element_text(face = 'bold',
                                   size = 3,
@@ -293,8 +281,8 @@ CalcUpMods_GO_P00001 <- go_results_BP %>%
         plot.background=element_blank(),#Set the plot background
         legend.position="none")
 
-CalcUpMods_GO_P00001
-ggsave("../../output/WGCNA/GO_analysis/CalcUpMods_GO_P00001.pdf", CalcUpMods_GO_P00001, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
+CalcUpMods_GO_P05
+ggsave("../../output/WGCNA/GO_analysis/CalcUpMods_GO_P05.pdf", CalcUpMods_GO_P05, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 
@@ -309,7 +297,7 @@ simMatrix <- calculateSimMatrix(go_results_BP$GOterm,
 
 ```{r}
  #calculate similarity 
-scores <- setNames(-log(go_results_BP$bh_adjust), go_results_BP$GOterm)
+scores <- setNames(-log(go_results_BP$over_represented_pvalue), go_results_BP$GOterm)
 reducedTerms <- reduceSimMatrix(simMatrix,
                                 scores,
                                 threshold=0.7,
@@ -327,7 +315,7 @@ go_results_BP_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_
 length(unique(go_results_BP_reduced$ParentTerm))
 ```
 
-The reduced list of terms is 1682 terms that falls under 130 parent terms.
+The reduced list of terms is 508 terms that falls under 73 parent terms.
 
 ```{r}
 write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
@@ -337,7 +325,7 @@ Plot reduced terms
 ```{r}
 #plot significantly enriched GO terms by Slim Category faceted by slim term 
  GO.plot_calcification <-  ggplot(go_results_BP_reduced, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
+    geom_point(aes(size=over_represented_pvalue)) + 
     scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
     facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
@@ -353,7 +341,7 @@ ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_calcification.pdf", plot
 ```
 
 ```{r}
-CalcUpMods_GO_P00001_reduced <- go_results_BP_reduced %>% 
+CalcUpMods_GO_P05_reduced <- go_results_BP_reduced %>% 
   mutate(term = fct_reorder(term, over_represented_pvalue, .desc = TRUE)) %>%
   ggplot(aes(x=term, y=over_represented_pvalue) ) +
       geom_segment(aes(x=term ,xend=term, y=0, yend=over_represented_pvalue), color="grey") +
@@ -365,7 +353,7 @@ CalcUpMods_GO_P00001_reduced <- go_results_BP_reduced %>%
         legend.position="none"
       ) +
   xlab("") +
-  ylab("over_represented_pvalueover_represented_pvalue") +
+  ylab("over_represented_pvalue") +
   ggtitle("Biological Process GO Terms Enriched in Modules Upregulated in Calcification") + #add a main title
   theme(plot.title = element_text(face = 'bold',
                                   size = 3,
@@ -379,8 +367,8 @@ CalcUpMods_GO_P00001_reduced <- go_results_BP_reduced %>%
         plot.background=element_blank(),#Set the plot background
         legend.position="none")
 
-CalcUpMods_GO_P00001_reduced
-ggsave("../../output/WGCNA/GO_analysis/CalcUpMods_GO_P00001_reduced.pdf", CalcUpMods_GO_P00001_reduced, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
+CalcUpMods_GO_P05_reduced
+ggsave("../../output/WGCNA/GO_analysis/CalcUpMods_GO_P05_reduced.pdf", CalcUpMods_GO_P05_reduced, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ## Calcification - Down
@@ -405,12 +393,11 @@ ID.vector <- geneInfo%>%
 
 length(ID.vector) #2842
 
-##Get a list of GO Terms for each module
-GO.terms <- geneInfo%>%
-  filter(moduleColor %in% c("turquoise","magenta","lightcyan"))%>%
-  dplyr::select(GOs,gene_id) %>% rename(GOs = "GO.terms")
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
 
-dim(GO.terms) #2842    2
+dim(GO.terms) #9012    2
 ```
 
 ```{r}
@@ -438,37 +425,27 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
 #Filtering for p < 0.05
 GO_05 <- GO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 ```
 
 ```{r}
-#Filtering for p < 0.00001
-GO_00001 <- GO %>%
-        dplyr::filter(bh_adjust<0.00001) %>%
-        dplyr::arrange(., ontology, bh_adjust)
-   
 #Write file of results 
-write.csv(GO_00001, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv")
+write.csv(GO_05, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv")
 ```
 
 ```{r}
-GO_00001 <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv")
+GO_05 <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv")
 ```
 
 ```{r}
-go_results_BP <- GO_00001 %>%
+go_results_BP <- GO_05 %>%
       filter(ontology=="BP") %>%
-      filter(bh_adjust != "NA") %>%
+      filter(over_represented_pvalue != "NA") %>%
       #filter(numInCat > 10) %>%
-      arrange(., bh_adjust)
+      arrange(., over_represented_pvalue)
 
 dim(go_results_BP)
 head(go_results_BP)
@@ -488,7 +465,7 @@ dev.off()
 ```
 
 ```{r}
-CalcDownMods_GO_P00001 <- go_results_BP %>% 
+CalcDownMods_GO_P05 <- go_results_BP %>% 
   mutate(term = fct_reorder(term, over_represented_pvalue, .desc = TRUE)) %>%
   ggplot(aes(x=term, y=over_represented_pvalue) ) +
       geom_segment(aes(x=term ,xend=term, y=0, yend=over_represented_pvalue), color="grey") +
@@ -500,7 +477,7 @@ CalcDownMods_GO_P00001 <- go_results_BP %>%
         legend.position="none"
       ) +
   xlab("") +
-  ylab("over_represented_pvalueover_represented_pvalue") +
+  ylab("over_represented_pvalue") +
   ggtitle("Biological Process GO Terms Enriched in Modules Downregulated in Calcification") + #add a main title
   theme(plot.title = element_text(face = 'bold',
                                   size = 3,
@@ -514,8 +491,8 @@ CalcDownMods_GO_P00001 <- go_results_BP %>%
         plot.background=element_blank(),#Set the plot background
         legend.position="none")
 
-CalcDownMods_GO_P00001
-ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P00001.pdf", CalcDownMods_GO_P00001, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
+CalcDownMods_GO_P05
+ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P05.pdf", CalcDownMods_GO_P05, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ```{r}
@@ -529,7 +506,7 @@ simMatrix <- calculateSimMatrix(go_results_BP$GOterm,
 
 ```{r}
  #calculate similarity 
-scores <- setNames(-log(go_results_BP$bh_adjust), go_results_BP$GOterm)
+scores <- setNames(-log(go_results_BP$over_represented_pvalue), go_results_BP$GOterm)
 reducedTerms <- reduceSimMatrix(simMatrix,
                                 scores,
                                 threshold=0.7,
@@ -547,7 +524,7 @@ go_results_BP_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_
 length(unique(go_results_BP_reduced$ParentTerm))
 ```
 
-The reduced list of terms is 1591 terms that falls under 127 parent terms.
+The reduced list of terms is 226 terms that falls under 38 parent terms.
 
 ```{r}
 write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
@@ -557,7 +534,7 @@ write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_c
 ```{r}
 #plot significantly enriched GO terms by Slim Category faceted by slim term 
  GO.plot_calcification_down <-  ggplot(go_results_BP_reduced, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
+    geom_point(aes(size=over_represented_pvalue)) + 
     scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
     facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
@@ -574,7 +551,7 @@ ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_calcification_down.pdf",
 ```
 
 ```{r}
-CalcDownMods_GO_P00001_reduced <- go_results_BP_reduced %>% 
+CalcDownMods_GO_P05_reduced <- go_results_BP_reduced %>% 
   mutate(term = fct_reorder(term, over_represented_pvalue, .desc = TRUE)) %>%
   ggplot(aes(x=term, y=over_represented_pvalue) ) +
       geom_segment(aes(x=term ,xend=term, y=0, yend=over_represented_pvalue), color="grey") +
@@ -586,7 +563,7 @@ CalcDownMods_GO_P00001_reduced <- go_results_BP_reduced %>%
         legend.position="none"
       ) +
   xlab("") +
-  ylab("over_represented_pvalueover_represented_pvalue") +
+  ylab("over_represented_pvalue") +
   ggtitle("Biological Process GO Terms Enriched in Modules Downregulated in Calcification") + #add a main title
   theme(plot.title = element_text(face = 'bold',
                                   size = 3,
@@ -600,8 +577,8 @@ CalcDownMods_GO_P00001_reduced <- go_results_BP_reduced %>%
         plot.background=element_blank(),#Set the plot background
         legend.position="none")
 
-CalcDownMods_GO_P00001_reduced
-ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P00001_reduced.pdf", CalcDownMods_GO_P00001_reduced, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
+CalcDownMods_GO_P05_reduced
+ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P05_reduced.pdf", CalcDownMods_GO_P05_reduced, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ## code for by module
@@ -715,23 +692,23 @@ for (color in module_colors) {
 
 ### Reduce the lists together
 ```{r}
-GO_00001_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
-GO_00001_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
+GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
+GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
 ```
 
 ```{r}
-go_results_BP_up <- GO_00001_up %>%
+go_results_BP_up <- GO_05_up %>%
       filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
+      filter(over_represented_pvalue != "NA") %>%
       #filter(numInCat>10)%>%
-      arrange(., bh_adjust)
+      arrange(., over_represented_pvalue)
 dim(go_results_BP_up)
 
-go_results_BP_down <- GO_00001_down %>%
+go_results_BP_down <- GO_05_down %>%
       filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
+      filter(over_represented_pvalue != "NA") %>%
       #filter(numInCat>10)%>%
-      arrange(., bh_adjust)
+      arrange(., over_represented_pvalue)
 dim(go_results_BP_down)
 
 all_enriched_terms_up_down <- c(go_results_BP_up$GOterm,go_results_BP_down$GOterm)
@@ -782,7 +759,7 @@ length(unique(go_results_BP_down_reduced$ParentTerm))
 #write.csv(go_results_BP_down_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
 ```
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 #cal_up_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
@@ -791,7 +768,7 @@ cal_up_terms <- cal_up_terms %>% mutate(Factor = "Up")
 head(cal_up_terms)
 ```
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 #cal_down_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
@@ -802,24 +779,24 @@ head(cal_down_terms)
 
 ### Merge up and down-regulation of calcification GOterms
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.0001) within the modules that were upregulated *or* downregulated for calcification. The list has been further reduced by using the package rrvgo.
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the modules that were upregulated *or* downregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 all_terms <- rbind(cal_down_terms,cal_up_terms)
 
-all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm")]
+all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","ParentTerm")]
 
 all_terms$GOterm<-as.factor(all_terms$GOterm)
 
-dim(all_terms) #3273 reduced terms 
+dim(all_terms) #734 reduced terms 
 
-length(unique(all_terms$GOterm)) #this represents 1809 unique terms between the two lists of reduced terms
-length(unique(all_terms$ParentTerm)) #this represents 139 unique terms between the two lists of reduced terms
+length(unique(all_terms$GOterm)) #this represents 730 unique terms between the two lists of reduced terms
+length(unique(all_terms$ParentTerm)) #this represents 87 unique terms between the two lists of reduced terms
 ```
 
 ### Unique terms
 
-This is collapsing the list from 3273 rows to only 1809, representing the 1809 unique GO terms in the list above. It collapses the information in the columns "ParentTerm" and "Factor" so that for each GO term we get the parent terms associated and if this was enriched in modules upregulated for calcification, downregulated for calcification, or both.
+This is collapsing the list from 734 rows to 730, representing the 730 unique GO terms in the list above. It collapses the information in the columns "ParentTerm" and "Factor" so that for each GO term we get the parent terms associated and if this was enriched in modules upregulated for calcification, downregulated for calcification, or both.
 
 ```{r}
 goterms_shared <- all_terms %>%
@@ -832,13 +809,13 @@ goterms_shared <- all_terms %>%
 dim(goterms_shared)
 
 goterms_shared_full <- goterms_shared %>%
-  left_join(dplyr::select(all_terms,GOterm, Factor, bh_adjust), by = "GOterm") %>% #select 3 columns GOterm, Factor, bh_adjust from all_terms and left join by GOterm, turns this dataframe from 1809 rows back to the 3273 in all_terms
-  mutate(bh_adjust_Up = ifelse(Factor.y == "Up", bh_adjust, NA)) %>% #add a column that is the p-value for the Up factor
-  mutate(bh_adjust_Down = ifelse(Factor.y == "Down", bh_adjust, NA)) %>% #add a column that is the p-value for the Down factor
-  dplyr::select(-c("bh_adjust", "Factor.y")) %>% #remove the unique columns so that we can collapse the dataframe
+  left_join(dplyr::select(all_terms,GOterm, Factor, over_represented_pvalue), by = "GOterm") %>% #select 3 columns GOterm, Factor, over_represented_pvalue from all_terms and left join by GOterm, turns this dataframe from 730 rows back to the 734 in all_terms
+  mutate(pvalue_Up = ifelse(Factor.y == "Up", over_represented_pvalue, NA)) %>% #add a column that is the p-value for the Up factor
+  mutate(pvalue_Down = ifelse(Factor.y == "Down", over_represented_pvalue, NA)) %>% #add a column that is the p-value for the Down factor
+  dplyr::select(-c("over_represented_pvalue", "Factor.y")) %>% #remove the unique columns so that we can collapse the dataframe
   group_by(GOterm, ParentTerm, Factor.x, term) %>% #group by the repeated columns for the non-unique GO terms
-  dplyr::summarize(bh_adjust_Up = na.omit(bh_adjust_Up)[1], #carry over the p-value for the term in the up direction, by taking the first non-NA value.
-            bh_adjust_Down = na.omit(bh_adjust_Down)[1]) %>% #carry over the p-value for the term in the down direction, by taking the first non-NA value.
+  dplyr::summarize(pvalue_Up = na.omit(pvalue_Up)[1], #carry over the p-value for the term in the up direction, by taking the first non-NA value.
+            pvalue_Down = na.omit(pvalue_Down)[1]) %>% #carry over the p-value for the term in the down direction, by taking the first non-NA value.
   rename(Factor.x = "Factor") #rename column 
 ```
 
@@ -868,13 +845,13 @@ length(unique(goterms_shared_only$ParentTerm))
 ```
   
 ```{r}
-freq_fig_up_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N_in_Parent), y = bh_adjust_Up)) +
-  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = bh_adjust_Up,),linewidth=.25) +
+freq_fig_up_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N_in_Parent), y = pvalue_Up)) +
+  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = pvalue_Up,),linewidth=.25) +
   geom_point(size=1.5, alpha=1, colour = "red") +
   geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
   coord_flip() +
   theme_classic() +
-  ylim(0, 1e-05) + 
+  ylim(0, 0.04) + 
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
         panel.background= element_rect(fill=NA, color='black'),
@@ -883,13 +860,13 @@ freq_fig_up_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N_i
         axis.title.y = element_blank()) +
   guides(color = FALSE)
 
-freq_fig_down_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N_in_Parent), y = bh_adjust_Down)) +
-  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = bh_adjust_Down),linewidth=.25) +
+freq_fig_down_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N_in_Parent), y = pvalue_Down)) +
+  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = pvalue_Down),linewidth=.25) +
   geom_point(size=1.5, alpha=1, colour = "blue") +
   geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
   coord_flip() +
   theme_classic() +
-  ylim(0, 1e-05) + 
+  ylim(0, 0.04) + 
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
         panel.background= element_rect(fill=NA, color='black'),
@@ -900,17 +877,17 @@ freq_fig_down_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N
 compare_figs<-cowplot::plot_grid(freq_fig_up_pval, freq_fig_down_pval, nrow=1, align="v")
 compare_figs
 
-ggsave(filename="../../output/WGCNA/GO_analysis/Up_Down_Shared_ParentTerms.pdf", plot=compare_figs, dpi=300, height=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Up_Down_Shared_ParentTerms.pdf", plot=compare_figs, dpi=300, height=3, units="in", limitsize=FALSE)
 ```
 
 ```{r}
-freq_fig_up_pval <- ggplot(goterms_up, aes(x = reorder(ParentTerm, -N_in_Parent), y = bh_adjust_Up)) +
-  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = bh_adjust_Up,),linewidth=.25) +
+freq_fig_up_pval <- ggplot(goterms_up, aes(x = reorder(ParentTerm, -N_in_Parent), y = pvalue_Up)) +
+  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = pvalue_Up,),linewidth=.25) +
   geom_point(size=1.5, alpha=1, colour = "red") +
   geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
   coord_flip() +
   theme_classic() +
-  ylim(0, 1e-05) + 
+  ylim(0, 0.05) + 
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
         panel.background= element_rect(fill=NA, color='black'),
@@ -919,13 +896,13 @@ freq_fig_up_pval <- ggplot(goterms_up, aes(x = reorder(ParentTerm, -N_in_Parent)
         axis.title.y = element_blank()) +
   guides(color = FALSE)
 
-freq_fig_down_pval <- ggplot(goterms_down, aes(x = reorder(ParentTerm, -N_in_Parent), y = bh_adjust_Down)) +
-  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = bh_adjust_Down),linewidth=.25) +
+freq_fig_down_pval <- ggplot(goterms_down, aes(x = reorder(ParentTerm, -N_in_Parent), y = pvalue_Down)) +
+  geom_segment(aes(x = ParentTerm, xend = ParentTerm, y = 0, yend = pvalue_Down),linewidth=.25) +
   geom_point(size=1.5, alpha=1, colour = "blue") +
   geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
   coord_flip() +
   theme_classic() +
-  ylim(0, 1e-05) + 
+  ylim(0, 0.05) + 
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
         panel.background= element_rect(fill=NA, color='black'),
@@ -958,7 +935,7 @@ goterms_shared_full_slim <- goterms_shared_full %>%
 goterms_up_slim <- goterms_shared_full_slim %>% dplyr::filter(Factor=="Up" | Factor=="Down, Up")
 
 goterms_up_full_slim_plot <- goterms_up_slim %>%
-      ggplot(aes(x=bh_adjust_Up, 
+      ggplot(aes(x=pvalue_Up, 
                y=term)) +
         geom_point(size = 0.5) +
         expand_limits(x=0) +
@@ -974,7 +951,7 @@ goterms_up_full_slim_plot <- goterms_up_slim %>%
 ggsave("../../output/WGCNA/GO_analysis/Calc_Up_GOSlim.pdf", goterms_up_full_slim_plot, width = 5, height = 35)
 
 goterms_up_full_slim_plot <- goterms_up_slim %>%
-      ggplot(aes(x=log10(bh_adjust_Up), 
+      ggplot(aes(x=log10(pvalue_Up), 
                y=term)) +
         geom_point(size = 0.5) +
         expand_limits(x=0) +
@@ -994,7 +971,7 @@ ggsave("../../output/WGCNA/GO_analysis/Calc_Up_GOSlim_Log.pdf", goterms_up_full_
 goterms_down_slim <- goterms_shared_full_slim %>% dplyr::filter(Factor=="Down" | Factor=="Down, Up")
 
 goterms_down_full_slim_plot <- goterms_down_slim %>%
-      ggplot(aes(x=bh_adjust_Down, 
+      ggplot(aes(x=pvalue_Down, 
                y=term)) +
         geom_point(size = 0.5) +
         expand_limits(x=0) +
@@ -1012,7 +989,7 @@ goterms_down_full_slim_plot <- goterms_down_slim %>%
 ggsave("../../output/WGCNA/GO_analysis/Calc_Down_GOSlim.pdf", goterms_down_full_slim_plot, width = 5, height = 35)
 
 goterms_down_full_slim_plot <- goterms_down_slim %>%
-      ggplot(aes(x=log10(bh_adjust_Down), 
+      ggplot(aes(x=log10(pvalue_Down), 
                y=term)) +
         geom_point(size = 0.5) +
         expand_limits(x=0) +
@@ -1272,7 +1249,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up_all, aes(y=Number.of.terms,x=reor
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
@@ -1306,7 +1283,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down_all, aes(y=Number.of.terms,x=
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,70))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
