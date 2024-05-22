@@ -117,21 +117,7 @@ dim(geneInfo)
 write.csv(geneInfo, file = "../../output/WGCNA/GO_analysis/geneInfo_WGCNA.csv") #gene info for reference/supplement
 ```
 
-## Run the GOSeq function by module color to test for GO term enrichment. Due to high number of enriched GO terms, I am using a p-value threshold of <0.05 and using `rrvgo` package to reduce redundancy in list of GO terms.   
-
-## Calcification - Up 
-
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
-
+## Modules
 
 ```{r}
 calc_up_mods <- c("brown", "red", "black", "pink", "salmon", "blue")
@@ -164,6 +150,18 @@ sum(nrow(geneInfo %>% dplyr::filter(moduleColor=="green")), nrow(geneInfo %>% dp
 # 2044
 
 # 4126 + 2842 + 2044 = 9012, which represents all of our genes
+```
+
+## Calcification - Up 
+
+```{r}
+### Generate vector with names of all genes 
+ALL.vector <- c(geneInfo$gene_id)
+```
+
+```{r}
+### Generate length vector for all genes 
+LENGTH.vector <- as.integer(geneInfo$Length)
 ```
 
 4126 genes are in the 6 modules significantly upregulated by calcification.
@@ -204,6 +202,8 @@ names(gene.vector)<-ALL.vector#set names
 #weight gene vector by bias for length of gene 
 pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
 ```
+
+### Run the GOSeq function by module color to test for GO term enrichment. Due to high number of enriched GO terms, I am using a p-value threshold of <0.05 and using `rrvgo` package to reduce redundancy in list of GO terms.   
 
 ```{r}
 #run goseq using Wallenius method for all categories of GO terms 
@@ -371,6 +371,408 @@ CalcUpMods_GO_P05_reduced
 ggsave("../../output/WGCNA/GO_analysis/CalcUpMods_GO_P05_reduced.pdf", CalcUpMods_GO_P05_reduced, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
+### Calcification - Up - By Module
+
+```{r}
+### Generate vector with names of all genes 
+ALL.vector <- c(geneInfo$gene_id)
+```
+
+```{r}
+### Generate length vector for all genes 
+LENGTH.vector <- as.integer(geneInfo$Length)
+```
+
+
+#### Brown
+
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("brown")) %>%
+  pull(gene_id)
+
+length(ID.vector) #942
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #9012    2
+```
+
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector #set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
+
+```{r}
+#Filtering for p < 0.05
+GO_05_brown <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Brown")
+
+go_results_BP <- GO_05_brown %>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+
+dim(go_results_BP)
+```
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_brown.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3)
+dev.off()
+```
+
+#### Red
+
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("red")) %>%
+  pull(gene_id)
+
+length(ID.vector) #425
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #9012    2
+```
+
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector#set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
+
+```{r}
+#Filtering for p < 0.05
+GO_05_red <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Red")
+
+go_results_BP <- GO_05_red %>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+
+dim(go_results_BP)
+```
+
+```{r}
+#Write file of results 
+write.csv(GO_05_red, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_red.csv")
+```
+
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_red.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+dev.off()
+```
+
+#### Black
+
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("black")) %>%
+  pull(gene_id)
+
+length(ID.vector) #396
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #9012    2
+```
+
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector#set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
+
+```{r}
+#Filtering for p < 0.05
+GO_05_black <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Black")
+
+go_results_BP <- GO_05_black %>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+
+dim(go_results_BP)
+```
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_black.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+dev.off()
+```
+
+#### Pink
+
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("pink")) %>%
+  pull(gene_id)
+
+length(ID.vector) #220
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #9012    2
+```
+
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector#set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
+
+```{r}
+#Filtering for p < 0.05
+GO_05_pink <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Pink")
+
+go_results_BP <- GO_05_pink %>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+
+dim(go_results_BP)
+```
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_pink.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+dev.off()
+```
+
+#### Salmon
+
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("salmon")) %>%
+  pull(gene_id)
+
+length(ID.vector) #154
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #9012    2
+```
+
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector#set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
+
+```{r}
+#Filtering for p < 0.05
+GO_05_salmon <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Salmon")
+
+go_results_BP <- GO_05_salmon %>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+
+dim(go_results_BP)
+```
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_salmon.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+dev.off()
+```
+
+#### Blue
+
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("blue")) %>%
+  pull(gene_id)
+
+length(ID.vector) #1989
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #9012    2
+```
+
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector#set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
+
+```{r}
+#Filtering for p < 0.05
+GO_05_blue <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Blue")
+
+go_results_BP <- GO_05_blue %>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+
+dim(go_results_BP)
+```
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_blue.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50))
+dev.off()
+```
+### Combining all the individual module lists for Calcification - Up
+
+```{r}
+GO_05_UP <- rbind(GO_05_brown,GO_05_red,GO_05_black,GO_05_pink,GO_05_salmon,GO_05_blue)
+
+length(GO_05_UP$GOterm) #3810 enriched GO terms
+length(unique(GO_05_UP$GOterm)) #3617 enriched GO terms
+
+#Write file of results 
+write.csv(GO_05_UP, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_up_bymod.csv")
+```
+
 ## Calcification - Down
 
 2842 genes are in the 4 modules significantly downregulated by calcification.
@@ -416,6 +818,7 @@ names(gene.vector)<-ALL.vector#set names
 #weight gene vector by bias for length of gene 
 pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
 ```
+### Run the GOSeq function by module color to test for GO term enrichment. Due to high number of enriched GO terms, I am using a p-value threshold of <0.05 and using `rrvgo` package to reduce redundancy in list of GO terms.   
 
 ```{r}
 #run goseq using Wallenius method for all categories of GO terms 
@@ -581,119 +984,226 @@ CalcDownMods_GO_P05_reduced
 ggsave("../../output/WGCNA/GO_analysis/CalcDownMods_GO_P05_reduced.pdf", CalcDownMods_GO_P05_reduced, width = 12, height = 36, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
-## code for by module
-```{r,eval=FALSE}
-library(rrvgo)
+### Calcification - Down - By Module
 
-# Define the unique module colors
-module_colors <- na.omit(unique(geneInfo$moduleColor))
-
-# Generate vector with names of all genes 
+```{r}
+### Generate vector with names of all genes 
 ALL.vector <- c(geneInfo$gene_id)
+```
 
-# Generate length vector for all genes 
+```{r}
+### Generate length vector for all genes 
 LENGTH.vector <- as.integer(geneInfo$Length)
+```
 
- 
-# Loop over each unique module color
-for (color in module_colors) {
- # Filter geneInfo based on the current color
-  color_filtered <- geneInfo %>% filter(moduleColor == color)
+#### Turquoise
 
-  # Generate vector with names in just the module we are analyzing
-  ID.vector <- color_filtered$gene_id
-  
-  length(ID.vector)
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("turquoise")) %>%
+  pull(gene_id)
 
-  # Get a list of GO Terms for each module
-  GO.terms <- color_filtered %>%
-    dplyr::select(GOs, gene_id) %>%
-    rename(GOs = "GO.terms")
-  
-  dim(GO.terms)
+length(ID.vector) #2558
 
-  ## Format to have one GO term per row with gene ID repeated
-  split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-  split2 <- data.frame(v1 = rep.int(GO.terms$gene_id, sapply(split, length)), v2 = unlist(split)) 
-  colnames(split2) <- c("gene", "GO.terms")
-  GO.terms <- split2
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
 
-  ## Construct list of genes with 1 for genes in module and 0 for genes not in the module
-  gene.vector <- as.integer(ALL.vector %in% ID.vector) 
-  names(gene.vector) <- ALL.vector # set names
-  # Weight gene vector by bias for length of gene 
-  pwf <- nullp(gene.vector, ID.vector, bias.data = LENGTH.vector) 
+dim(GO.terms) #9012    2
+```
 
-  # Run goseq using Wallenius method for all categories of GO terms 
-  GO.wall <- goseq(pwf, ID.vector, gene2cat = GO.terms, test.cats = c("GO:BP", "GO:MF", "GO:CC"), method = "Wallenius", use_genes_without_cat = TRUE)
-  GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
-  colnames(GO)[1] <- "GOterm"
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
 
-  # Adjust p-values 
-  GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method = "BH") 
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector #set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
 
-  # Filtering for p < 0.01
-  GO <- GO %>%
-    dplyr::filter(bh_adjust < 0.00001) %>%
-    dplyr::arrange(., ontology, bh_adjust)
-   
-  # Write file of results 
-  write.csv(GO, file = paste0("../../output/WGCNA/GO_analysis/goseq_pattern_", color, ".csv"))
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
 
-  go_results <- GO
+```{r}
+#Filtering for p < 0.05
+GO_05_turquoise <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Turquoise")
 
-  go_results<-go_results%>%
+go_results_BP <- GO_05_turquoise %>%
       filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      #filter(numInCat>100)%>%
-      arrange(., bh_adjust)
-  
-  #Reduce/collapse GO term set with the rrvgo package 
-  simMatrix <- calculateSimMatrix(go_results$GOterm,
-                                orgdb="org.Ce.eg.db", #c. elegans database
-                                ont="BP",
-                                method="Rel")
-  
-   #calculate similarity 
-  scores <- setNames(-log(go_results$bh_adjust), go_results$GOterm)
-  reducedTerms <- reduceSimMatrix(simMatrix,
-                                scores,
-                                threshold=0.7,
-                                orgdb="org.Ce.eg.db")
-  
-  #keep only the goterms from the reduced list
-  go_results <- go_results %>% filter(GOterm %in% reducedTerms$go)
-  
-  #add in parent terms to list of go terms 
-  go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-  
-  #plot significantly enriched GO terms by Slim Category faceted by slim term 
- GO.plot <-  ggplot(go_results, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
-    scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
-    theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
-    panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
-    strip.text.y = element_text(angle=0, size = 10),
-    strip.text.x = element_text(size = 20),
-    axis.text = element_text(size = 8),
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank())
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
 
- GO.plot
- 
-  length(colnames(go_results)[go_results$ParentTerm=="cation transport"])
-  length(colnames(go_results)[go_results$ParentTerm=="inorganic ion homeostasis"])
-  length(colnames(go_results)[go_results$ParentTerm=="regulation of cellular response to stress"])
-}
+dim(go_results_BP)
+```
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_down_mods_GOSEM_turquoise.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+dev.off()
+```
+
+#### Magenta
+
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("magenta")) %>%
+  pull(gene_id)
+
+length(ID.vector) #219
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #9012    2
+```
+
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector#set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
+
+```{r}
+#Filtering for p < 0.05
+GO_05_magenta <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Magenta")
+
+go_results_BP <- GO_05_magenta %>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+
+dim(go_results_BP)
+```
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_down_mods_GOSEM_magenta.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+dev.off()
+```
+
+#### Lightcyan
+
+```{r}
+ID.vector <- geneInfo %>%
+  filter(moduleColor %in% c("lightcyan")) %>%
+  pull(gene_id)
+
+length(ID.vector) #65
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms) #9012    2
+```
+
+```{r}
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+
+##Construct list of genes with 1 for genes in module and 0 for genes not in the module
+gene.vector=as.integer(ALL.vector %in% ID.vector) 
+names(gene.vector)<-ALL.vector#set names
+#weight gene vector by bias for length of gene 
+pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector) 
+
+#run goseq using Wallenius method for all categories of GO terms 
+GO.wall<-goseq(pwf, ID.vector, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
+colnames(GO)[1] <- "GOterm"
+```
+
+```{r}
+#Filtering for p < 0.05
+GO_05_lightcyan <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue) %>% mutate(Module = "Lightcyan")
+
+go_results_BP <- GO_05_lightcyan %>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+
+dim(go_results_BP)
+```
+
+Collapsing with simplifyEnrichment package
+
+```{r}
+library(simplifyEnrichment)
+BP_terms <- go_results_BP$GOterm
+
+Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
+pdf(file = "../../output/WGCNA/GO_analysis/calc_down_mods_GOSEM_lightcyan.pdf", width = 7, height = 5)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+dev.off()
+```
+
+
+### Combining all the individual module lists for Calcification - Down
+
+```{r}
+GO_05_DOWN <- rbind(GO_05_turquoise,GO_05_magenta,GO_05_lightcyan)
+
+length(GO_05_DOWN$GOterm) #1072 enriched GO terms
+length(unique(GO_05_DOWN$GOterm)) #1070 enriched GO terms
+
+#Write file of results 
+write.csv(GO_05_DOWN, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_bymod.csv")
 ```
 
 ## Merge the frequency of GOterms for both up- and down-regulation of calcification
 
 ### Reduce the lists together
 ```{r}
-GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
-GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
+# GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
+# GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
+
+GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_up_bymod.csv") %>% dplyr::select(-"X")
+GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_bymod.csv") %>% dplyr::select(-"X")
 ```
 
 ```{r}
