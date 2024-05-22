@@ -84,21 +84,29 @@ LENGTH.vector <- as.integer(geneInfo$Length)
 ID.vector_biomin <- biomin_mod %>%
   pull(gene_id) %>% unique()
 
-##Get a list of GO Terms for each module
+##Get a list of GO Terms for the biomineralization genes
 GO.terms_biomin <- biomin_mod %>%
-  dplyr::select(GOs,gene_id) %>% unique() %>% rename(GOs = "GO.terms")
+  dplyr::select(gene_id, GOs) %>% unique() %>% rename(GOs = "GO.terms")
 
 dim(GO.terms_biomin)
-dim(GO.terms_biomin %>% filter(is.na(GO.terms)))
 dim(GO.terms_biomin %>% filter(!is.na(GO.terms)))
+
+## only 22/65 of these genes have GO annotations!!
+
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
+
+dim(GO.terms)
+dim(GO.terms %>% filter(!is.na(GO.terms)))
 ```
 
 ```{r}
 ##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms_biomin$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms_biomin$gene_id, sapply(split, length)), v2 = unlist(split)) 
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
 colnames(split2) <- c("gene_id", "GO.terms")
-GO.terms_biomin <- split2
+GO.terms<-split2
 ```
 
 ```{r}
@@ -111,7 +119,7 @@ pwf<-nullp(gene.vector, ID.vector, bias.data=LENGTH.vector)
 
 ```{r}
 #run goseq using Wallenius method for all categories of GO terms 
-GO.wall<-goseq(pwf, ID.vector_biomin, gene2cat=GO.terms_biomin, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
+GO.wall<-goseq(pwf, ID.vector_biomin, gene2cat=GO.terms, test.cats=c("GO:BP", "GO:MF", "GO:CC"), method="Wallenius", use_genes_without_cat=TRUE)
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 colnames(GO)[1] <- "GOterm"
 ```
@@ -121,23 +129,13 @@ head(GO)
 ```
 
 ```{r}
-#adjust p-values 
-GO$bh_adjust <-  p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-```
-
-```{r}
 #Filtering for p < 0.05
 GO_05 <- GO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
    
-#Filtering for p < 0.00001
-# GO_00001 <- GO %>%
-#         dplyr::filter(bh_adjust<0.00001) %>%
-#         dplyr::arrange(., ontology, bh_adjust)
-   
+
 #Write file of results 
-#write.csv(GO_00001, file = "../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv")
 write.csv(GO_05, file = "../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv")
 ```
 
@@ -149,9 +147,9 @@ head(go_results)
 ```{r}
 go_results_BP <- go_results %>%
       filter(ontology=="BP") %>%
-      filter(bh_adjust != "NA") %>%
+      filter(over_represented_pvalue != "NA") %>%
       #filter(numInCat>10)%>%
-      arrange(., bh_adjust)
+      arrange(., over_represented_pvalue)
 
 dim(go_results_BP)
 head(go_results_BP)
@@ -165,7 +163,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/biomin_GOSEM.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), max_words=20)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50))
 dev.off()
 ```
 
@@ -180,7 +178,7 @@ simMatrix <- calculateSimMatrix(go_results_BP$GOterm,
 
 ```{r}
  #calculate similarity 
-scores <- setNames(-log(go_results_BP$bh_adjust), go_results_BP$GOterm)
+scores <- setNames(-log(go_results_BP$over_represented_pvalue), go_results_BP$GOterm)
 reducedTerms <- reduceSimMatrix(simMatrix,
                                 scores,
                                 threshold=0.7,
@@ -190,15 +188,15 @@ dim(reducedTerms)
 
 ```{r}
 #keep only the goterms from the reduced list
-go_results_BP_reduced <- go_results_BP %>%
-  filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
+go_results_BP_reduced <- go_results_BP %>% filter(GOterm %in% reducedTerms$go)
+
+#add in parent terms to list of go terms 
 go_results_BP_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_reduced$GOterm, reducedTerms$go)]
 
 length(unique(go_results_BP_reduced$ParentTerm))
 ```
 
-The reduced list of terms is 180 terms that falls under 32 parent terms.
+The reduced list of terms is 51 terms that falls under 15 parent terms.
 
 ```{r}
 #write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomineralization_goterms.csv")
@@ -221,7 +219,7 @@ go_results_BP_reduced <- go_results_BP_reduced %>%
    filter(grepl(paste(keywords, collapse="|"), ParentTerm))
 ```
 
-This is only 17 terms
+This is only 19 terms
 
 ```{r}
 #write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomineralization_goterms.csv")
@@ -231,7 +229,7 @@ write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_b
 ```{r}
 #plot significantly enriched GO terms by Slim Category faceted by slim term 
  GO.plot_biomin <-  ggplot(go_results_BP_reduced, aes(x = ontology, y = term)) + 
-    geom_point(aes(size=bh_adjust)) + 
+    geom_point(aes(size=over_represented_pvalue)) + 
     scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
     facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
@@ -242,41 +240,51 @@ write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_b
     axis.title.x = element_blank(),
     axis.title.y = element_blank())
 GO.plot_biomin
+
+
+ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_biomin.pdf", plot=GO.plot_biomin, dpi=300, height=5, units="in", limitsize=FALSE)
 ```
 
 ## Combining with Calcification Up and Down module info to make figure 4
 
 ### Reduce the lists together
 ```{r}
-GO_00001_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
-GO_00001_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
-GO_00001_biomin <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv") %>% dplyr::select(-"X")
+# GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
+# GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
+# GO_05_biomin <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv") %>% dplyr::select(-"X")
 ```
 
 ```{r}
-go_results_BP_up <- GO_00001_up %>%
+GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_up_bymod.csv") %>% dplyr::select(-"X")
+GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_bymod.csv") %>% dplyr::select(-"X")
+GO_05_biomin <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv") %>% dplyr::select(-"X")
+```
+
+```{r}
+go_results_BP_up <- GO_05_up %>%
       filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
 dim(go_results_BP_up)
 
-go_results_BP_down <- GO_00001_down %>%
+go_results_BP_down <- GO_05_down %>%
       filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
-      filter(numInCat>10)%>%
-      arrange(., bh_adjust)
+      filter(over_represented_pvalue != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
 dim(go_results_BP_down)
 
-go_results_BP_biomin <- GO_00001_biomin %>%
+go_results_BP_biomin <- GO_05_biomin %>%
       filter(ontology=="BP")%>%
-      filter(bh_adjust != "NA") %>%
+      filter(over_represented_pvalue != "NA") %>%
       #filter(numInCat>10)%>%
-      arrange(., bh_adjust)
+      arrange(., over_represented_pvalue)
 dim(go_results_BP_biomin)
 
 
 all_enriched_terms_up_down_biomin <- c(go_results_BP_up$GOterm,go_results_BP_down$GOterm,go_results_BP_biomin$GOterm)
+
 length(all_enriched_terms_up_down_biomin)
 length(unique(all_enriched_terms_up_down_biomin))
 ```
@@ -305,7 +313,8 @@ dim(reducedTerms)
 #keep only the goterms from the reduced list
 go_results_BP_up_reduced <- go_results_BP_up %>%
   filter(GOterm %in% reducedTerms$go)
- #add in parent terms to list of go terms 
+
+#add in parent terms to list of go terms 
 go_results_BP_up_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_up_reduced$GOterm, reducedTerms$go)]
 
 length(unique(go_results_BP_up_reduced$GOterm))
@@ -368,7 +377,9 @@ length(unique(go_results_BP_biomin_reduced_keywords$ParentTerm))
 
 Won't move forward with these for now, but they are there if we need further reduced lists.
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
+### Combining lists with factor
+
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 #cal_up_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
@@ -385,7 +396,7 @@ cal_up_terms_parent_nterm <- cal_up_terms %>%
 head(cal_up_terms)
 ```
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 #cal_down_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
@@ -400,35 +411,35 @@ cal_down_terms_parent_nterm <- cal_down_terms %>%
 head(cal_down_terms)
 ```
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P_adj < 0.00001) within the list of biomineralization-related genes. The list has been further reduced by using the package rrvgo.
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the list of biomineralization-related genes. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 #cal_biomin_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
 cal_biomin_terms <- go_results_BP_biomin_reduced
-cal_biomin_terms <- cal_biomin_terms %>% mutate(Factor = "Biomin")
+cal_biomin_terms <- cal_biomin_terms %>% mutate(Factor = "Biomin") %>% mutate(Module = "Biomin")
 head(cal_biomin_terms)
 ```
 
 ### Merge up and down-regulation of calcification GOterms along with GOterms enriched in the biomineralization gene list
 
-The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.0001) within the modules that were upregulated *or* downregulated for calcification *or* in the biomineralization gene list. The list has been further reduced by using the package rrvgo.
+The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the modules that were upregulated *or* downregulated for calcification *or* in the biomineralization gene list. The list has been further reduced by using the package rrvgo.
 
 ```{r}
 all_terms <- rbind(cal_down_terms,cal_up_terms,cal_biomin_terms)
 
-all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","ParentTerm")]
+all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","ParentTerm","Module")]
 
 all_terms$GOterm<-as.factor(all_terms$GOterm)
 
-dim(all_terms) #3453 reduced terms 
+dim(all_terms) #785 reduced terms 
 
-length(unique(all_terms$GOterm)) #this represents 1817 unique terms between the three lists of reduced terms
-length(unique(all_terms$ParentTerm)) #this represents 136 unique terms between the three lists of reduced terms
+length(unique(all_terms$GOterm)) #this represents 780 unique terms between the three lists of reduced terms
+length(unique(all_terms$ParentTerm)) #this represents 92 unique terms between the three lists of reduced terms
 ```
 
 ### Unique terms
 
-This is collapsing the list from 3273 rows to only 1809, representing the 1809 unique GO terms in the list above. It collapses the information in the columns "ParentTerm" and "Factor" so that for each GO term we get the parent terms associated and if this was enriched in modules upregulated for calcification, downregulated for calcification, or both.
+This is collapsing the list from 2287 rows to 2036, representing the 2036 unique GO terms in the list above. It collapses the information in the columns "ParentTerm" and "Factor" so that for each GO term we get the parent terms associated and if this was enriched in modules upregulated for calcification, downregulated for calcification, or both.
 
 ```{r}
 goterms_shared <- all_terms %>%
@@ -441,15 +452,15 @@ goterms_shared <- all_terms %>%
 dim(goterms_shared)
 
 goterms_shared_full <- goterms_shared %>%
-  left_join(dplyr::select(all_terms,GOterm, Factor, bh_adjust), by = "GOterm") %>% #select 3 columns GOterm, Factor, bh_adjust from all_terms and left join by GOterm, turns this dataframe from 1817 rows back to the 3453 in all_terms
-  mutate(bh_adjust_Up = ifelse(Factor.y == "Up", bh_adjust, NA)) %>% #add a column that is the p-value for the Up factor
-  mutate(bh_adjust_Down = ifelse(Factor.y == "Down", bh_adjust, NA)) %>% #add a column that is the p-value for the Down factor
-  mutate(bh_adjust_Biomin = ifelse(Factor.y == "Biomin", bh_adjust, NA)) %>% #add a column that is the p-value for the Biomin factor
-  dplyr::select(-c("bh_adjust", "Factor.y")) %>% #remove the unique columns so that we can collapse the dataframe
+  left_join(dplyr::select(all_terms,GOterm, Factor, over_represented_pvalue), by = "GOterm") %>% #select 3 columns GOterm, Factor, over_represented_pvalue from all_terms and left join by GOterm, turns this dataframe from 1817 rows back to the 3453 in all_terms
+  mutate(pvalue_Up = ifelse(Factor.y == "Up", over_represented_pvalue, NA)) %>% #add a column that is the p-value for the Up factor
+  mutate(pvalue_Down = ifelse(Factor.y == "Down", over_represented_pvalue, NA)) %>% #add a column that is the p-value for the Down factor
+  mutate(pvalue_Biomin = ifelse(Factor.y == "Biomin", over_represented_pvalue, NA)) %>% #add a column that is the p-value for the Biomin factor
+  dplyr::select(-c("over_represented_pvalue", "Factor.y")) %>% #remove the unique columns so that we can collapse the dataframe
   group_by(GOterm, ParentTerm, Factor.x, term) %>% #group by the repeated columns for the non-unique GO terms
-  dplyr::summarize(bh_adjust_Up = na.omit(bh_adjust_Up)[1], #carry over the p-value for the term in the up direction, by taking the first non-NA value.
-            bh_adjust_Down = na.omit(bh_adjust_Down)[1], #carry over the p-value for the term in the down direction, by taking the first non-NA value.
-            bh_adjust_Biomin = na.omit(bh_adjust_Biomin)[1]) %>% #carry over the p-value for the term in the biomin list, by taking the first non-NA value.
+  dplyr::summarize(pvalue_Up = na.omit(pvalue_Up)[1], #carry over the p-value for the term in the up direction, by taking the first non-NA value.
+            pvalue_Down = na.omit(pvalue_Down)[1], #carry over the p-value for the term in the down direction, by taking the first non-NA value.
+            pvalue_Biomin = na.omit(pvalue_Biomin)[1]) %>% #carry over the p-value for the term in the biomin list, by taking the first non-NA value.
   rename(Factor.x = "Factor") #rename column 
 ```
 
@@ -531,11 +542,11 @@ merged_shared_clean <- na.omit(merged_shared) #remove rows for the non-"Down, Up
 head(merged_shared_clean)
 ```
 
-### Frequency >10 
+### Frequency >0 
 
 ```{r}
 cal_freq_terms_filtered_shared <- merged_shared_clean %>%
-  filter(Sum_of_SharedGOterms>=10) 
+  filter(Sum_of_SharedGOterms>=0) 
 head(cal_freq_terms_filtered_shared)
 ```
 
@@ -546,7 +557,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Sum_of_SharedGOterms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
+  #scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
   scale_fill_gradientn(colours=c("white","#E6E6FA","#C9A0DC","#9370DB","#663399"), na.value = "grey98",limits = c(0, 100))+ 
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
@@ -578,7 +589,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Sum_of_SharedGOterms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
+  #scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
   scale_fill_gradientn(colours=c("white","#E6E6FA","#C9A0DC","#9370DB","#663399"), na.value = "grey98",limits = c(0, 100))+ 
   theme_classic()+
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
@@ -817,7 +828,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Sum_of_UniqueGOterms,x=reo
         strip.text = element_text(size=12)) #making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_unique_biomin.pdf", plot=freq_fig_up, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_unique_biomin_only.pdf", plot=freq_fig_up, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
 ```
 
 ### Frequency >0 down
@@ -850,7 +861,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Sum_of_UniqueGOterms,x
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_unique_biomin.pdf", plot=freq_fig_down, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_unique_biomin_only.pdf", plot=freq_fig_down, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
 ```
 
 ```{r}
@@ -1003,11 +1014,11 @@ freq_fig_down
 ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_all.pdf", plot=freq_fig_down, dpi=300, height=25, width=10, units="in", limitsize=FALSE)
 ```
 
-### Frequency >20 up
+### Frequency >10 up
 
 ```{r}
 cal_freq_terms_filtered_up <- merged_up_clean %>%
-  filter(Number.of.terms>=20) %>%
+  filter(Number.of.terms>=10) %>%
   filter(Calcification.direction=="Up")
 cal_freq_terms_filtered_up
 ```
@@ -1032,14 +1043,14 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
         strip.text = element_text(size=12)) #making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_all_gr20.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_all_gr10.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
 ```
 
-### Frequency >20 down
+### Frequency >10 down
 
 ```{r}
 cal_freq_terms_filtered_down <- merged_down_clean %>%
-  filter(Number.of.terms>=20) %>%
+  filter(Number.of.terms>=10) %>%
   filter(Calcification.direction=="Down")
 cal_freq_terms_filtered_down
 ```
@@ -1065,6 +1076,6 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_all_gr20.pdf", plot=freq_fig_down, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_all_gr10.pdf", plot=freq_fig_down, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
 ```
 
