@@ -769,6 +769,19 @@ GO_05_UP <- rbind(GO_05_brown,GO_05_red,GO_05_black,GO_05_pink,GO_05_salmon,GO_0
 length(GO_05_UP$GOterm) #3810 enriched GO terms
 length(unique(GO_05_UP$GOterm)) #3617 enriched GO terms
 
+# Collapse GO terms that are duplicated accross modules - sort by GO term and p-value, then keep the row with the lowest p-value, collapsing the module names so you know which modules were represented
+
+# Identify and collapse duplicates
+GO_05_UP <- GO_05_UP %>%
+  arrange(GOterm, over_represented_pvalue) %>%
+  group_by(GOterm) %>% mutate(Module = paste(unique(Module), collapse = ";")) %>%
+  group_by(GOterm) %>%
+  slice_min(order_by = over_represented_pvalue, n = 1) %>%
+  ungroup()
+
+length(GO_05_UP$GOterm) #3617 enriched GO terms
+length(unique(GO_05_UP$GOterm)) #3617 enriched GO terms, all are unique
+
 #Write file of results 
 write.csv(GO_05_UP, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_up_bymod.csv")
 ```
@@ -1191,6 +1204,16 @@ GO_05_DOWN <- rbind(GO_05_turquoise,GO_05_magenta,GO_05_lightcyan)
 length(GO_05_DOWN$GOterm) #1072 enriched GO terms
 length(unique(GO_05_DOWN$GOterm)) #1070 enriched GO terms
 
+# Collapse GO terms that are duplicated accross modules - sort by GO term and p-value, then keep the row with the lowest p-value, collapsing the module names so you know which modules were represented
+
+# Identify and collapse duplicates
+GO_05_DOWN <- GO_05_DOWN %>%
+  arrange(GOterm, over_represented_pvalue) %>%
+  group_by(GOterm) %>% mutate(Module = paste(unique(Module), collapse = ";")) %>%
+  group_by(GOterm) %>%
+  slice_min(order_by = over_represented_pvalue, n = 1) %>%
+  ungroup()
+
 #Write file of results 
 write.csv(GO_05_DOWN, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_bymod.csv")
 ```
@@ -1298,7 +1321,7 @@ all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_re
 
 all_terms$GOterm<-as.factor(all_terms$GOterm)
 
-dim(all_terms) #2236 reduced terms 
+dim(all_terms) #2140 reduced terms 
 
 length(unique(all_terms$GOterm)) #this represents 2004 unique terms between the two lists of reduced terms
 length(unique(all_terms$ParentTerm)) #this represents 153 unique terms between the two lists of reduced terms
@@ -1361,7 +1384,7 @@ freq_fig_up_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N_i
   geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
   coord_flip() +
   theme_classic() +
-  ylim(0, 0.04) + 
+  ylim(0, 0.05) + 
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
         panel.background= element_rect(fill=NA, color='black'),
@@ -1376,7 +1399,7 @@ freq_fig_down_pval <- ggplot(goterms_shared_only, aes(x = reorder(ParentTerm, -N
   geom_hline(yintercept = 0, linetype = "solid", color = "grey", size = 0.5, show.legend = TRUE) +
   coord_flip() +
   theme_classic() +
-  ylim(0, 0.04) + 
+  ylim(0, 0.05) + 
   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=5),
         plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
         panel.background= element_rect(fill=NA, color='black'),
