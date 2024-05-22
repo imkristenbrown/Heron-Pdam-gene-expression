@@ -1294,19 +1294,19 @@ The following list is a list of BP-ontology ("Biological Process") GO terms that
 ```{r}
 all_terms <- rbind(cal_down_terms,cal_up_terms)
 
-all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","ParentTerm")]
+all_terms <-  all_terms[,c("Factor","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","ParentTerm","Module")]
 
 all_terms$GOterm<-as.factor(all_terms$GOterm)
 
-dim(all_terms) #734 reduced terms 
+dim(all_terms) #2236 reduced terms 
 
-length(unique(all_terms$GOterm)) #this represents 730 unique terms between the two lists of reduced terms
-length(unique(all_terms$ParentTerm)) #this represents 87 unique terms between the two lists of reduced terms
+length(unique(all_terms$GOterm)) #this represents 2004 unique terms between the two lists of reduced terms
+length(unique(all_terms$ParentTerm)) #this represents 153 unique terms between the two lists of reduced terms
 ```
 
 ### Unique terms
 
-This is collapsing the list from 734 rows to 730, representing the 730 unique GO terms in the list above. It collapses the information in the columns "ParentTerm" and "Factor" so that for each GO term we get the parent terms associated and if this was enriched in modules upregulated for calcification, downregulated for calcification, or both.
+This is collapsing the list from 2236 rows to 2004, representing the 2004 unique GO terms in the list above. It collapses the information in the columns "ParentTerm" and "Factor" so that for each GO term we get the parent terms associated and if this was enriched in modules upregulated for calcification, downregulated for calcification, or both.
 
 ```{r}
 goterms_shared <- all_terms %>%
@@ -1319,7 +1319,7 @@ goterms_shared <- all_terms %>%
 dim(goterms_shared)
 
 goterms_shared_full <- goterms_shared %>%
-  left_join(dplyr::select(all_terms,GOterm, Factor, over_represented_pvalue), by = "GOterm") %>% #select 3 columns GOterm, Factor, over_represented_pvalue from all_terms and left join by GOterm, turns this dataframe from 730 rows back to the 734 in all_terms
+  left_join(dplyr::select(all_terms,GOterm, Factor, over_represented_pvalue), by = "GOterm") %>% #select 3 columns GOterm, Factor, over_represented_pvalue from all_terms and left join by GOterm, turns this dataframe from 2004 rows back to the 2236 in all_terms
   mutate(pvalue_Up = ifelse(Factor.y == "Up", over_represented_pvalue, NA)) %>% #add a column that is the p-value for the Up factor
   mutate(pvalue_Down = ifelse(Factor.y == "Down", over_represented_pvalue, NA)) %>% #add a column that is the p-value for the Down factor
   dplyr::select(-c("over_represented_pvalue", "Factor.y")) %>% #remove the unique columns so that we can collapse the dataframe
@@ -1605,7 +1605,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
@@ -1640,7 +1640,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,27))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
@@ -1682,7 +1682,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
@@ -1717,7 +1717,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,27))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
@@ -1759,7 +1759,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up_all, aes(y=Number.of.terms,x=reor
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,60))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
@@ -1793,7 +1793,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down_all, aes(y=Number.of.terms,x=
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=Number.of.terms)) +
   #geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,30))+
+  scale_y_continuous(expression(GO~term~counts),limits=c(0,27))+
   #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
   scale_fill_gradientn(colours=c("white","#d1e5f0","#92c5de","#4393c3","#2166ac"), na.value = "grey98",limits = c(0, 100))+ 
