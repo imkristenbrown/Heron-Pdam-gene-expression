@@ -136,11 +136,11 @@ GO_05 <- GO %>%
    
 
 #Write file of results 
-write.csv(GO_05, file = "../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv")
+write.csv(GO_05, file = "../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_biomin.csv")
 ```
 
 ```{r}
-go_results <-read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv")
+go_results <-read.csv("../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_biomin.csv")
 head(go_results)
 ```
 
@@ -162,7 +162,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/biomin_GOSEM.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/Biomin_genes/biomin_GOSEM.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50))
 dev.off()
 ```
@@ -199,8 +199,8 @@ length(unique(go_results_BP_reduced$ParentTerm))
 The reduced list of terms is 51 terms that falls under 15 parent terms.
 
 ```{r}
-#write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomineralization_goterms.csv")
-write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
+#write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomin_genes/Biomineralization_goterms.csv")
+write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_biomin_filtered.csv")
 ```
 
 Can further reduce like so:
@@ -222,8 +222,8 @@ go_results_BP_reduced <- go_results_BP_reduced %>%
 This is only 19 terms
 
 ```{r}
-#write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomineralization_goterms.csv")
-write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered_keywords.csv")
+#write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomin_genes/Biomineralization_goterms.csv")
+write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_biomin_filtered_keywords.csv")
 ```
 
 ```{r}
@@ -242,7 +242,7 @@ write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_b
 GO.plot_biomin
 
 
-ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_biomin.pdf", plot=GO.plot_biomin, dpi=300, height=5, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/GO.plot_biomin.pdf", plot=GO.plot_biomin, dpi=300, height=5, units="in", limitsize=FALSE)
 ```
 
 ## Combining with Calcification Up and Down module info to make figure 4
@@ -251,13 +251,13 @@ ggsave(filename="../../output/WGCNA/GO_analysis/GO.plot_biomin.pdf", plot=GO.plo
 ```{r}
 # GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
 # GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
-# GO_05_biomin <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv") %>% dplyr::select(-"X")
+# GO_05_biomin <- read.csv("../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_biomin.csv") %>% dplyr::select(-"X")
 ```
 
 ```{r}
 GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_up_bymod.csv") %>% dplyr::select(-"X")
 GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_bymod.csv") %>% dplyr::select(-"X")
-GO_05_biomin <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin.csv") %>% dplyr::select(-"X")
+GO_05_biomin <- read.csv("../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_biomin.csv") %>% dplyr::select(-"X")
 ```
 
 ```{r}
@@ -370,9 +370,9 @@ length(unique(go_results_BP_biomin_reduced_keywords$ParentTerm))
 
 
 ```{r}
-#write.csv(go_results_BP_up_reduced_keywords, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
-#write.csv(go_results_BP_down_reduced_keywords, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
-#write.csv(go_results_BP_biomin_reduced_keywords, "../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
+#write.csv(go_results_BP_up_reduced_keywords, "../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_calcification_filtered.csv")
+#write.csv(go_results_BP_down_reduced_keywords, "../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_calcification_down_filtered.csv")
+#write.csv(go_results_BP_biomin_reduced_keywords, "../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_biomin_filtered.csv")
 ```
 
 Won't move forward with these for now, but they are there if we need further reduced lists.
@@ -382,7 +382,6 @@ Won't move forward with these for now, but they are there if we need further red
 The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the modules that were upregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
-#cal_up_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
 cal_up_terms <- go_results_BP_up_reduced
 
 cal_up_terms <- cal_up_terms %>%
@@ -399,7 +398,6 @@ head(cal_up_terms)
 The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the modules that were downregulated for calcification. The list has been further reduced by using the package rrvgo.
 
 ```{r}
-#cal_down_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down_filtered.csv")
 cal_down_terms <- go_results_BP_down_reduced
 cal_down_terms <- cal_down_terms %>% mutate(Factor = "Down")
 
@@ -414,7 +412,7 @@ head(cal_down_terms)
 The following list is a list of BP-ontology ("Biological Process") GO terms that were significantly enriched (P < 0.05) within the list of biomineralization-related genes. The list has been further reduced by using the package rrvgo.
 
 ```{r}
-#cal_biomin_terms <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_biomin_filtered.csv")
+#cal_biomin_terms <- read.csv("../../output/WGCNA/GO_analysis/Biomin_genes/goseq_pattern_biomin_filtered.csv")
 cal_biomin_terms <- go_results_BP_biomin_reduced
 cal_biomin_terms <- cal_biomin_terms %>% mutate(Factor = "Biomin") %>% mutate(Module = "Biomin")
 head(cal_biomin_terms)
@@ -465,11 +463,11 @@ goterms_shared_full <- goterms_shared %>%
 ```
 
 ```{r}
-write.csv(goterms_shared_full, "../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm_with_Biomin.csv")
+write.csv(goterms_shared_full, "../../output/WGCNA/GO_analysis/Biomin_genes/Merged_GOterms_factor_ParentTerm_with_Biomin.csv")
 ```
 
 ```{r}
-goterms_shared_full <- read.csv("../../output/WGCNA/GO_analysis/Merged_GOterms_factor_ParentTerm_with_Biomin.csv")
+goterms_shared_full <- read.csv("../../output/WGCNA/GO_analysis/Biomin_genes/Merged_GOterms_factor_ParentTerm_with_Biomin.csv")
 ```
 
 ### calculations to check before plots
@@ -570,7 +568,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_colored_sharedUpDown.pdf", plot=freq_fig_up, dpi=300, height=15, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_colored_sharedUpDown.pdf", plot=freq_fig_up, dpi=300, height=15, width=10, units="in", limitsize=FALSE)
 ```
 
 
@@ -602,7 +600,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_colored_sharedUpDown_gr20.pdf", plot=freq_fig_up, dpi=300, height=7, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_colored_sharedUpDown_gr20.pdf", plot=freq_fig_up, dpi=300, height=7, width=10, units="in", limitsize=FALSE)
 ```
 ### Percentage shared >20 
 
@@ -632,7 +630,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_colored_sharedUpDown_80percentshared.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_colored_sharedUpDown_80percentshared.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
 ```
 
 ```{r}
@@ -654,7 +652,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_shared, aes(y=Sum_of_SharedGOterms,x
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_colored_sharedUpDown_80percentsharedordered.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_colored_sharedUpDown_80percentsharedordered.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
 ```
 
 ## Plot of parent terms UNIQUE for Up and Down modules
@@ -758,7 +756,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Sum_of_UniqueGOterms,x=reo
         strip.text = element_text(size=12)) #making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_unique.pdf", plot=freq_fig_up, dpi=300, height=15, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_up_colored_unique.pdf", plot=freq_fig_up, dpi=300, height=15, width=10, units="in", limitsize=FALSE)
 ```
 
 ### Frequency all down
@@ -791,7 +789,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Sum_of_UniqueGOterms,x
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_unique.pdf", plot=freq_fig_down, dpi=300, height=15, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_down_colored_unique.pdf", plot=freq_fig_down, dpi=300, height=15, width=10, units="in", limitsize=FALSE)
 ```
 
 ```{r}
@@ -828,7 +826,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Sum_of_UniqueGOterms,x=reo
         strip.text = element_text(size=12)) #making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_unique_biomin_only.pdf", plot=freq_fig_up, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_up_colored_unique_biomin_only.pdf", plot=freq_fig_up, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
 ```
 
 ### Frequency >0 down
@@ -861,7 +859,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Sum_of_UniqueGOterms,x
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_unique_biomin_only.pdf", plot=freq_fig_down, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_down_colored_unique_biomin_only.pdf", plot=freq_fig_down, dpi=300, height=5, width=10, units="in", limitsize=FALSE)
 ```
 
 ```{r}
@@ -978,7 +976,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
         strip.text = element_text(size=12)) #making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_all.pdf", plot=freq_fig_up, dpi=300, height=25, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_up_colored_all.pdf", plot=freq_fig_up, dpi=300, height=25, width=10, units="in", limitsize=FALSE)
 ```
 
 ### Frequency down
@@ -1011,7 +1009,7 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_all.pdf", plot=freq_fig_down, dpi=300, height=25, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_down_colored_all.pdf", plot=freq_fig_down, dpi=300, height=25, width=10, units="in", limitsize=FALSE)
 ```
 
 ### Frequency >10 up
@@ -1043,7 +1041,7 @@ freq_fig_up<-ggplot(cal_freq_terms_filtered_up, aes(y=Number.of.terms,x=reorder(
         strip.text = element_text(size=12)) #making the axis title larger 
 freq_fig_up
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_up_colored_all_gr10.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_up_colored_all_gr10.pdf", plot=freq_fig_up, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
 ```
 
 ### Frequency >10 down
@@ -1076,6 +1074,6 @@ freq_fig_down<-ggplot(cal_freq_terms_filtered_down, aes(y=Number.of.terms,x=reor
         strip.text = element_text(size=12))#making the axis title larger 
 freq_fig_down
 
-ggsave(filename="../../output/WGCNA/GO_analysis/freq_fig_down_colored_all_gr10.pdf", plot=freq_fig_down, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
+ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/freq_fig_down_colored_all_gr10.pdf", plot=freq_fig_down, dpi=300, height=10, width=10, units="in", limitsize=FALSE)
 ```
 
