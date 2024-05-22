@@ -247,7 +247,7 @@ ggsave(filename="../../output/WGCNA/GO_analysis/Biomin_genes/GO.plot_biomin.pdf"
 
 ## Combining with Calcification Up and Down module info to make figure 4
 
-### Reduce the lists together
+### Load in the lists
 ```{r}
 # GO_05_up <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv") %>% dplyr::select(-"X")
 # GO_05_down <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_down.csv") %>% dplyr::select(-"X")
@@ -289,6 +289,37 @@ length(all_enriched_terms_up_down_biomin)
 length(unique(all_enriched_terms_up_down_biomin))
 ```
 
+### Check which modules have overlap with the enriched terms for the biomin genes
+
+```{r}
+go_results_BP_up[which(go_results_BP_up$GOterm %in% go_results_BP_biomin$GOterm),]
+
+go_results_BP_up[which(go_results_BP_up$GOterm %in% go_results_BP_biomin$GOterm),"Module"] %>% count()
+go_results_BP_up[,"Module"] %>% count()
+
+left_join(
+  go_results_BP_up[which(go_results_BP_up$GOterm %in% go_results_BP_biomin$GOterm),"Module"] %>% count(),
+  go_results_BP_up[,"Module"] %>% count(), by=join_by(x)) %>%
+  mutate("Percent" = 100*(freq.x/freq.y)) %>% dplyr::arrange(-Percent)
+
+#this shows us that red and salmon are the up-calcification modules with the largest percentage of enriched GO terms shared with the enriched GO terms of the biomineralization genes.
+```
+
+```{r}
+go_results_BP_down[which(go_results_BP_down$GOterm %in% go_results_BP_biomin$GOterm),]
+
+go_results_BP_down[which(go_results_BP_down$GOterm %in% go_results_BP_biomin$GOterm),"Module"] %>% count()
+go_results_BP_down[,"Module"] %>% count()
+
+left_join(
+  go_results_BP_down[which(go_results_BP_down$GOterm %in% go_results_BP_biomin$GOterm),"Module"] %>% count(),
+  go_results_BP_down[,"Module"] %>% count(), by=join_by(x)) %>%
+  mutate("Percent" = 100*(freq.x/freq.y)) %>% dplyr::arrange(-Percent)
+
+#magenta and turquoise both have two enriched GO terms shared with the enriched GO terms of the biomineralization genes. This represents less than 1% of the enriched terms in each module.
+```
+
+### Reduce the lists together
 By reducing the lists together, we can ensure that each GO term is given the same parent term whether the term was in the Up or Down modules or the biomineralization genes.
 
 ```{r}
