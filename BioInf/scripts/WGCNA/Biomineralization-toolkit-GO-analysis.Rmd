@@ -302,7 +302,7 @@ left_join(
   go_results_BP_up[,"Module"] %>% count(), by=join_by(x)) %>%
   mutate("Percent" = 100*(freq.x/freq.y)) %>% dplyr::arrange(-Percent)
 
-#this shows us that red and salmon are the up-calcification modules with the largest percentage of enriched GO terms shared with the enriched GO terms of the biomineralization genes.
+#this shows us that red (4%) and salmon (2.5%) are the up-calcification modules with the largest percentage of enriched GO terms shared with the enriched GO terms of the biomineralization genes.
 ```
 
 ```{r}
