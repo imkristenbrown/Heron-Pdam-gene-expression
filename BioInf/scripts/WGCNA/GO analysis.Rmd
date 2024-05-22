@@ -249,7 +249,7 @@ Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 
 #compare_clustering_methods(Mat, plot_type = "heatmap")
 
-pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), max_words=20)
 dev.off()
 ```
@@ -441,7 +441,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_brown.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_brown.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3)
 dev.off()
 ```
@@ -509,7 +509,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_red.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_red.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
 dev.off()
 ```
@@ -571,7 +571,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_black.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_black.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
 dev.off()
 ```
@@ -633,7 +633,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_pink.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_pink.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
 dev.off()
 ```
@@ -695,7 +695,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_salmon.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_salmon.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
 dev.off()
 ```
@@ -757,7 +757,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_up_mods_GOSEM_blue.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_blue.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50))
 dev.off()
 ```
@@ -875,7 +875,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_down_mods_GOSEM.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), max_words=20)
 dev.off()
 ```
@@ -1066,7 +1066,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_down_mods_GOSEM_turquoise.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_turquoise.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
 dev.off()
 ```
@@ -1128,7 +1128,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_down_mods_GOSEM_magenta.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_magenta.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
 dev.off()
 ```
@@ -1190,7 +1190,7 @@ library(simplifyEnrichment)
 BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-pdf(file = "../../output/WGCNA/GO_analysis/calc_down_mods_GOSEM_lightcyan.pdf", width = 7, height = 5)
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_lightcyan.pdf", width = 7, height = 5)
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
 dev.off()
 ```
