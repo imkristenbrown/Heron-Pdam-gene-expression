@@ -45,6 +45,7 @@ library(GenomicRanges)
 library(rtracklayer)
 library(rrvgo)
 library(simplifyEnrichment)
+library(scales)
 ```
 
 ## Load in data
@@ -434,6 +435,29 @@ go_results_BP <- GO_05_brown %>%
 dim(go_results_BP)
 ```
 
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Brown Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Brown.pdf", Top10Plot, width = 7, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -442,7 +466,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_brown.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3, exclude_words = c("regulation", "process"))
 dev.off()
 ```
 
@@ -502,6 +526,31 @@ write.csv(GO_05_red, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcif
 ```
 
 
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+  
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Red Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Red.pdf", Top10Plot, width = 7, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -510,7 +559,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_red.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3, exclude_words = c("regulation", "process"))
 dev.off()
 ```
 
@@ -564,6 +613,29 @@ go_results_BP <- GO_05_black %>%
 dim(go_results_BP)
 ```
 
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Black Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Black.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -572,7 +644,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_black.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
 dev.off()
 ```
 
@@ -626,6 +698,29 @@ go_results_BP <- GO_05_pink %>%
 dim(go_results_BP)
 ```
 
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Pink Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() +
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Pink.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -634,7 +729,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_pink.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
 dev.off()
 ```
 
@@ -688,6 +783,29 @@ go_results_BP <- GO_05_salmon %>%
 dim(go_results_BP)
 ```
 
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Salmon Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Salmon.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -696,7 +814,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_salmon.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
 dev.off()
 ```
 
@@ -750,6 +868,29 @@ go_results_BP <- GO_05_blue %>%
 dim(go_results_BP)
 ```
 
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Blue Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Blue.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -761,6 +902,7 @@ pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSE
 simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50))
 dev.off()
 ```
+
 ### Combining all the individual module lists for Calcification - Up
 
 ```{r}
@@ -1059,6 +1201,31 @@ go_results_BP <- GO_05_turquoise %>%
 dim(go_results_BP)
 ```
 
+
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Turquoise Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() +
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Turquoise.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -1067,7 +1234,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_turquoise.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
 dev.off()
 ```
 
@@ -1121,6 +1288,29 @@ go_results_BP <- GO_05_magenta %>%
 dim(go_results_BP)
 ```
 
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Magenta Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Magenta.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -1129,7 +1319,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_magenta.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
 dev.off()
 ```
 
@@ -1183,6 +1373,29 @@ go_results_BP <- GO_05_lightcyan %>%
 dim(go_results_BP)
 ```
 
+```{r}
+Top10Plot <- go_results_BP %>% 
+    top_n(10, wt=-over_represented_pvalue) %>% 
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    ggplot(aes(x=hitsPerc, 
+               y=reorder(term, -hitsPerc), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        geom_point() +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=0) +
+        scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Top 10 Enriched Biological Process GO Terms, Lightcyan Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10)) 
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Lightcyan.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -1191,7 +1404,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_lightcyan.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3)
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
 dev.off()
 ```
 
