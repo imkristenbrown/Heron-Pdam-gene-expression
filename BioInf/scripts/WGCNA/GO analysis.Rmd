@@ -455,7 +455,7 @@ Top10Plot <- go_results_BP %>%
 
 Top10Plot
 
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Brown.pdf", Top10Plot, width = 7, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Brown.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 Collapsing with simplifyEnrichment package
@@ -547,7 +547,7 @@ Top10Plot <- go_results_BP %>%
 
 Top10Plot
 
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Red.pdf", Top10Plot, width = 7, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Red.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 
