@@ -466,7 +466,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_brown.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3, exclude_words = c("regulation", "process"))
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
 ```
 
@@ -559,7 +559,20 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_red.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3, exclude_words = c("regulation", "process"))
+result <-  simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3, exclude_words = c("regulation", "process"), order_by_size = TRUE)
+result
+dev.off()
+
+# Following filtering of small clusters is based on the simplifyGO/ht_clusters source code for merging the small clusters together
+
+# Filter clusters smaller than 3
+cluster_sizes <- table(result$cluster) # table function makes a table with the size of each cluster (freqeuncy) 
+large_clusters <- as.numeric(names(cluster_sizes)[cluster_sizes >= 3]) # Identify clusters with frequenct/size less than 3
+filtered_indices <- result$cluster %in% large_clusters # Filter out the indices belonging to small clusters
+filtered_Mat <- Mat[filtered_indices, filtered_indices] # Create a new matrix with only the indicies from larger clusters
+
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_red_filtered.pdf", width = 7, height = 5)
+simplifyGO(filtered_Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 1, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
 ```
 
@@ -644,7 +657,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_black.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
 ```
 
@@ -729,7 +742,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_pink.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
 ```
 
@@ -814,7 +827,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_salmon.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
 ```
 
@@ -1234,7 +1247,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_turquoise.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
 ```
 
@@ -1319,7 +1332,21 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_magenta.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
+result <-  simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3, exclude_words = c("regulation", "process"), order_by_size = TRUE)
+result
+dev.off()
+
+# Following filtering of small clusters is based on the simplifyGO/ht_clusters source code for merging the small clusters together
+
+# Filter clusters smaller than 3
+cluster_sizes <- table(result$cluster) # table function makes a table with the size of each cluster (freqeuncy) 
+large_clusters <- as.numeric(names(cluster_sizes)[cluster_sizes >= 3]) # Identify clusters with frequenct/size less than 3
+filtered_indices <- result$cluster %in% large_clusters # Filter out the indices belonging to small clusters
+filtered_Mat <- Mat[filtered_indices, filtered_indices] # Create a new matrix with only the indicies from larger clusters
+
+
+pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_magenta_filtered.pdf", width = 7, height = 5)
+simplifyGO(filtered_Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 1, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
 ```
 
@@ -1404,7 +1431,7 @@ BP_terms <- go_results_BP$GOterm
 
 Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_lightcyan.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"))
+simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), min_term = 3, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
 ```
 
