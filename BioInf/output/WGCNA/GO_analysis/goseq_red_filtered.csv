@@ -1,0 +1,80 @@
+"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","Module","ParentTerm","N_in_Parent"
+"1","GO:0019722",0.000347002361226095,0.999950857865522,7,50,"calcium-mediated signaling","BP","Magenta","calcium-mediated signaling",3
+"2","GO:0007267",0.000843373022690257,0.999672723937605,20,340,"cell-cell signaling","BP","Magenta","cell-cell signaling",7
+"3","GO:0017158",0.00139194636322715,0.999838010262563,5,30,"regulation of calcium ion-dependent exocytosis","BP","Magenta","regulation of calcium ion-dependent exocytosis",6
+"4","GO:0008584",0.00166885906237118,0.999737150100808,6,48,"male gonad development","BP","Magenta","development of primary male sexual characteristics",5
+"5","GO:0046546",0.00166885906237118,0.999737150100808,6,48,"development of primary male sexual characteristics","BP","Magenta","development of primary male sexual characteristics",5
+"6","GO:0017157",0.00258144664720045,0.999471071085362,7,69,"regulation of exocytosis","BP","Magenta","regulation of calcium ion-dependent exocytosis",6
+"7","GO:0007268",0.00387493855777199,0.998687295376919,12,179,"chemical synaptic transmission","BP","Magenta","cell-cell signaling",7
+"8","GO:0098916",0.00387493855777199,0.998687295376919,12,179,"anterograde trans-synaptic signaling","BP","Magenta","cell-cell signaling",7
+"9","GO:0099537",0.00407456741483571,0.998610699983767,12,180,"trans-synaptic signaling","BP","Magenta","cell-cell signaling",7
+"10","GO:0099536",0.00421439280117675,0.998556678549347,12,181,"synaptic signaling","BP","Magenta","cell-cell signaling",7
+"11","GO:1903305",0.00511223332829067,0.999172828964379,5,40,"regulation of regulated secretory pathway","BP","Magenta","regulation of calcium ion-dependent exocytosis",6
+"12","GO:0019932",0.00575918621910204,0.998623743782994,7,80,"second-messenger-mediated signaling","BP","Magenta","calcium-mediated signaling",3
+"13","GO:0045838",0.00620506926996791,0.999516549195027,3,16,"positive regulation of membrane potential","BP","Magenta","positive regulation of membrane potential",6
+"14","GO:1903530",0.0094508558807207,0.996092138717196,14,251,"regulation of secretion by cell","BP","Magenta","regulation of secretion by cell",13
+"15","GO:0006376",0.0108243459857685,0.998942193239062,3,19,"mRNA splice site selection","BP","Magenta","mRNA splice site selection",3
+"16","GO:0051560",0.0109308803285639,0.998935022914926,3,18,"mitochondrial calcium ion homeostasis","BP","Magenta","mitochondrial calcium ion homeostasis",6
+"17","GO:1901018",0.0118355719139683,0.999511259038222,2,7,"positive regulation of potassium ion transmembrane transporter activity","BP","Magenta","regulation of secretion by cell",13
+"18","GO:0030001",0.0126893103870415,0.995458515444355,10,158,"metal ion transport","BP","Magenta","metal ion transport",4
+"19","GO:0006816",0.0127329311865696,0.996887587203921,6,66,"calcium ion transport","BP","Magenta","metal ion transport",4
+"20","GO:0055074",0.0128997565652102,0.995993381860918,8,123,"calcium ion homeostasis","BP","Magenta","mitochondrial calcium ion homeostasis",6
+"21","GO:0046883",0.0144065779931623,0.995445080072302,8,115,"regulation of hormone secretion","BP","Magenta","positive regulation of membrane potential",6
+"22","GO:1905954",0.014966219875724,0.997501795026593,4,36,"positive regulation of lipid localization","BP","Magenta","regulation of secretion by cell",13
+"23","GO:1903115",0.0150553620037816,0.999330489933084,2,6,"regulation of actin filament-based movement","BP","Magenta","regulation of actin filament-based movement",1
+"24","GO:0051561",0.0155228265681269,0.999211157501282,2,9,"positive regulation of mitochondrial calcium ion concentration","BP","Magenta","mitochondrial calcium ion homeostasis",6
+"25","GO:0051046",0.0163119539959783,0.99277565076219,14,269,"regulation of secretion","BP","Magenta","regulation of secretion by cell",13
+"26","GO:0033563",0.0168367328439777,0.999162355864338,2,7,"dorsal/ventral axon guidance","BP","Magenta","dorsal/ventral axon guidance",2
+"27","GO:0048581",0.0175261448483039,0.996939265491424,4,35,"negative regulation of post-embryonic development","BP","Magenta","negative regulation of post-embryonic development",3
+"28","GO:0010960",0.0190630641786438,0.998948744880563,2,8,"magnesium ion homeostasis","BP","Magenta","mitochondrial calcium ion homeostasis",6
+"29","GO:0050906",0.0191513519575287,0.996535179116821,4,40,"detection of stimulus involved in sensory perception","BP","Magenta","detection of stimulus involved in sensory perception",2
+"30","GO:0010817",0.0198951880709261,0.991940624018971,11,201,"regulation of hormone levels","BP","Magenta","positive regulation of membrane potential",6
+"31","GO:1903799",0.0204720378276061,1,1,1,"negative regulation of miRNA maturation","BP","Magenta","negative regulation of miRNA maturation",1
+"32","GO:0014059",0.0211051366707225,0.99871065470816,2,10,"regulation of dopamine secretion","BP","Magenta","regulation of calcium ion-dependent exocytosis",6
+"33","GO:0010862",0.0211583784388553,0.99870566353803,2,10,"positive regulation of pathway-restricted SMAD protein phosphorylation","BP","Magenta","cell-cell signaling",7
+"34","GO:1901381",0.0221665141204296,0.998638596650317,2,9,"positive regulation of potassium ion transmembrane transport","BP","Magenta","regulation of secretion by cell",13
+"35","GO:1903859",0.0224116311578976,0.99865245719889,2,8,"regulation of dendrite extension","BP","Magenta","regulation of dendrite extension",3
+"36","GO:1903861",0.0224116311578976,0.99865245719889,2,8,"positive regulation of dendrite extension","BP","Magenta","regulation of dendrite extension",3
+"37","GO:0048791",0.023171673651664,0.998542667679807,2,9,"calcium ion-regulated exocytosis of neurotransmitter","BP","Magenta","regulation of calcium ion-dependent exocytosis",6
+"38","GO:0032026",0.0232417792324787,0.998505036640215,2,10,"response to magnesium ion","BP","Magenta","response to magnesium ion",1
+"39","GO:1903532",0.023613283169992,0.991194871018803,9,152,"positive regulation of secretion by cell","BP","Magenta","regulation of secretion by cell",13
+"40","GO:0008406",0.0241885941498102,0.990941415745697,9,153,"gonad development","BP","Magenta","development of primary male sexual characteristics",5
+"41","GO:0045137",0.0241885941498102,0.990941415745697,9,153,"development of primary sexual characteristics","BP","Magenta","development of primary male sexual characteristics",5
+"42","GO:0000389",0.0244103930256847,0.998388050616379,2,10,"mRNA 3'-splice site recognition","BP","Magenta","mRNA splice site selection",3
+"43","GO:0061067",0.0246358406847333,0.998398806025097,2,9,"negative regulation of dauer larval development","BP","Magenta","negative regulation of post-embryonic development",3
+"44","GO:0032370",0.0247696125043476,0.996617517974029,3,24,"positive regulation of lipid transport","BP","Magenta","regulation of secretion by cell",13
+"45","GO:0019228",0.0259654567009739,0.998264013052592,2,9,"neuronal action potential","BP","Magenta","positive regulation of membrane potential",6
+"46","GO:0006874",0.0287888751787659,0.990452460886116,7,117,"intracellular calcium ion homeostasis","BP","Magenta","mitochondrial calcium ion homeostasis",6
+"47","GO:0009584",0.0288659394607835,0.99580505461032,3,25,"detection of visible light","BP","Magenta","detection of stimulus involved in sensory perception",2
+"48","GO:0042713",0.0297345522117586,1,1,1,"sperm ejaculation","BP","Magenta","sperm ejaculation",2
+"49","GO:0051047",0.0300187572171225,0.988316306517621,9,159,"positive regulation of secretion","BP","Magenta","regulation of secretion by cell",13
+"50","GO:1903306",0.0312414530036837,0.997643535866337,2,10,"negative regulation of regulated secretory pathway","BP","Magenta","regulation of calcium ion-dependent exocytosis",6
+"51","GO:0090472",0.0313524827652474,1,1,1,"dibasic protein processing","BP","Magenta","dibasic protein processing",1
+"52","GO:0006812",0.0315069304636313,0.986289328842006,11,218,"monoatomic cation transport","BP","Magenta","metal ion transport",4
+"53","GO:0030845",0.0315897573642693,1,1,1,"phospholipase C-inhibiting G protein-coupled receptor signaling pathway","BP","Magenta","phospholipase C-inhibiting G protein-coupled receptor signaling pathway",1
+"54","GO:0018401",0.0316529676406571,1,1,1,"peptidyl-proline hydroxylation to 4-hydroxy-L-proline","BP","Magenta","peptidyl-proline hydroxylation to 4-hydroxy-L-proline",5
+"55","GO:0019511",0.0316529676406571,1,1,1,"peptidyl-proline hydroxylation","BP","Magenta","peptidyl-proline hydroxylation to 4-hydroxy-L-proline",5
+"56","GO:0016331",0.0317509145551859,0.987515687319401,9,161,"morphogenesis of embryonic epithelium","BP","Magenta","dorsal/ventral axon guidance",2
+"57","GO:0036124",0.0319605684166134,1,1,1,"histone H3-K9 trimethylation","BP","Magenta","peptidyl-proline hydroxylation to 4-hydroxy-L-proline",5
+"58","GO:0051659",0.0319976344139188,1,1,1,"maintenance of mitochondrion location","BP","Magenta","maintenance of mitochondrion location",2
+"59","GO:0007043",0.0321817798598059,0.993165751748966,4,41,"cell-cell junction assembly","BP","Magenta","mRNA splice site selection",3
+"60","GO:0006813",0.0328489965177822,0.994965534913648,3,26,"potassium ion transport","BP","Magenta","metal ion transport",4
+"61","GO:0032469",0.0334268123603811,0.997275836173734,2,13,"endoplasmic reticulum calcium ion homeostasis","BP","Magenta","mitochondrial calcium ion homeostasis",6
+"62","GO:0051567",0.0343400634406845,0.997273356102895,2,10,"histone H3-K9 methylation","BP","Magenta","peptidyl-proline hydroxylation to 4-hydroxy-L-proline",5
+"63","GO:0051050",0.0361383489448029,0.980902599983449,17,384,"positive regulation of transport","BP","Magenta","regulation of secretion by cell",13
+"64","GO:0034764",0.038238346759299,0.989436663788135,5,70,"positive regulation of transmembrane transport","BP","Magenta","regulation of secretion by cell",13
+"65","GO:0010650",0.0382750148630186,1,1,1,"positive regulation of cell communication by electrical coupling","BP","Magenta","positive regulation of cell communication by electrical coupling",1
+"66","GO:0032414",0.0404917879946139,0.993182218347433,3,31,"positive regulation of ion transmembrane transporter activity","BP","Magenta","regulation of secretion by cell",13
+"67","GO:0046958",0.043970090583272,0.996002807287969,2,10,"nonassociative learning","BP","Magenta","sperm ejaculation",2
+"68","GO:0040018",0.0444888096153861,0.989443163191687,4,49,"positive regulation of multicellular organism growth","BP","Magenta","regulation of dendrite extension",3
+"69","GO:0048312",0.0447484727248396,0.995825534801129,2,11,"intracellular distribution of mitochondria","BP","Magenta","maintenance of mitochondrion location",2
+"70","GO:0060393",0.0451600164245887,0.995558300609546,2,16,"regulation of pathway-restricted SMAD protein phosphorylation","BP","Magenta","cell-cell signaling",7
+"71","GO:0046661",0.0455833899233409,0.984901347796247,6,95,"male sex differentiation","BP","Magenta","development of primary male sexual characteristics",5
+"72","GO:0001666",0.0458863514949622,0.983174624485622,7,126,"response to hypoxia","BP","Magenta","response to hypoxia",1
+"73","GO:1901021",0.0458890221058829,0.995477476334677,2,15,"positive regulation of calcium ion transmembrane transporter activity","BP","Magenta","regulation of secretion by cell",13
+"74","GO:0061647",0.0463089590520578,0.995539361597556,2,12,"histone H3-K9 modification","BP","Magenta","peptidyl-proline hydroxylation to 4-hydroxy-L-proline",5
+"75","GO:0006937",0.046773844767155,0.988711866801454,4,50,"regulation of muscle contraction","BP","Magenta","negative regulation of post-embryonic development",3
+"76","GO:0086010",0.047498417162971,0.995494059538781,2,10,"membrane depolarization during action potential","BP","Magenta","positive regulation of membrane potential",6
+"77","GO:0043267",0.0476018265164078,0.995250438190052,2,14,"negative regulation of potassium ion transport","BP","Magenta","regulation of secretion by cell",13
+"78","GO:0050848",0.0491782212595444,0.991008834842386,3,34,"regulation of calcium-mediated signaling","BP","Magenta","calcium-mediated signaling",3
+"79","GO:0046887",0.049231282799122,0.985421959862069,5,72,"positive regulation of hormone secretion","BP","Magenta","positive regulation of membrane potential",6

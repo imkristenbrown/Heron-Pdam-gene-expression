@@ -476,6 +476,43 @@ simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 3, exc
 dev.off()
 ```
 
+```{r}
+library(rrvgo)
+#Reduce/collapse GO term set with the rrvgo package 
+simMatrix <- calculateSimMatrix(go_results_BP$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont="BP",
+                                method="Rel")
+```
+
+```{r}
+ #calculate similarity 
+scores <- setNames(-log(go_results_BP$over_represented_pvalue), go_results_BP$GOterm)
+reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+dim(reducedTerms)
+```
+
+```{r}
+#keep only the goterms from the reduced list
+go_results_BP_reduced <- go_results_BP %>%
+  filter(GOterm %in% reducedTerms$go)
+ #add in parent terms to list of go terms 
+go_results_BP_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_reduced$GOterm, reducedTerms$go)]
+
+length(unique(go_results_BP_reduced$ParentTerm))
+
+go_results_BP_reduced <- go_results_BP_reduced %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
+```
+
+The reduced list of terms is 157 terms that falls under 30 parent terms.
+
+```{r}
+write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_brown_filtered.csv")
+```
+
 #### Red
 
 ```{r}
@@ -580,6 +617,44 @@ filtered_Mat <- Mat[filtered_indices, filtered_indices] # Create a new matrix wi
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_up_mods_GOSEM_red_filtered.pdf", width = 7, height = 5)
 simplifyGO(filtered_Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 1, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
+```
+
+
+```{r}
+library(rrvgo)
+#Reduce/collapse GO term set with the rrvgo package 
+simMatrix <- calculateSimMatrix(go_results_BP$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont="BP",
+                                method="Rel")
+```
+
+```{r}
+ #calculate similarity 
+scores <- setNames(-log(go_results_BP$over_represented_pvalue), go_results_BP$GOterm)
+reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+dim(reducedTerms)
+```
+
+```{r}
+#keep only the goterms from the reduced list
+go_results_BP_reduced <- go_results_BP %>%
+  filter(GOterm %in% reducedTerms$go)
+ #add in parent terms to list of go terms 
+go_results_BP_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_reduced$GOterm, reducedTerms$go)]
+
+length(unique(go_results_BP_reduced$ParentTerm))
+
+go_results_BP_reduced <- go_results_BP_reduced %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
+```
+
+The reduced list of terms is 157 terms that falls under 30 parent terms.
+
+```{r}
+write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_red_filtered.csv")
 ```
 
 #### Black
@@ -1360,6 +1435,44 @@ filtered_Mat <- Mat[filtered_indices, filtered_indices] # Create a new matrix wi
 pdf(file = "../../output/WGCNA/GO_analysis/semantic_similarity/calc_down_mods_GOSEM_magenta_filtered.pdf", width = 7, height = 5)
 simplifyGO(filtered_Mat, word_cloud_grob_param = list(max_width = 50),  min_term = 1, exclude_words = c("regulation", "process"), order_by_size = TRUE)
 dev.off()
+```
+
+
+```{r}
+library(rrvgo)
+#Reduce/collapse GO term set with the rrvgo package 
+simMatrix <- calculateSimMatrix(go_results_BP$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont="BP",
+                                method="Rel")
+```
+
+```{r}
+ #calculate similarity 
+scores <- setNames(-log(go_results_BP$over_represented_pvalue), go_results_BP$GOterm)
+reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+dim(reducedTerms)
+```
+
+```{r}
+#keep only the goterms from the reduced list
+go_results_BP_reduced <- go_results_BP %>%
+  filter(GOterm %in% reducedTerms$go)
+ #add in parent terms to list of go terms 
+go_results_BP_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_reduced$GOterm, reducedTerms$go)]
+
+length(unique(go_results_BP_reduced$ParentTerm))
+
+go_results_BP_reduced <- go_results_BP_reduced %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
+```
+
+The reduced list of terms is 157 terms that falls under 30 parent terms.
+
+```{r}
+write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_red_filtered.csv")
 ```
 
 #### Lightcyan
