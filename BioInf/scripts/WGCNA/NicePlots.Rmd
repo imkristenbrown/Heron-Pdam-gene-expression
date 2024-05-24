@@ -1,0 +1,214 @@
+---
+title: "NicePlots"
+author: "Zoe Dellaert"
+date: "2024-04-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+```{r}
+library(goseq)
+library(dplyr)
+library(forcats)
+library(ggplot2)
+library(gridExtra)
+library(tidyr)
+library(grDevices)
+library(reshape2)
+library(Rmisc)
+library(ggpubr)
+library(tibble)
+library(gridExtra)
+library(tidyr)
+library(zoo)
+library(ComplexHeatmap)
+library(circlize)
+library(GSEABase)
+library(data.table)
+library(stringr)
+library(GenomicRanges)
+library(rtracklayer)
+library(rrvgo)
+library(simplifyEnrichment)
+
+```
+
+
+```{r}
+#Filtering for p < 0.00001
+# GO_00001 <- GO %>%
+#         dplyr::filter(bh_adjust<0.00001) %>%
+#         dplyr::arrange(., ontology, bh_adjust)
+
+GO_00001 <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification.csv")
+```
+
+```{r}
+go_results_BP <- GO_00001 %>%
+      filter(ontology=="BP")%>%
+      filter(bh_adjust != "NA") %>%
+      #filter(numInCat>10)%>%
+      arrange(., bh_adjust)
+dim(go_results_BP)
+head(go_results_BP)
+colnames(go_results_BP)
+```
+
+To load this data into ClusterProfiler, we need a dataframe with the following columns :
+
+"ID"          "Description" "GeneRatio"   "BgRatio"     "pvalue"      "p.adjust"    "qvalue"      "geneID"      "Count" 
+
+You might notice that in this case, each now 
+
+```{r}
+go_results_BP_reft <- go_results_BP %>%
+  select(-c(X, under_represented_pvalue, ontology, numDEInCat)) %>% 
+  dplyr::rename("ID" = GOterm,
+                "Description" = term,
+                "pvalue" = over_represented_pvalue,
+                "p.adjust" = bh_adjust,
+                "Count" = numInCat
+                ) %>%
+  mutate(GeneRatio = paste0(Count,"/4126"), #number of genes enriched divided by number of terms in gene list provided to goseq
+         BgRatio = NA,
+         qvalue = p.adjust,
+         geneID = NA) %>% 
+  relocate(ID, Description, GeneRatio, BgRatio, pvalue, p.adjust, qvalue, geneID, Count)
+
+enrichResult_calcup <- new("enrichResult",
+  readable = FALSE,
+  result = go_results_BP_reft,
+  pvalueCutoff = 0.05,
+  pAdjustMethod = "BH",
+  qvalueCutoff = 0.2,
+  organism = "UNKNOWN",
+  ontology = "UNKNOWN",
+  gene = DE_genes_vector,
+  keytype = "UNKNOWN",
+  universe = universe_vector,
+  gene2Symbol = character(0),
+  geneSets = geneSets)
+```
+
+## Trying to get EnrichPLot to work
+
+https://biostatsquid.com/pathway-enrichment-analysis-plots/#step5
+
+https://github.com/GuangchuangYu/enrichplot/blob/master/R/pairwise_termsim.R
+https://github.com/GuangchuangYu/enrichplot/blob/master/R/treeplot.R
+
+ClusterProfiler tutorial
+
+```{r}
+library(clusterProfiler)
+#BiocManager::install("org.Hs.eg.db")
+library(org.Hs.eg.db)
+data(geneList, package="DOSE")
+gene <- names(geneList)[abs(geneList) > 2]
+
+# Entrez gene ID
+head(gene)
+
+ggo <- groupGO(gene     = gene,
+               OrgDb    = org.Hs.eg.db,
+               ont      = "CC",
+               level    = 3,
+               readable = TRUE)
+
+head(ggo)
+
+ego <- enrichGO(gene          = gene,
+                universe      = names(geneList),
+                OrgDb         = org.Hs.eg.db,
+                ont           = "CC",
+                pAdjustMethod = "BH",
+                pvalueCutoff  = 0.01,
+                qvalueCutoff  = 0.05,
+        readable      = TRUE)
+head(ego)
+```
+
+
+
+```{r}
+goplot(ego)
+```
+
+
+https://biostatsquid.com/pathway-enrichment-analysis-plots/#step5
+
+```{r}
+library(enrichplot)
+barplot(ego, showCategory=20) 
+dotplot(ego, showCategory=30)
+
+edox2 <- pairwise_termsim(edox)
+p1 <- treeplot(edox2)
+p2 <- treeplot(edox2, hclust_method = "average")
+aplot::plot_list(p1, p2, tag_levels='A')
+```
+
+
+
+## Reducing code
+
+```{r}
+library(rrvgo)
+#Reduce/collapse GO term set with the rrvgo package 
+simMatrix <- calculateSimMatrix(go_results_BP$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont="BP",
+                                method="Rel")
+```
+
+```{r}
+ #calculate similarity 
+scores <- setNames(-log(go_results_BP$bh_adjust), go_results_BP$GOterm)
+reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+dim(reducedTerms)
+```
+
+```{r}
+#keep only the goterms from the reduced list
+go_results_BP_reduced <- go_results_BP %>%
+  filter(GOterm %in% reducedTerms$go)
+ #add in parent terms to list of go terms 
+go_results_BP_reduced$ParentTerm <- reducedTerms$parentTerm[match(go_results_BP_reduced$GOterm, reducedTerms$go)]
+
+length(unique(go_results_BP_reduced$ParentTerm))
+```
+
+The reduced list of terms is 1682 terms that falls under 130 parent terms.
+
+```{r}
+write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
+```
+
+```{r}
+go_results_BP_reduced <- read.csv("../../output/WGCNA/GO_analysis/goseq_pattern_calcification_filtered.csv")
+```
+
+```{r}
+scatterPlot(simMatrix, reducedTerms)
+treemapPlot(reducedTerms)
+wordcloudPlot(reducedTerms, min.freq=1, colors="black")
+```
+
+Hollie dendrogram code 
+
+```{r}
+library(dendextend)
+tree <- as.dendrogram((hclust(dist(simMatrix))))
+plot(tree)
+
+ggplot(tree, horiz = TRUE, theme = NULL) + theme_classic()
+```
+
+
