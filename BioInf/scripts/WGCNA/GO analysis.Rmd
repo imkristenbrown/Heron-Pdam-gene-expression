@@ -436,6 +436,12 @@ dim(go_results_BP)
 ```
 
 ```{r}
+#Write file of results 
+write.csv(GO_05_brown, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_brown.csv")
+```
+
+
+```{r}
 Top10Plot <- go_results_BP %>% 
     top_n(10, wt=-over_represented_pvalue) %>% 
     mutate(hitsPerc=numDEInCat/numInCat) %>% 
@@ -1300,6 +1306,12 @@ go_results_BP <- GO_05_magenta %>%
 
 dim(go_results_BP)
 ```
+
+```{r}
+#Write file of results 
+write.csv(GO_05_magenta, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_magenta.csv")
+```
+
 
 ```{r}
 Top10Plot <- go_results_BP %>% 
