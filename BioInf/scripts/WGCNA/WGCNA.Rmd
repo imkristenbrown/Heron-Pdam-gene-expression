@@ -11,7 +11,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This is a Rmd file analyzing our raw count data by the WGCNA package as described in the [manual](https://cran.r-project.org/web/packages/WGCNA/WGCNA.pdf).
+This is a Rmd file analyzing our raw count data by the WGCNA package as described in the [manual](https://cran.r-project.org/web/packages/WGCNA/WGCNA.pdf) and tutorials.
 
 ```{r}
 sessionInfo() #provides list of loaded packages and version of R. 
@@ -237,7 +237,7 @@ withoutoutliers
 ```
 
 ```{r}
-compare_figs <- cowplot::plot_grid(withoutliers, withoutoutliers,withoutliers, withoutoutliers,nrow=2, ncol=2, align="h")
+compare_figs <- cowplot::plot_grid(withoutliers, withoutoutliers,ncol=2, align="h")
 compare_figs
 ```
 
@@ -247,13 +247,12 @@ compare_figs
 # transform the data 
 vst2 <- vst(dds2) # transform it vst
 vst2 <- assay(vst2) # call only the transformed coutns in the dds object
-# fix(dds.d0_vst)
 vst2 <- t(vst2) # transpose columns to rows and vice versa
 ```
 
 ## Check for genes and samples with too many missing values with goodSamplesGenes. There shouldn't be any because we performed pre-filtering
 ```{r}
-dim(vst2) #  9056 genes; 46  samples
+dim(vst2) #  9012 genes; 46  samples
 gsg <- goodSamplesGenes(vst2, verbose = 3);  # We first check for genes and samples with too many missing values
 gsg$allOK # If the statement returns TRUE, all genes have passed the cuts. 
 ```
@@ -297,7 +296,7 @@ text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
      labels=powers,cex=cex1,col="red");
 
 # this line corresponds to using an R^2 cut-off of h
-abline(h=0.90,col="red") # look at at cut off at power of 6
+abline(h=0.90,col="red") 
 
 # Mean connectivity as a function of the soft-thresholding power
 plot(sft$fitIndices[,1], sft$fitIndices[,5],
@@ -410,7 +409,7 @@ sizeGrWindow(7, 6)
 png("../../output/WGCNA/ClusterEigengenes.png", 1000, 1000, pointsize=20)
 plot(METree, main = "Clustering of module eigengenes - SIGNED (dissimilarity calc = MEDiss = 1-cor(MEs))",
      xlab = "", sub = "")
-MEDissThres = 0.55 
+MEDissThres = 0.15 
 abline(h=MEDissThres, col = "red")
 dev.off()
 ```
@@ -671,7 +670,7 @@ Strader_MEs <- Strader_MEs%>%
 
 ```{r}
 plot_MEs <- Strader_MEs %>%
-  gather(., key="Module", value="Mean", 1:15)
+  gather(., key="Module", value="Mean", 1:(ncol(Strader_MEs)-2))
 head(plot_MEs)
 ```
 
@@ -879,7 +878,7 @@ Strader_MEs <- Strader_MEs%>%
 
 ```{r}
 plot_MEs <- Strader_MEs%>%
-  gather(., key="Module", value="Mean", 1:15)
+  gather(., key="Module", value="Mean", 1:(ncol(Strader_MEs)-4))
 head(plot_MEs)
 ```
 
