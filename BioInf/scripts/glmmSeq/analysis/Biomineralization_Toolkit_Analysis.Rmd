@@ -411,7 +411,7 @@ vst <- read.csv(file="../../../output/glmmseq/vst.csv", sep=',', header=TRUE)  %
 Lets also pull in our metadata
 
 ```{r}
-coldata <- read.csv("../../../../RAnalysis/Data/RNA Submission Sample List metadata.csv") #read in metadata file
+coldata <- read.csv("../../../../TagSeq_Submission/RNA Submission Sample List metadata.csv") #read in metadata file
 coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
 coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by remobing letters after colony name
 coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
