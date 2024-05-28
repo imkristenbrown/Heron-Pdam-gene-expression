@@ -165,6 +165,13 @@ results <- glmmSeq(~ Treatment * Origin + (1 | Colony),
 #this fitting takes a while, so I save it as an RDS and load this in when needed instead of re-running everytime (unless something upstream of here changes)
 
 saveRDS(results, file = "glmmSeq.rds")  #save RDS
+
+results_incr_it <- glmmSeq(~ Treatment * Origin + (1 | Colony),
+                   countdata = cts_filt_outrm_poa,
+                   metadata = coldata_outrm,
+                   dispersion = dispersions_filt_outrm,
+                   progress = TRUE,
+                   control = glmerControl(optimizer = "bobyqa", optCtrl = list(maxfun = 1000000000)))
 ```
 
 Showed errors in one gene, Pocillopora_acuta_HIv2___RNAseq.g5950.t1.
