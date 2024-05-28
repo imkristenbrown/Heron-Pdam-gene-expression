@@ -513,6 +513,69 @@ The reduced list of terms is 157 terms that falls under 30 parent terms.
 write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_brown_filtered.csv")
 ```
 
+```{r}
+go_results_BP_reduced_Brown <- go_results_BP_reduced
+
+top_10_parent <- go_results_BP_reduced_Brown %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct()  %>% top_n(10, wt=N_in_Parent)
+
+Top10Plot <- go_results_BP_reduced_Brown %>% 
+    filter(ParentTerm %in% top_10_parent$ParentTerm) %>%
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    arrange(-N_in_Parent) %>%
+  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
+    
+    ggplot(aes(x=-log10(over_represented_pvalue), 
+               y=reorder(term, -log10(over_represented_pvalue)), 
+               #colour=over_represented_pvalue, 
+               colour=numDEInCat)) +
+        scale_colour_gradient(low = "red", high = "blue", name = "Count",guide=guide_colorbar(reverse=FALSE)) + 
+        expand_limits(x=1.3) +
+        facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
+        geom_segment(aes(y=term ,yend=term, x=1.3, xend=-log10(over_represented_pvalue)), color="black",linewidth=0.3) +
+       geom_point() +
+    scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Enriched Biological Process GO Terms,\nFacet by Parent Term, Brown Module", x="-log10(p-value)", y="GO term", colour="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 4), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10),
+              strip.text.y = element_text(size = 8,angle = 0,face = "bold"))
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Brown_allterms_top10parent.pdf", Top10Plot, width = 5, height = 10, units = c("in"), dpi=300, limitsize=FALSE)
+
+top_5_parent <- go_results_BP_reduced_Brown %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct()  %>% top_n(5, wt=N_in_Parent)
+
+Top5Plot <- go_results_BP_reduced_Brown %>% 
+    filter(ParentTerm %in% top_5_parent$ParentTerm) %>%
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    arrange(-N_in_Parent) %>%
+  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
+    
+    ggplot(aes(x=-log10(over_represented_pvalue), 
+               y=reorder(term, -log10(over_represented_pvalue)), 
+               #colour=over_represented_pvalue, 
+               colour=numDEInCat)) +
+        scale_colour_gradient(low = "red", high = "blue", name = "Count",guide=guide_colorbar(reverse=FALSE)) + 
+        expand_limits(x=1.3) +
+        facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
+        geom_segment(aes(y=term ,yend=term, x=1.3, xend=-log10(over_represented_pvalue)), color="black",linewidth=0.3) +
+       geom_point() +
+    scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Enriched Biological Process GO Terms,\nFacet by Parent Term, Brown Module", x="-log10(p-value)", y="GO term", colour="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 4), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10),
+              strip.text.y = element_text(size = 8,angle = 0,face = "bold"))
+
+Top5Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Brown_allterms_top5parent.pdf", Top5Plot, width = 5, height = 7, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
+
 #### Red
 
 ```{r}
@@ -655,6 +718,102 @@ The reduced list of terms is 157 terms that falls under 30 parent terms.
 
 ```{r}
 write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_red_filtered.csv")
+```
+
+```{r}
+go_results_BP_reduced_Red <- go_results_BP_reduced
+
+top_10_parent <- go_results_BP_reduced_Red %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct()  %>% top_n(10, wt=N_in_Parent)
+
+Top10Plot <- go_results_BP_reduced_Red %>% 
+    filter(ParentTerm %in% top_10_parent$ParentTerm) %>%
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    arrange(-N_in_Parent) %>%
+  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
+    
+    ggplot(aes(x=-log10(over_represented_pvalue), 
+               y=reorder(term, -log10(over_represented_pvalue)), 
+               #colour=over_represented_pvalue, 
+               colour=numDEInCat)) +
+        scale_colour_gradient(low = "red", high = "blue", name = "Count",guide=guide_colorbar(reverse=FALSE)) + 
+        expand_limits(x=1.3) +
+        facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
+        geom_segment(aes(y=term ,yend=term, x=1.3, xend=-log10(over_represented_pvalue)), color="black",linewidth=0.3) +
+       geom_point() +
+    scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Enriched Biological Process GO Terms,\nFacet by Parent Term, Red Module", x="-log10(p-value)", y="GO term", colour="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 4), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10),
+              strip.text.y = element_text(size = 8,angle = 0,face = "bold"))
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Red_allterms_top10parent.pdf", Top10Plot, width = 5, height = 10, units = c("in"), dpi=300, limitsize=FALSE)
+
+top_5_parent <- go_results_BP_reduced_Red %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct()  %>% top_n(5, wt=N_in_Parent)
+
+Top5Plot <- go_results_BP_reduced_Red %>% 
+    filter(ParentTerm %in% top_5_parent$ParentTerm) %>%
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    arrange(-N_in_Parent) %>%
+  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
+    
+    ggplot(aes(x=-log10(over_represented_pvalue), 
+               y=reorder(term, -log10(over_represented_pvalue)), 
+               #colour=over_represented_pvalue, 
+               colour=numDEInCat)) +
+        scale_colour_gradient(low = "red", high = "blue", name = "Count",guide=guide_colorbar(reverse=FALSE)) + 
+        expand_limits(x=1.3) +
+        facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
+        geom_segment(aes(y=term ,yend=term, x=1.3, xend=-log10(over_represented_pvalue)), color="black",linewidth=0.3) +
+       geom_point() +
+    scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Enriched Biological Process GO Terms,\nFacet by Parent Term, Red Module", x="-log10(p-value)", y="GO term", colour="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 4), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10),
+              strip.text.y = element_text(size = 8,angle = 0,face = "bold"))
+
+Top5Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Red_allterms_top5parent.pdf", Top5Plot, width = 5, height = 7, units = c("in"), dpi=300, limitsize=FALSE)
+```
+
+
+
+```{r}
+go_results_BP_reduced_Red <- go_results_BP_reduced
+
+top_10_parent <- go_results_BP_reduced_Red %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct()  %>% top_n(10, wt=N_in_Parent)
+
+Top10Plot <- go_results_BP_reduced_Red %>% 
+    filter(ParentTerm %in% top_10_parent$ParentTerm) %>%
+    mutate(hitsPerc=numDEInCat/numInCat) %>% 
+    arrange(-N_in_Parent) %>%
+  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
+    
+    ggplot(aes(x=-log10(over_represented_pvalue), 
+               y=reorder(term, -log10(over_represented_pvalue)), 
+               colour=over_represented_pvalue, 
+               size=numDEInCat)) +
+        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
+        expand_limits(x=1.3) +
+        facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
+        geom_point() +
+    scale_y_discrete(labels = label_wrap(40)) + 
+        labs(title = "Enriched Biological Process GO Terms, Facet by Parent Term, Red Module", x="-log10(p-value)", y="GO term", colour="p value", size="Count") +
+        theme_bw() + 
+        theme(axis.text.y = element_text(size = 5), 
+              axis.title = element_text(size = 10), 
+              plot.title = element_text(hjust = 0.5, size = 10),
+              strip.text.y = element_text(angle = 0,face = "bold"))
+
+Top10Plot
+
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Red_allterms_top10parent_old.pdf", Top10Plot, width = 7, height = 10, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 #### Black
