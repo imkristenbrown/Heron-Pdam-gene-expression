@@ -1324,7 +1324,7 @@ Top5Plot <- go_results_BP_reduced_Turquoise %>%
         geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
        geom_point(shape=21) +
     scale_y_discrete(labels = label_wrap(30)) + 
-        labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term (Top 5), Turquoise Module", x="Count", y="GO term", colour="p-value") +
+        labs(title = "Enriched Biological Process GO Terms p < 0.001,\nFacet by Parent Term (Top 5), Turquoise Module", x="Count", y="GO term", colour="p-value") +
         theme_bw() + 
         theme(axis.text.y = element_text(size = 4), 
               axis.title = element_text(size = 10), 
