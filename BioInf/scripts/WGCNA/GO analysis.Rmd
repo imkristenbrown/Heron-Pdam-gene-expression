@@ -441,29 +441,6 @@ write.csv(GO_05_brown, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calc
 ```
 
 
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Brown Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Brown.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
-```
-
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -525,33 +502,6 @@ This is only 41 terms that fall into 12 parent terms
 
 ```{r}
 go_results_BP_reduced_Brown <- go_results_BP_reduced_01
-
-top_10_parent <- go_results_BP_reduced_Brown %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct() %>% arrange(-N_in_Parent) %>% head(10)
-
-Top10Plot <- go_results_BP_reduced_Brown %>% 
-    filter(ParentTerm %in% top_10_parent$ParentTerm) %>%
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    arrange(-N_in_Parent) %>%
-  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
-    ggplot(aes(x=numDEInCat, 
-               y=reorder(term, numDEInCat), 
-               colour=over_represented_pvalue)) +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) +
-        expand_limits(x=1.3) +
-        facet_grid(ParentTerm ~ .,scales="free_y",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
-        geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
-       geom_point() +
-    scale_y_discrete(labels = label_wrap(30)) + 
-        labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term (Top 10), Brown Module", x="Count", y="GO term", colour="p-value") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 4), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10),
-              strip.text.y = element_text(size = 6,angle = 0,face = "bold"))
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Brown_allterms_top10parent_filtp01.pdf", Top10Plot, width = 5, height = 7, units = c("in"), dpi=300, limitsize=FALSE)
 
 top_5_parent <- go_results_BP_reduced_Brown %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct() %>% arrange(-N_in_Parent) %>% head(5)
 
@@ -639,32 +589,6 @@ dim(go_results_BP)
 write.csv(GO_05_red, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_red.csv")
 ```
 
-
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-  
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Red Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Red.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
-```
-
-
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -741,33 +665,6 @@ This is only 16 terms that fall into 9 parent terms
 
 ```{r}
 go_results_BP_reduced_Red <- go_results_BP_reduced_01
-
-top_10_parent <- go_results_BP_reduced_Red %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct() %>% arrange(-N_in_Parent) %>% head(10)
-
-Top10Plot <- go_results_BP_reduced_Red %>% 
-    filter(ParentTerm %in% top_10_parent$ParentTerm) %>%
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    arrange(-N_in_Parent) %>%
-  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
-    ggplot(aes(x=numDEInCat, 
-               y=reorder(term, numDEInCat), 
-               colour=over_represented_pvalue)) +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) +
-        expand_limits(x=1.3) +
-        facet_grid(ParentTerm ~ .,scales="free_y",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
-        geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
-       geom_point() +
-    scale_y_discrete(labels = label_wrap(30)) + 
-        labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term, Red Module", x="Count", y="GO term", colour="p-value") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 4), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10),
-              strip.text.y = element_text(size = 6,angle = 0,face = "bold"))
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Red_allterms_top10parent_filtp01.pdf", Top10Plot, width = 5, height = 7, units = c("in"), dpi=300, limitsize=FALSE)
 
 top_5_parent <- go_results_BP_reduced_Red %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct() %>% arrange(-N_in_Parent) %>% head(5)
 
@@ -849,29 +746,6 @@ go_results_BP <- GO_05_black %>%
 dim(go_results_BP)
 ```
 
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Black Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Black.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
-```
-
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -932,29 +806,6 @@ go_results_BP <- GO_05_pink %>%
       arrange(., over_represented_pvalue)
 
 dim(go_results_BP)
-```
-
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Pink Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() +
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Pink.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 Collapsing with simplifyEnrichment package
@@ -1019,29 +870,6 @@ go_results_BP <- GO_05_salmon %>%
 dim(go_results_BP)
 ```
 
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Salmon Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Salmon.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
-```
-
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -1102,29 +930,6 @@ go_results_BP <- GO_05_blue %>%
       arrange(., over_represented_pvalue)
 
 dim(go_results_BP)
-```
-
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Blue Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Blue.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 Collapsing with simplifyEnrichment package
@@ -1438,30 +1243,6 @@ dim(go_results_BP)
 ```
 
 
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Turquoise Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() +
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Turquoise.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
-```
-
-
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -1524,33 +1305,6 @@ This is only 155 terms that fall into 28 parent terms
 
 ```{r}
 go_results_BP_reduced_Turquoise <- go_results_BP_reduced_01
-
-top_10_parent <- go_results_BP_reduced_Turquoise %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct() %>% arrange(-N_in_Parent) %>% head(10)
-
-Top10Plot <- go_results_BP_reduced_Turquoise %>% 
-    filter(ParentTerm %in% top_10_parent$ParentTerm) %>%
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    arrange(-N_in_Parent) %>%
-  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
-    ggplot(aes(x=numDEInCat, 
-               y=reorder(term, numDEInCat), 
-               colour=over_represented_pvalue)) +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) +
-        expand_limits(x=1.3) +
-        facet_grid(ParentTerm ~ .,scales="free_y",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
-        geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
-       geom_point() +
-    scale_y_discrete(labels = label_wrap(30)) + 
-        labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term, Turquoise Module", x="Count", y="GO term", colour="p-value") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 4), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10),
-              strip.text.y = element_text(size = 6,angle = 0,face = "bold"))
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Turquoise_allterms_top10parent_filtp01.pdf", Top10Plot, width = 5, height = 7, units = c("in"), dpi=300, limitsize=FALSE)
 
 top_5_parent <- go_results_BP_reduced_Turquoise %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct() %>% arrange(-N_in_Parent) %>% head(5)
 
@@ -1638,30 +1392,6 @@ dim(go_results_BP)
 write.csv(GO_05_magenta, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcification_magenta.csv")
 ```
 
-
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Magenta Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Magenta.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
-```
-
 Collapsing with simplifyEnrichment package
 
 ```{r}
@@ -1739,33 +1469,6 @@ This is only 14 terms that fall into 6 parent terms
 
 ```{r}
 go_results_BP_reduced_Magenta <- go_results_BP_reduced_01
-
-top_10_parent <- go_results_BP_reduced_Magenta %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct() %>% arrange(-N_in_Parent) %>% head(10)
-
-Top10Plot <- go_results_BP_reduced_Magenta %>% 
-    filter(ParentTerm %in% top_10_parent$ParentTerm) %>%
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    arrange(-N_in_Parent) %>%
-  mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
-    ggplot(aes(x=numDEInCat, 
-               y=reorder(term, numDEInCat), 
-               colour=over_represented_pvalue)) +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) +
-        expand_limits(x=1.3) +
-        facet_grid(ParentTerm ~ .,scales="free_y",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
-        geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
-       geom_point() +
-    scale_y_discrete(labels = label_wrap(30)) + 
-        labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term, Magenta Module", x="Count", y="GO term", colour="p-value") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 4), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10),
-              strip.text.y = element_text(size = 6,angle = 0,face = "bold"))
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Magenta_allterms_top10parent_filtp01.pdf", Top10Plot, width = 5, height = 7, units = c("in"), dpi=300, limitsize=FALSE)
 
 top_5_parent <- go_results_BP_reduced_Magenta %>% dplyr::select(ParentTerm, N_in_Parent) %>% distinct() %>% arrange(-N_in_Parent) %>% head(10)
 
@@ -1846,29 +1549,6 @@ go_results_BP <- GO_05_lightcyan %>%
       arrange(., over_represented_pvalue)
 
 dim(go_results_BP)
-```
-
-```{r}
-Top10Plot <- go_results_BP %>% 
-    top_n(10, wt=-over_represented_pvalue) %>% 
-    mutate(hitsPerc=numDEInCat/numInCat) %>% 
-    ggplot(aes(x=hitsPerc, 
-               y=reorder(term, -hitsPerc), 
-               colour=over_represented_pvalue, 
-               size=numDEInCat)) +
-        geom_point() +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) + 
-        expand_limits(x=0) +
-        scale_y_discrete(labels = label_wrap(40)) + 
-        labs(title = "Top 10 Enriched Biological Process GO Terms, Lightcyan Module", x="Proportion of Genes in Module per GO Term", y="GO term", colour="p value", size="Count") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 8), 
-              axis.title = element_text(size = 10), 
-              plot.title = element_text(hjust = 0.5, size = 10)) 
-
-Top10Plot
-
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Lightcyan.pdf", Top10Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 Collapsing with simplifyEnrichment package
