@@ -514,12 +514,12 @@ Top5Plot <- go_results_BP_reduced_Brown %>%
     
     ggplot(aes(x=numDEInCat, 
                y=reorder(term, numDEInCat), 
-               colour=over_represented_pvalue)) +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) +
-        expand_limits(x=1.3) +
+               fill=over_represented_pvalue)) +
+        scale_fill_gradient(low = "black", high = "white", name = "p value",guide=guide_colorbar(reverse=TRUE),limits=c(0,0.01) ) +
+        xlim(0, 60) +
         facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
         geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
-       geom_point() +
+       geom_point(shape=21) +
     scale_y_discrete(labels = label_wrap(30)) + 
         labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term (Top 5), Brown Module", x="Count", y="GO term", colour="p-value") +
         theme_bw() + 
@@ -677,12 +677,12 @@ Top5Plot <- go_results_BP_reduced_Red %>%
     
     ggplot(aes(x=numDEInCat, 
                y=reorder(term, numDEInCat), 
-               colour=over_represented_pvalue)) +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) +
-        expand_limits(x=1.3) +
+               fill=over_represented_pvalue)) +
+        scale_fill_gradient(low = "black", high = "white", name = "p value",guide=guide_colorbar(reverse=TRUE),limits=c(0,0.01)) +
+        xlim(0, 60) +
         facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
         geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
-       geom_point() +
+       geom_point(shape=21) +
     scale_y_discrete(labels = label_wrap(30)) + 
         labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term (Top 5), Red Module", x="Count", y="GO term", colour="p-value") +
         theme_bw() + 
@@ -1310,19 +1310,19 @@ top_5_parent <- go_results_BP_reduced_Turquoise %>% dplyr::select(ParentTerm, N_
 
 Top5Plot <- go_results_BP_reduced_Turquoise %>% 
     filter(ParentTerm %in% top_5_parent$ParentTerm) %>%
-    filter(over_represented_pvalue <0.01) %>%
+    filter(over_represented_pvalue <0.001) %>%
     mutate(hitsPerc=numDEInCat/numInCat) %>% 
     arrange(-N_in_Parent) %>%
   mutate(ParentTerm = factor(ParentTerm, levels = unique(ParentTerm))) %>%
     
     ggplot(aes(x=numDEInCat, 
                y=reorder(term, numDEInCat), 
-               colour=over_represented_pvalue)) +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) +
+               fill=over_represented_pvalue)) +
+        scale_fill_gradient(low = "black", high = "white", name = "p value",guide=guide_colorbar(reverse=TRUE),limits=c(0,0.01)) +
         expand_limits(x=1.3) +
         facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
         geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
-       geom_point() +
+       geom_point(shape=21) +
     scale_y_discrete(labels = label_wrap(30)) + 
         labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term (Top 5), Turquoise Module", x="Count", y="GO term", colour="p-value") +
         theme_bw() + 
@@ -1333,7 +1333,7 @@ Top5Plot <- go_results_BP_reduced_Turquoise %>%
 
 Top5Plot
 
-ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Turquoise_allterms_top5parent_filtp01.pdf", Top5Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
+ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Turquoise_allterms_top5parent_filtp001.pdf", Top5Plot, width = 5, height = 7, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 
@@ -1481,12 +1481,12 @@ Top5Plot <- go_results_BP_reduced_Magenta %>%
     
     ggplot(aes(x=numDEInCat, 
                y=reorder(term, numDEInCat), 
-               colour=over_represented_pvalue)) +
-        scale_colour_gradient(low = "red", high = "blue", name = "p value",guide=guide_colorbar(reverse=TRUE)) +
-        expand_limits(x=1.3) +
+               fill=over_represented_pvalue)) +
+        scale_fill_gradient(low = "black", high = "white", name = "p value",guide=guide_colorbar(reverse=TRUE),limits=c(0,0.01)) +
+        xlim(0, 60) +
         facet_grid(ParentTerm ~ .,scales="free_y", space = "free",labeller = labeller(ParentTerm = label_wrap_gen(width = 25))) + 
         geom_segment(aes(y=term ,yend=term, x=0, xend=numDEInCat), color="black",linewidth=0.3) +
-       geom_point() +
+       geom_point(shape=21) +
     scale_y_discrete(labels = label_wrap(30)) + 
         labs(title = "Enriched Biological Process GO Terms p < 0.01,\nFacet by Parent Term (Top 5), Magenta Module", x="Count", y="GO term", colour="p-value") +
         theme_bw() + 
