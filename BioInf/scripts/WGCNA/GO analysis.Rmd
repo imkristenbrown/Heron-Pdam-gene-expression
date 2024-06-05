@@ -265,7 +265,7 @@ length(unique(go_results_BP_reduced_01$ParentTerm))
 ```
 
 ```{r}
-#go_results_BP_reduced_Brown <- go_results_BP_reduced_01
+go_results_BP_reduced_Brown <- go_results_BP_reduced_01
 
 freq_fig_brown <- ggplot(go_results_BP_reduced_Brown, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
   geom_point(size=5, alpha=1, pch=21,color="black")+
@@ -428,7 +428,7 @@ length(unique(go_results_BP_reduced_01$ParentTerm))
 This is only 16 terms that fall into 9 parent terms
 
 ```{r}
-#go_results_BP_reduced_Red <- go_results_BP_reduced_01
+go_results_BP_reduced_Red <- go_results_BP_reduced_01
 
 freq_fig_red <- ggplot(go_results_BP_reduced_Red, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
   geom_point(size=5, alpha=1, pch=21,color="black")+
@@ -819,7 +819,7 @@ length(unique(go_results_BP_reduced_01$ParentTerm))
 This is only 155 terms that fall into 28 parent terms
 
 ```{r}
-#go_results_BP_reduced_Turquoise <- go_results_BP_reduced_01
+go_results_BP_reduced_Turquoise <- go_results_BP_reduced_01
 
 freq_fig_turquoise <- ggplot(go_results_BP_reduced_Turquoise, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
   geom_point(size=5, alpha=1, pch=21,color="black")+
@@ -1000,7 +1000,7 @@ length(unique(go_results_BP_reduced_01$ParentTerm))
 This is only 14 terms that fall into 6 parent terms
 
 ```{r}
-#go_results_BP_reduced_Magenta <- go_results_BP_reduced_01
+go_results_BP_reduced_Magenta <- go_results_BP_reduced_01
 
 freq_fig_magenta <- ggplot(go_results_BP_reduced_Magenta, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
   geom_point(size=5, alpha=1, pch=21,color="black")+
