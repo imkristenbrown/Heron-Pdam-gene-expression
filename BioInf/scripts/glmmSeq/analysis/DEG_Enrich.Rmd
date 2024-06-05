@@ -376,6 +376,34 @@ freq_fig
 
 ggsave("../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_Parent_filtp05.pdf", freq_fig, width = 5, height = 6, units = c("in"), dpi=300)
 ```
+
+```{r}
+go_results <-  read.csv("../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_filtered_P05_BP.csv")
+
+length(unique(go_results$ParentTerm)) #17 parent terms
+
+go_results <- go_results %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
+
+go_results <- go_results %>% filter(over_represented_pvalue < 0.01)
+
+freq_fig <- ggplot(go_results, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
+  geom_point(size=3, color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(limits=c(0,10))+
+   scale_x_discrete(labels = label_wrap(30)) +
+  labs(title = "Enriched Biological Process Parent GO Terms, DEGs", x="Parent Term", y="Number of Significant (p < 0.01) GO Terms") +
+        theme_classic() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 8), 
+              plot.title = element_text(hjust = 0.5, size = 8))
+
+freq_fig
+
+ggsave("../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_Parent_filtp01.pdf", freq_fig, width = 5, height = 6, units = c("in"), dpi=300)
+```
+
 ### KEGG enrichment
 ```{r}
 ##Get a list of KEGG Terms for all 9011 genes

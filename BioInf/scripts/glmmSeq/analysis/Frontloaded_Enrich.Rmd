@@ -32,6 +32,7 @@ library(GO.db)
 library(tidyr)
 library(forcats)
 library(simplifyEnrichment)
+library(scales)
 sessionInfo() #list of packages after library-ing these packages
 ```
 
@@ -168,7 +169,7 @@ head(GO_01)
 Plotting!
 
 ```{r}
-ontologies<-c("BP", "CC", "MF")
+ontologies<-c("BP")
 
 for (category in ontologies) {
     
@@ -219,30 +220,6 @@ for (category in ontologies) {
   
 ggsave(filename=paste0("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P05", "_", category, ".png"), plot=GO.plot, dpi=100, width=8, height=100, units="in", limitsize=FALSE)
 }
-```
-
-Collapsing with simplifyEnrichment package
-
-```{r}
-library(simplifyEnrichment)
-BP_terms <- GO_05 %>% dplyr::filter(ontology=="BP") %>% dplyr::select(GOterm) %>% unlist()
-
-Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-
-pdf(file = "../../../output/glmmseq/Frontloaded_GOSeq/Frontloadeds_P05_GOSEM_kmeans_10max.pdf", width = 7, height = 10)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), method = "kmeans", max_words=10)
-dev.off()
-```
-
-```{r}
-library(simplifyEnrichment)
-BP_terms <- GO_01 %>% dplyr::filter(ontology=="BP") %>% dplyr::select(GOterm) %>% unlist()
-
-Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-
-pdf(file = "../../../output/glmmseq/Frontloaded_GOSeq/Frontloadeds_P01_GOSEM_kmeans_10max.pdf", width = 7, height = 10)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), method = "kmeans", max_words=10)
-dev.off()
 ```
 
 ### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
@@ -307,6 +284,59 @@ GO_plot_all_pval
 ggsave("../../../output/glmmseq/Frontloaded_GOSeq/FRONTs_P01_orderedpval.pdf", GO_plot_all_pval)
 ```
 
+### Frequency based graphs
+
+```{r}
+go_results <-  read.csv("../../../output/glmmseq/Frontloaded_GOSeq/GOseq_FRONTs_filtered_P05_BP.csv")
+
+length(unique(go_results$ParentTerm)) #56 parent terms
+
+go_results <- go_results %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
+
+freq_fig <- ggplot(go_results, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
+  geom_point(size=3, color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(limits=c(0,25))+
+   scale_x_discrete(labels = label_wrap(30)) +
+  labs(title = "Enriched Biological Process Parent GO Terms,\nFrontloaded Genes", x="Parent Term", y="Number of Significant (p < 0.05) GO Terms") +
+        theme_classic() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 8), 
+              plot.title = element_text(hjust = 0.5, size = 8))
+
+freq_fig
+
+ggsave("../../../output/glmmseq/Frontloaded_GOSeq/GOseq_FRONTs_Parent_filtp05.pdf", freq_fig, width = 5, height = 16, units = c("in"), dpi=300)
+```
+
+```{r}
+go_results <-  read.csv("../../../output/glmmseq/Frontloaded_GOSeq/GOseq_FRONTs_filtered_P05_BP.csv")
+
+length(unique(go_results$ParentTerm)) #56 parent terms
+
+go_results <- go_results %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
+
+go_results <- go_results %>% filter(over_represented_pvalue < 0.01)
+
+freq_fig <- ggplot(go_results, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
+  geom_point(size=3, color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(limits=c(0,25))+
+   scale_x_discrete(labels = label_wrap(30)) +
+  labs(title = "Enriched Biological Process Parent GO Terms,\nFrontloaded Genes", x="Parent Term", y="Number of Significant (p < 0.01) GO Terms") +
+        theme_classic() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 8), 
+              plot.title = element_text(hjust = 0.5, size = 8))
+
+freq_fig
+
+ggsave("../../../output/glmmseq/Frontloaded_GOSeq/GOseq_FRONTs_Parent_filtp01.pdf", freq_fig, width = 5, height = 8, units = c("in"), dpi=300)
+```
 
 ### KEGG enrichment
 ```{r}
