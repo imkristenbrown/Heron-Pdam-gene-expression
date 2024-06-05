@@ -268,7 +268,7 @@ length(unique(go_results_BP_reduced_01$ParentTerm))
 go_results_BP_reduced_Brown <- go_results_BP_reduced_01
 
 freq_fig_brown <- ggplot(go_results_BP_reduced_Brown, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_point(size=3, color="black")+
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
@@ -276,8 +276,8 @@ freq_fig_brown <- ggplot(go_results_BP_reduced_Brown, aes(y=N_in_Parent,x=reorde
    scale_x_discrete(labels = label_wrap(30)) +
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100)) +
   labs(title = "Enriched Biological Process Parent GO Terms, Brown Module", x="Parent Term", y="Number of Significant (p < 0.01) GO Terms in Module", colour="p-value") +
-        theme_bw() + 
-        theme(axis.text.y = element_text(size = 8), 
+  theme_classic() + 
+  theme(axis.text.y = element_text(size = 8), 
               axis.title = element_text(size = 8), 
               plot.title = element_text(hjust = 0.5, size = 8))
 
@@ -431,7 +431,7 @@ This is only 16 terms that fall into 9 parent terms
 go_results_BP_reduced_Red <- go_results_BP_reduced_01
 
 freq_fig_red <- ggplot(go_results_BP_reduced_Red, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_point(size=3, color="black")+
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
@@ -439,7 +439,7 @@ freq_fig_red <- ggplot(go_results_BP_reduced_Red, aes(y=N_in_Parent,x=reorder(Pa
    scale_x_discrete(labels = label_wrap(30)) +
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100)) +
   labs(title = "Enriched Biological Process Parent GO Terms, Red Module", x="Parent Term", y="Number of Significant (p < 0.01) GO Terms in Module", colour="p-value") +
-        theme_bw() + 
+        theme_classic() + 
         theme(axis.text.y = element_text(size = 8), 
               axis.title = element_text(size = 8), 
               plot.title = element_text(hjust = 0.5, size = 8))
@@ -822,7 +822,7 @@ This is only 155 terms that fall into 28 parent terms
 go_results_BP_reduced_Turquoise <- go_results_BP_reduced_01
 
 freq_fig_turquoise <- ggplot(go_results_BP_reduced_Turquoise, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_point(size=3, color="black")+
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
@@ -830,7 +830,7 @@ freq_fig_turquoise <- ggplot(go_results_BP_reduced_Turquoise, aes(y=N_in_Parent,
    scale_x_discrete(labels = label_wrap(30)) +
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100)) +
   labs(title = "Enriched Biological Process Parent GO Terms, Turquoise Module", x="Parent Term", y="Number of Significant (p < 0.01) GO Terms in Module", colour="p-value") +
-        theme_bw() + 
+        theme_classic() + 
         theme(axis.text.y = element_text(size = 8), 
               axis.title = element_text(size = 8), 
               plot.title = element_text(hjust = 0.5, size = 8))
@@ -843,7 +843,7 @@ ggsave("../../output/WGCNA/GO_analysis/Parent_by_mod/Turquoise_Parent_filtp01.pd
 go_results_BP_reduced_Turquoise_001 <- go_results_BP_reduced_Turquoise %>% filter(over_represented_pvalue <0.001)
   
 freq_fig_turquoise_001 <- ggplot(go_results_BP_reduced_Turquoise_001, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
+    geom_point(size=3, color="black")+
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
@@ -851,7 +851,7 @@ freq_fig_turquoise_001 <- ggplot(go_results_BP_reduced_Turquoise_001, aes(y=N_in
    scale_x_discrete(labels = label_wrap(30)) +
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100)) +
   labs(title = "Enriched Biological Process Parent GO Terms, Turquoise Module", x="Parent Term", y="Number of Significant (p < 0.001) GO Terms in Module", colour="p-value") +
-        theme_bw() + 
+        theme_classic() + 
         theme(axis.text.y = element_text(size = 5), 
               axis.title = element_text(size = 8), 
               plot.title = element_text(hjust = 0.5, size = 8))
@@ -1003,7 +1003,7 @@ This is only 14 terms that fall into 6 parent terms
 go_results_BP_reduced_Magenta <- go_results_BP_reduced_01
 
 freq_fig_magenta <- ggplot(go_results_BP_reduced_Magenta, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
+  geom_point(size=3, color="black")+
   geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
   geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
   coord_flip()+
@@ -1011,7 +1011,7 @@ freq_fig_magenta <- ggplot(go_results_BP_reduced_Magenta, aes(y=N_in_Parent,x=re
    scale_x_discrete(labels = label_wrap(30)) +
   scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100)) +
   labs(title = "Enriched Biological Process Parent GO Terms, Magenta Module", x="Parent Term", y="Number of Significant (p < 0.01) GO Terms in Module", colour="p-value") +
-        theme_bw() + 
+        theme_classic() + 
         theme(axis.text.y = element_text(size = 8), 
               axis.title = element_text(size = 8), 
               plot.title = element_text(hjust = 0.5, size = 8))

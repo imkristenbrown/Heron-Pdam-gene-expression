@@ -1031,8 +1031,8 @@ plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module =="MEbrown"), aes(y=Mean
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1)+
   geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5)+
   geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE)+
-  scale_fill_manual("Origin", values=c("Slope"='paleturquoise3', "Flat"= "indianred"))+
-  scale_color_manual("Origin", values=c("Slope"='paleturquoise3', "Flat"= "indianred"))+
+  scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
   scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005))+  
   theme_classic()+
   labs(title = "Brown Module") +
@@ -1062,8 +1062,8 @@ plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module =="MEred"), aes(y=Mean, 
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1)+
   geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5)+
   geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE)+
-  scale_fill_manual("Origin", values=c("Slope"='paleturquoise3', "Flat"= "indianred"))+
-  scale_color_manual("Origin", values=c("Slope"='paleturquoise3', "Flat"= "indianred"))+
+  scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
   scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005))+  
   theme_classic()+
   labs(title = "Red Module")+
@@ -1092,8 +1092,8 @@ plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module =="MEturquoise"), aes(y=
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1)+
   geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5)+
   geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE)+
-  scale_fill_manual("Origin", values=c("Slope"='paleturquoise3', "Flat"= "indianred"))+
-  scale_color_manual("Origin", values=c("Slope"='paleturquoise3', "Flat"= "indianred"))+
+  scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
   scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005))+  
   theme_classic()+
   labs(title = "Turquoise Module")+
@@ -1122,8 +1122,8 @@ plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module =="MEmagenta"), aes(y=Me
   geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1)+
   geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5)+
   geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE)+
-  scale_fill_manual("Origin", values=c("Slope"='paleturquoise3', "Flat"= "indianred"))+
-  scale_color_manual("Origin", values=c("Slope"='paleturquoise3', "Flat"= "indianred"))+
+  scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
   scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005))+  
   theme_classic()+
   labs(title = "Magenta Module")+
