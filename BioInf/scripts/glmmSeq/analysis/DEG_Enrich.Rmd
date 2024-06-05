@@ -31,6 +31,7 @@ library(GO.db)
 library(tidyr)
 library(forcats)
 library(simplifyEnrichment)
+library(scales)
 sessionInfo() #list of packages after library-ing these packages
 ```
 
@@ -219,24 +220,23 @@ GO_05 <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
-#Filtering for p < 0.05
-GO_001 <- GO %>%
-        dplyr::filter(over_represented_pvalue<0.001) %>%
-        dplyr::arrange(., ontology, over_represented_pvalue)
-
-
 dim(GO_05)
 head(GO_05)
 
-dim(GO_001)
-GO_001
+#Filtering for p < 0.05
+GO_01 <- GO %>%
+        dplyr::filter(over_represented_pvalue<0.01) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
+
+dim(GO_01)
+head(GO_01)
 ```
 
 
 Plotting!
 
 ```{r}
-ontologies<-c("BP", "CC", "MF")
+ontologies<-c("BP")
 
 for (category in ontologies) {
     
@@ -289,25 +289,12 @@ ggsave(filename=paste0("../../../output/glmmseq/GOSeq/OriginDEGs_P05", "_", cate
 }
 ```
 
-Collapsing with simplifyEnrichment package
-
-```{r}
-library(simplifyEnrichment)
-BP_terms <- GO_05 %>% dplyr::filter(ontology=="BP") %>% dplyr::select(GOterm) %>% unlist()
-
-Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-
-pdf(file = "../../../output/glmmseq/GOSeq/OriginDEGs_P05_GOSEM.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), method = "kmeans")
-dev.off()
-```
-
 
 ### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
 
 ```{r}
 #ordered by p-value
-GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
+GO_plot_all_pval <- GO_01 %>% drop_na(ontology) %>% mutate(term = fct_reorder(term, over_represented_pvalue)) %>%
   mutate(term = fct_reorder(term, ontology)) %>%
   ggplot( aes(x=term, y=numDEInCat) ) +
   geom_segment( aes(x=term ,xend=term, y=0, yend=numDEInCat), color="grey") +
@@ -331,7 +318,7 @@ GO_plot_all_pval <- GO_001 %>% drop_na(ontology) %>% mutate(term = fct_reorder(t
 
 GO_plot_all_pval
 
-ggsave("../../../output/glmmseq/GOSeq/OriginDEGs_P001_orderedpval.pdf", GO_plot_all_pval)
+ggsave("../../../output/glmmseq/GOSeq/OriginDEGs_P01_orderedpval.pdf", GO_plot_all_pval, width = 12, height = 12, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
 ```{r}
@@ -363,29 +350,32 @@ GO_plot_all_pval
 ggsave("../../../output/glmmseq/GOSeq/OriginDEGs_P05_orderedpval.pdf", GO_plot_all_pval, width = 12, height = 24, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
-Plotting with GOplot package
+### Frequency based graphs
+
 ```{r}
-library(GOplot)
+go_results <-  read.csv("../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_filtered_P05_BP.csv")
 
+length(unique(go_results$ParentTerm)) #17 parent terms
 
-GO.terms_genes <- GO.terms %>%
-  group_by(Annotation.GO.ID) %>%
-  summarise(Genes = paste(gene, collapse = ', ')) %>% rename(Annotation.GO.ID = "GOterm")
+go_results <- go_results %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
 
-GO_gene <- GO_05 %>% left_join(GO.terms_genes) %>% rename(ontology = "category", GOterm = "ID", over_represented_pvalue= "adj_pval")
+freq_fig <- ggplot(go_results, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
+  geom_point(size=3, color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(limits=c(0,10))+
+   scale_x_discrete(labels = label_wrap(30)) +
+  labs(title = "Enriched Biological Process Parent GO Terms, DEGs", x="Parent Term", y="Number of Significant (p < 0.05) GO Terms") +
+        theme_classic() + 
+        theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 8), 
+              plot.title = element_text(hjust = 0.5, size = 8))
 
-geneInfo_GOplot <- geneInfo %>% rename(gene_id = "ID", Stable_OriginFC = "logFC")
+freq_fig
 
-circ <- circle_dat(GO_gene, geneInfo_GOplot)
-
-# Generate a simple barplot
-GOBar(subset(circ, category == 'BP'))
-
-# Generate the bubble plot with a label threshold of 3
-#GOBubble(circ)
+ggsave("../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_Parent_filtp05.pdf", freq_fig, width = 5, height = 6, units = c("in"), dpi=300)
 ```
-
-
 ### KEGG enrichment
 ```{r}
 ##Get a list of KEGG Terms for all 9011 genes
@@ -423,65 +413,6 @@ write.csv(KO, "../../../output/glmmseq/GOSeq/GOseq_KEGG_Origin.csv")
 
 Over-represented KEGG terms, p = 0.05:
 "K01052" "K01539" "K05658" "K05619" "K11789" "K01363" "K13348" "K01345" "K24436" "K17592" "K25493" "K24125" "K12825" "K08059" "K05929" "K19721" "K14480" "K03671" "K06711" "K13443" "K18405"
-
-
-## Part 2: Frequency based graphs
-
-```{r}
-freq_fig <- ggplot(go_results, aes(y=numInCat,x=reorder(ParentTerm, numInCat)
-                                   #, fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1
-                                   ))+
-  #facet_wrap(~Calcification.direction, nrow = 1)+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
-  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=numInCat)) +
-  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
-  coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,95))+
-  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
- #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
-  theme_classic()+
-   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
-        panel.background= element_rect(fill=NA, color='black'),
-        legend.title = element_blank(),
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_blank(),
-        strip.text = element_text(size=12))#making the axis title larger 
-freq_fig
-
-ggsave(filename="../../../output/glmmseq/GOSeq/OriginDEGs_P05_BP_numInCat.png", plot=freq_fig, dpi=300, height=10, units="in", limitsize=FALSE)
-```
-
-```{r}
-freq_fig <- ggplot(go_results, aes(y=numDEInCat,x=reorder(ParentTerm, numDEInCat)
-                                   #, fill=Percentage.of.shared.GO.terms.with.biomineralization.genes,group=1
-                                   ))+
-  #facet_wrap(~Calcification.direction, nrow = 1)+
-  geom_point(size=5, alpha=1, pch=21,color="black")+
-  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=numDEInCat)) +
-  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
-  coord_flip()+
-  scale_y_continuous(expression(GO~term~counts),limits=c(0,20))+
-  #scale_color_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_manual("Direction.of.flat.origin",values= c("up"="#b2182b","no pattern"="grey","down" ="#67a9cf"))+
-  #scale_fill_gradientn(colours=c("white","#fddbc7","#f4a582","#d6604d","#b2182b"), na.value = "grey98",limits = c(0, 100))+ 
- #scale_color_gradientn(colours=c("#b2182b","#fddbc7","white","#d1e5f0","#67a9cf", "#67a9cf", "#2166ac"), na.value = "grey98",limits = c(-0, 40))+ 
-  theme_classic()+
-   theme(axis.text.x=element_text(vjust=0.5, hjust=0.95,size=12),
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),
-        panel.background= element_rect(fill=NA, color='black'),
-        legend.title = element_blank(),
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_blank(),
-        strip.text = element_text(size=12))#making the axis title larger 
-freq_fig
-
-ggsave(filename="../../../output/glmmseq/GOSeq/OriginDEGs_P05_BP_numDEInCat.png", plot=freq_fig, dpi=300, height=10, units="in", limitsize=FALSE)
-```
 
 
 ## Part 3: Direction of FC
@@ -522,12 +453,12 @@ GO_upSlope_05 <- GO_upSlope %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
 #Filtering for p < 0.05
-GO_upSlope_001 <- GO_upSlope %>%
-        dplyr::filter(over_represented_pvalue<0.001) %>%
+GO_upSlope_01 <- GO_upSlope %>%
+        dplyr::filter(over_represented_pvalue<0.01) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
 dim(GO_upSlope_05)
-dim(GO_upSlope_001)
+dim(GO_upSlope_01)
 
 ```
 
@@ -536,7 +467,7 @@ There are 422 over-represented GO terms (by p <0.05) in the 346 significant DEGs
 Plotting!
 
 ```{r}
-ontologies<-c("BP", "CC", "MF")
+ontologies<-c("BP")
 
 for (category in ontologies) {
     
@@ -623,12 +554,12 @@ GO_upFlat_05 <- GO_upFlat %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
 #Filtering for p < 0.05
-GO_upFlat_001 <- GO_upFlat %>%
-        dplyr::filter(over_represented_pvalue<0.001) %>%
+GO_upFlat_01 <- GO_upFlat %>%
+        dplyr::filter(over_represented_pvalue<0.01) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
 dim(GO_upFlat_05)
-dim(GO_upFlat_001)
+dim(GO_upFlat_01)
 ```
 
 There are 243 over-represented GO terms (by p <0.05) in the 481 significant DEGs by Origin that are upregulated in the Flat origin in both treatments
@@ -636,7 +567,7 @@ There are 243 over-represented GO terms (by p <0.05) in the 481 significant DEGs
 Plotting!
 
 ```{r}
-ontologies<-c("BP", "CC", "MF")
+ontologies<-c("BP")
 
 for (category in ontologies) {
     
@@ -724,13 +655,13 @@ GO_updownSlope_05 <- GO_updownSlope %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
-#Filtering for p < 0.001
-GO_updownSlope_001 <- GO_updownSlope %>%
-        dplyr::filter(over_represented_pvalue<0.001) %>%
+#Filtering for p < 0.01
+GO_updownSlope_01 <- GO_updownSlope %>%
+        dplyr::filter(over_represented_pvalue<0.01) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
 dim(GO_updownSlope_05)
-dim(GO_updownSlope_001)
+dim(GO_updownSlope_01)
 
 ```
 
@@ -739,7 +670,7 @@ There are 151 over-represented GO terms (by p <0.05) in the 11 significant DEGs 
 Plotting!
 
 ```{r}
-ontologies<-c("BP", "CC", "MF")
+ontologies<-c("BP")
 
 for (category in ontologies) {
     
@@ -833,13 +764,13 @@ GO_downupSlope_05 <- GO_downupSlope %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
-#Filtering for p < 0.001
-GO_downupSlope_001 <- GO_downupSlope %>%
-        dplyr::filter(over_represented_pvalue<0.001) %>%
+#Filtering for p < 0.01
+GO_downupSlope_01 <- GO_downupSlope %>%
+        dplyr::filter(over_represented_pvalue<0.01) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
 dim(GO_downupSlope_05)
-dim(GO_downupSlope_001)
+dim(GO_downupSlope_01)
 
 ```
 
@@ -848,7 +779,7 @@ There are 11 over-represented GO terms (by p <0.05) in the 2 significant DEGs by
 Plotting!
 
 ```{r}
-ontologies<-c("BP", "MF")
+ontologies<-c("BP")
 
 for (category in ontologies) {
     

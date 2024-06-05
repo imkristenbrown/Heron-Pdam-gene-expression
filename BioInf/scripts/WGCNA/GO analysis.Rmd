@@ -1016,7 +1016,7 @@ freq_fig_magenta <- ggplot(go_results_BP_reduced_Magenta, aes(y=N_in_Parent,x=re
               axis.title = element_text(size = 8), 
               plot.title = element_text(hjust = 0.5, size = 8))
 
-freq_fig_red
+freq_fig_magenta
 
 ggsave("../../output/WGCNA/GO_analysis/Parent_by_mod/Magenta_Parent_filtp01.pdf", freq_fig_magenta, width = 5, height = 4, units = c("in"), dpi=300)
 ```
