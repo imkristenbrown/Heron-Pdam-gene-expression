@@ -1141,3 +1141,105 @@ dev.off()
 
 plot_MEs_fig_Trt_Orig
 ```
+
+Alternative loop below:
+
+Make a vector of calcification- and origin-associated modules to explore in detail:
+
+```{r}
+moduleTraitCor_both <- as.data.frame(moduleTraitCor_both)
+heatmappval <- as.data.frame(heatmappval)
+
+# Modules significant by calcification
+
+calc_signif <- rownames(heatmappval[heatmappval$Calcification.per.day < 0.05,])
+
+origin_signif <- rownames(heatmappval[heatmappval$Origin < 0.05,])
+
+density_signif <- rownames(heatmappval[heatmappval$CaCO3.Density..g.ml. < 0.05,])
+
+# Calc up mods:
+calc_up <- rownames(moduleTraitCor_both[moduleTraitCor_both$Calcification.per.day > 0,])
+
+calc_up <- calc_up[calc_up %in% calc_signif & calc_up %in% origin_signif & calc_up %in% density_signif]
+
+# Calc down mods:
+calc_down <- rownames(moduleTraitCor_both[moduleTraitCor_both$Calcification.per.day < 0,])
+
+calc_down <- calc_down[calc_down %in% calc_signif & calc_down %in% origin_signif & calc_down %in% density_signif]
+```
+
+```{r}
+unique(geneInfo_GROUPS$moduleColor)
+
+calc_up
+
+calc_down
+```
+
+```{r}
+for (color in calc_up) {
+  module_name <- gsub("ME", "", color)
+  n_mod <- nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor == module_name))
+  
+  pdf(paste0("../../output/WGCNA/plot_MEs_fig_Trt_Orig_", toupper(module_name), ".pdf"))
+  
+  plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module == color), aes(y=Mean, x=Treatment, color=Origin, fill=Origin)) + 
+    geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1) +
+    geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5) +
+    geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE) +
+    scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C")) +
+    scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C")) +
+    scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005)) +  
+    theme_classic() +
+    labs(title = paste0(toupper(substring(module_name, 1, 1)), substring(module_name, 2), " Module")) +
+    annotate("text", x = Inf, y = Inf, label = paste("n genes =", n_mod), hjust = 1.1, vjust = 2.1, size = 6, color = "black") + 
+    theme(axis.text.x = element_text(vjust=0.5, size=20),
+          axis.text.y = element_text(vjust=0.5, size=20),
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(size=20),
+          legend.text = element_text(vjust=0.5, size=20),
+          panel.background = element_rect(fill=NA, color='black'),
+          strip.text = element_text(vjust=0.5, size=20),
+          legend.position = "none") 
+  
+  print(plot_MEs_fig_Trt_Orig)
+  dev.off()
+  
+  print(plot_MEs_fig_Trt_Orig)
+}
+```
+
+```{r}
+for (color in calc_down) {
+  module_name <- gsub("ME", "", color)
+  n_mod <- nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor == module_name))
+  
+  pdf(paste0("../../output/WGCNA/plot_MEs_fig_Trt_Orig_", toupper(module_name), ".pdf"))
+  
+  plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module == color), aes(y=Mean, x=Treatment, color=Origin, fill=Origin)) + 
+    geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1) +
+    geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5) +
+    geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE) +
+    scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C")) +
+    scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C")) +
+    scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005)) +  
+    theme_classic() +
+    labs(title = paste0(toupper(substring(module_name, 1, 1)), substring(module_name, 2), " Module")) +
+    annotate("text", x = Inf, y = Inf, label = paste("n genes =", n_mod), hjust = 1.1, vjust = 2.1, size = 6, color = "black") + 
+    theme(axis.text.x = element_text(vjust=0.5, size=20),
+          axis.text.y = element_text(vjust=0.5, size=20),
+          axis.title.x = element_blank(),
+          axis.title.y = element_text(size=20),
+          legend.text = element_text(vjust=0.5, size=20),
+          panel.background = element_rect(fill=NA, color='black'),
+          strip.text = element_text(vjust=0.5, size=20),
+          legend.position = "none") 
+  
+  print(plot_MEs_fig_Trt_Orig)
+  dev.off()
+  
+  print(plot_MEs_fig_Trt_Orig)
+}
+```
+

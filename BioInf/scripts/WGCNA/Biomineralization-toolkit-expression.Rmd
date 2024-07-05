@@ -66,11 +66,6 @@ head(glmmseq_exp)
 ```
 
 ```{r}
-biomin_exp <- merge(biomin_mod, glmmseq_exp, by=c("Pocillopora_acuta_best_hit"), all=T)
-head(biomin_exp)
-```
-
-```{r}
 biomin_all <- read.csv("../../output/Biomin_blast_Pocillopora_acuta_best_hit_glmmSeq.csv")
 head(biomin_all)
 ```
@@ -114,6 +109,14 @@ biomin_all_filtered_long $Treatment2 <- as.factor(biomin_all_filtered_long $Trea
 head(biomin_all_filtered_long)
 ```
 
+# Which modules are these genes in?
+
+```{r}
+biomin_mod %>% group_by(moduleColor) %>% dplyr::summarise(n = n()) %>% arrange(-n)
+```
+## The modules with the most biomineralization genes are: blue, turquoise, red, and brown. Let's focus on red and brown for now, since these modules are positively associated with calcification.
+
+
 
 ## MERed signficant genes
 
@@ -136,15 +139,6 @@ unique(red_genes_data_DE_Origin$Gene)
 biomin_all_filtered_long_g12304 <- biomin_all_filtered_long  %>%
   filter(Gene == "Pocillopora_acuta_HIv2___TS.g12304.t1") %>% dplyr::select(Origin, Colony, Expression, Treatment2) %>% distinct()
 biomin_all_filtered_long_g12304  
-```
-
-```{r}
-library(nlme)
-library(emmeans)
-g12304.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g12304 , na.action=na.exclude)
-car::Anova(g12304.lme, type=3)
-tukey3<- emmeans(g12304.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
 ```
 
 ```{r}
@@ -185,15 +179,6 @@ g12304_fig
 biomin_all_filtered_long_g7908 <- biomin_all_filtered_long  %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g7908.t1")
 biomin_all_filtered_long_g7908  
-```
-
-```{r}
-library(nlme)
-library(emmeans)
-g7908.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g7908 , na.action=na.exclude)
-car::Anova(g7908.lme, type=3)
-tukey3<- emmeans(g7908.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
 ```
 
 ```{r}
@@ -254,15 +239,6 @@ biomin_all_filtered_long_g25351
 ```
 
 ```{r}
-library(nlme)
-library(emmeans)
-g25351.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g25351 , na.action=na.exclude)
-car::Anova(g25351.lme, type=3)
-tukey3<- emmeans(g25351.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
 library(Rmisc)
 g25351_sum<-summarySE(biomin_all_filtered_long_g25351 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g25351_sum
@@ -299,15 +275,6 @@ g25351_fig
 biomin_all_filtered_long_g13222 <- biomin_all_filtered_long  %>%
   filter(Gene == "Pocillopora_acuta_HIv2___TS.g13222.t1b") %>% dplyr::select(Origin, Colony, Expression, Treatment2) %>% distinct()
 biomin_all_filtered_long_g13222  
-```
-
-```{r}
-library(nlme)
-library(emmeans)
-g13222.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g13222 , na.action=na.exclude)
-car::Anova(g13222.lme, type=3)
-tukey3<- emmeans(g13222.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
 ```
 
 ```{r}
@@ -350,15 +317,6 @@ biomin_all_filtered_long_g21232
 ```
 
 ```{r}
-library(nlme)
-library(emmeans)
-g21232.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g21232 , na.action=na.exclude)
-car::Anova(g21232.lme, type=3)
-tukey3<- emmeans(g21232.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
 library(Rmisc)
 g21232_sum<-summarySE(biomin_all_filtered_long_g21232 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g21232_sum
@@ -395,15 +353,6 @@ g21232_fig
 biomin_all_filtered_long_g5013 <- biomin_all_filtered_long  %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g5013.t1")
 biomin_all_filtered_long_g5013  
-```
-
-```{r}
-library(nlme)
-library(emmeans)
-g5013.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g5013 , na.action=na.exclude)
-car::Anova(g5013.lme, type=3)
-tukey3<- emmeans(g5013.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
 ```
 
 ```{r}
@@ -446,15 +395,6 @@ biomin_all_filtered_long_g10093
 ```
 
 ```{r}
-library(nlme)
-library(emmeans)
-g10093.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g10093 , na.action=na.exclude)
-car::Anova(g10093.lme, type=3)
-tukey3<- emmeans(g10093.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
 library(Rmisc)
 g10093_sum<-summarySE(biomin_all_filtered_long_g10093 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g10093_sum
@@ -491,15 +431,6 @@ g10093_fig
 biomin_all_filtered_long_g13824 <- biomin_all_filtered_long  %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g13824.t1")
 biomin_all_filtered_long_g13824  
-```
-
-```{r}
-library(nlme)
-library(emmeans)
-g13824.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g13824 , na.action=na.exclude)
-car::Anova(g13824.lme, type=3)
-tukey3<- emmeans(g13824.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
 ```
 
 ```{r}
@@ -573,15 +504,6 @@ biomin_all_filtered_long_g20587
 ```
 
 ```{r}
-library(nlme)
-library(emmeans)
-g20587.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g20587 , na.action=na.exclude)
-car::Anova(g20587.lme, type=3)
-tukey3<- emmeans(g20587.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
-```
-
-```{r}
 library(Rmisc)
 g20587_sum<-summarySE(biomin_all_filtered_long_g20587 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
 g20587_sum
@@ -618,15 +540,6 @@ g20587_fig
 biomin_all_filtered_long_g16715 <- biomin_all_filtered_long  %>%
   filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g16715.t1")
 biomin_all_filtered_long_g16715  
-```
-
-```{r}
-library(nlme)
-library(emmeans)
-g16715.lme <- lme(Expression~Origin*Treatment2, random = ~1|Colony, data=biomin_all_filtered_long_g16715 , na.action=na.exclude)
-car::Anova(g16715.lme, type=3)
-tukey3<- emmeans(g16715.lme, list(pairwise ~ Origin), adjust = "tukey")
-tukey3
 ```
 
 ```{r}

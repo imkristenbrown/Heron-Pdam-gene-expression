@@ -163,7 +163,7 @@ GO_001
 Plotting!
 
 ```{r}
-ontologies<-c("BP", "CC", "MF")
+ontologies<-c("BP")
 
 for (category in ontologies) {
     
@@ -215,20 +215,6 @@ for (category in ontologies) {
 ggsave(filename=paste0("../../../output/glmmseq/GOSeq/Interaction/InteractionDEGs_P05", "_", category, ".png"), plot=GO.plot, dpi=300, height=20, width=15, units="in", limitsize=FALSE)
 }
 ```
-
-Collapsing with simplifyEnrichment package
-
-```{r}
-library(simplifyEnrichment)
-BP_terms <- GO_05 %>% dplyr::filter(ontology=="BP") %>% dplyr::select(GOterm) %>% unlist()
-
-Mat <- GO_similarity(BP_terms, ont = "BP", db = "org.Ce.eg.db")
-
-pdf(file = "../../../output/glmmseq/GOSeq/Interaction/InteractionDEGs_P05_GOSEM.pdf", width = 7, height = 5)
-simplifyGO(Mat, word_cloud_grob_param = list(max_width = 50), method = "kmeans")
-dev.off()
-```
-
 
 ### Combining MF, CC, and BP into one plot and order by pvalue, based on [Jill's script](https://github.com/JillAshey/SedimentStress/blob/master/RAnalysis/pacuta/pacuta_GOSeq.Rmd)
 
