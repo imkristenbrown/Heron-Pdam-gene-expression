@@ -1011,140 +1011,12 @@ head(geneInfo_GROUPS)
 write.csv(geneInfo_GROUPS, file = "../../output/WGCNA/WGCNA_ModuleMembership.csv")
 ```
 
-
-## Individual Module Plots again, with n = number of genes in module
-
-```{r}
-nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor=="brown")) #942
-nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor=="red")) #425
-nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor=="turquoise")) #2558
-nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor=="magenta")) #219
-```
-
-##### Brown only -  By Treatment and Origin, Plot mean module eigengene  
-```{r}
-n_mod <- nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor=="brown")) #942
-
-pdf("../../output/WGCNA/plot_MEs_fig_Trt_Orig_BROWN.pdf")
-
-plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module =="MEbrown"), aes(y=Mean, x=Treatment, color=Origin, fill=Origin))+ 
-  geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1)+
-  geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5)+
-  geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE)+
-  scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
-  scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005))+  
-  theme_classic()+
-  labs(title = "Brown Module") +
-  annotate("text", x = Inf, y = Inf, label = paste("n genes =", n_mod), hjust = 1.1, vjust = 2.1, size = 6, color = "black") + 
-  theme(axis.text.x=element_text(vjust=0.5, size=20),
-        axis.text.y=element_text(vjust=0.5, size=20),
-        axis.title.x=element_blank(),
-        axis.title.y=element_text(size=20),
-        legend.text = element_text(vjust=0.5, size=20),
-        panel.background= element_rect(fill=NA, color='black'),
-        strip.text = element_text(vjust=0.5, size=20),
-        legend.position = "none") 
-
-plot_MEs_fig_Trt_Orig
-dev.off()
-
-plot_MEs_fig_Trt_Orig
-```
-
-##### Red only -  By Treatment and Origin, Plot mean module eigengene  
-```{r}
-n_mod <- nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor=="red")) #425
-
-pdf("../../output/WGCNA/plot_MEs_fig_Trt_Orig_RED.pdf")
-
-plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module =="MEred"), aes(y=Mean, x=Treatment, color=Origin, fill=Origin))+ 
-  geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1)+
-  geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5)+
-  geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE)+
-  scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
-  scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005))+  
-  theme_classic()+
-  labs(title = "Red Module")+
-  annotate("text", x = Inf, y = Inf, label = paste("n genes =", n_mod), hjust = 1.1, vjust = 2.1, size = 6, color = "black") + 
-  theme(axis.text.x=element_text(vjust=0.5, size=20),
-        axis.text.y=element_text(vjust=0.5, size=20),
-        axis.title.x=element_blank(),
-        axis.title.y=element_text(size=20),
-        legend.text = element_text(vjust=0.5, size=20),
-        panel.background= element_rect(fill=NA, color='black'),
-        strip.text = element_text(vjust=0.5, size=20),
-        legend.position = "none")
-plot_MEs_fig_Trt_Orig
-dev.off()
-
-plot_MEs_fig_Trt_Orig
-```
-
-##### Turquoise only -  By Treatment and Origin, Plot mean module eigengene  
-```{r,warning=FALSE}
-n_mod <- nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor=="turquoise")) #2558
-
-pdf("../../output/WGCNA/plot_MEs_fig_Trt_Orig_TURQUOISE.pdf")
-
-plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module =="MEturquoise"), aes(y=Mean, x=Treatment, color=Origin, fill=Origin))+ 
-  geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1)+
-  geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5)+
-  geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE)+
-  scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
-  scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005))+  
-  theme_classic()+
-  labs(title = "Turquoise Module")+
-  annotate("text", x = Inf, y = Inf, label = paste("n genes =", n_mod), hjust = 1.1, vjust = 2.1, size = 6, color = "black") + 
-  theme(axis.text.x=element_text(vjust=0.5, size=20),
-        axis.text.y=element_text(vjust=0.5, size=20),
-        axis.title.x=element_blank(),
-        axis.title.y=element_text(size=20),
-        legend.text = element_text(vjust=0.5, size=20),
-        panel.background= element_rect(fill=NA, color='black'),
-        strip.text = element_text(vjust=0.5, size=20),
-        legend.position = "none")
-plot_MEs_fig_Trt_Orig
-dev.off()
-
-plot_MEs_fig_Trt_Orig
-```
-
-##### Magenta only -  By Treatment and Origin, Plot mean module eigengene  
-```{r,warning=FALSE}
-n_mod <- nrow(geneInfo_GROUPS %>% dplyr::filter(moduleColor=="magenta")) #219
-
-pdf("../../output/WGCNA/plot_MEs_fig_Trt_Orig_MAGENTA.pdf")
-
-plot_MEs_fig_Trt_Orig <- ggplot(filter(plot_MEs, Module =="MEmagenta"), aes(y=Mean, x=Treatment, color=Origin, fill=Origin))+ 
-  geom_boxplot(alpha=0.4, color="black", outlier.shape = NA, size =1)+
-  geom_point(alpha=0.8,position=position_jitterdodge(0.05),size=2.5)+
-  geom_hline(yintercept = 0, linetype="dashed", color = 'black', size=0.7, show.legend = TRUE)+
-  scale_fill_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("Slope"='#26519B', "Flat"= "#FE180C"))+
-  scale_y_continuous(expression(Mean~module~eigenegene), limits=c(-0.4, 0.4), expand = c(0.005, 0.005))+  
-  theme_classic()+
-  labs(title = "Magenta Module")+
-  annotate("text", x = Inf, y = Inf, label = paste("n genes =", n_mod), hjust = 1.1, vjust = 2.1, size = 6, color = "black") + 
-  theme(axis.text.x=element_text(vjust=0.5, size=20),
-        axis.text.y=element_text(vjust=0.5, size=20),
-        axis.title.x=element_blank(),
-        axis.title.y=element_text(size=20),
-        legend.text = element_text(vjust=0.5, size=20),
-        panel.background= element_rect(fill=NA, color='black'),
-        strip.text = element_text(vjust=0.5, size=20),
-        legend.position = "none")
-plot_MEs_fig_Trt_Orig
-dev.off()
-
-plot_MEs_fig_Trt_Orig
-```
-
-Alternative loop below:
+## Individual Module Plots, with n = number of genes in module
 
 Make a vector of calcification- and origin-associated modules to explore in detail:
+
+We are using a more stringent significance cutoff for origin (p < 0.01).
+
 
 ```{r}
 moduleTraitCor_both <- as.data.frame(moduleTraitCor_both)
@@ -1154,7 +1026,7 @@ heatmappval <- as.data.frame(heatmappval)
 
 calc_signif <- rownames(heatmappval[heatmappval$Calcification.per.day < 0.05,])
 
-origin_signif <- rownames(heatmappval[heatmappval$Origin < 0.05,])
+origin_signif <- rownames(heatmappval[heatmappval$Origin < 0.01,]) 
 
 density_signif <- rownames(heatmappval[heatmappval$CaCO3.Density..g.ml. < 0.05,])
 
