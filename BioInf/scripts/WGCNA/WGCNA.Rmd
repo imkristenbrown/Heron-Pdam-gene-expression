@@ -541,7 +541,7 @@ write.csv(vst2, "../../output/WGCNA/vstTransformed_WGCNAdata.csv") # write
 # Since we already have a summary profile (eigengene) for each module, we simply correlate eigengenes with external traits and look for the most significant associations:
 
 # Define numbers of genes and samples
-nGenes = ncol(vst2); # 9266
+nGenes = ncol(vst2); # 9012
 nSamples = nrow(vst2); # 46
 # # Recalculate MEs with color labels
 MEs0 = moduleEigengenes(vst2, moduleColors)$eigengenes
@@ -557,8 +557,8 @@ Traits$Origin <- as.numeric(Traits$Origin)
 ```{r}
 # ALL TRAIT DATA
 
-dim(Traits)  # 48 2
-dim(MEs)  # 48 15
+dim(Traits)  # 46 2
+dim(MEs)  # 46 15
 # moduleTraitCor = cor(MEs, d0.Traits, use = "p");
 # moduleTraitPvalue = corPvalueStudent(moduleTraitCor, nSamples);
 
