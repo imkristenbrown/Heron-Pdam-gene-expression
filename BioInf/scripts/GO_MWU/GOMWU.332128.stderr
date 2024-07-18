@@ -1,0 +1,57 @@
+shuffling values to calculate FDR, 20 reps
+replicate 1
+replicate 2
+replicate 3
+replicate 4
+replicate 5
+replicate 6
+replicate 7
+replicate 8
+replicate 9
+replicate 10
+replicate 11
+replicate 12
+replicate 13
+replicate 14
+replicate 15
+replicate 16
+replicate 17
+replicate 18
+replicate 19
+replicate 20
+7 GO terms at 10% FDR
+Loading required package: ape
+GO terms dispayed: 7
+"Good genes" accounted for:  79 out of 444 ( 18% )
+Warning messages:
+1: In plot.formula(c(1:top) ~ c(1:top), type = "n", axes = F, xlab = "",  :
+  the formula 'c(1:top) ~ c(1:top)' is treated as 'c(1:top) ~ 1'
+2: In plot.formula(c(1:top) ~ c(1:top), type = "n", axes = F, xlab = "",  :
+  the formula 'c(1:top) ~ c(1:top)' is treated as 'c(1:top) ~ 1'
+1
+2
+shuffling values to calculate FDR, 20 reps
+replicate 1
+replicate 2
+replicate 3
+replicate 4
+replicate 5
+replicate 6
+replicate 7
+replicate 8
+replicate 9
+replicate 10
+replicate 11
+replicate 12
+replicate 13
+replicate 14
+replicate 15
+replicate 16
+replicate 17
+replicate 18
+replicate 19
+replicate 20
+0 GO terms at 10% FDR
+Error in `.rowNamesDF<-`(x, value = value) : invalid 'row.names' length
+Calls: gomwuPlot ... row.names<- -> row.names<-.data.frame -> .rowNamesDF<-
+Execution halted
