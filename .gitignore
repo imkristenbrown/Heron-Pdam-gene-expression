@@ -10,7 +10,4 @@ BioInf/output/WGCNA/GO_analysis_ZD
 BioInf/output/WGCNA/GO_analysis_ZD/*
 BioInf/scripts/WGCNA/GO analysis_ZD.Rmd
 BioInf/scripts/WGCNA/GO-analysis_ZD.html
-BioInf/scripts/GO_MWU/dissim_BP_brown_module.csv_gene_to_go.tab
-BioInf/scripts/GO_MWU/dissim_BP_red_module.csv_gene_to_go.tab
-BioInf/scripts/GO_MWU/dissim_BP_turquoise_module.csv_gene_to_go.tab
-BioInf/scripts/GO_MWU/dissim_BP_magenta_module.csv_gene_to_go.tab
+*dissim_BP_*
