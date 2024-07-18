@@ -1,0 +1,34 @@
+---
+title: "WGCNA GOMWU Analysis - Plotting"
+author: "Zoe Dellaert"
+date: "7/16/2024"
+output: html_document
+---
+
+# WGCNA GO Analysism GO_MWU
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+sessionInfo() #provides list of loaded packages and version of R. 
+```
+
+```{r}
+#BiocManager::install("topGO")
+#BiocManager::install("clusterProfiler")
+```
+
+First, load the necessary packages.
+
+```{r load_libraries, include = TRUE}
+library(tidyverse)
+library(topGO)
+library(lintr)
+library(lattice)
+library(dplyr)
+library(rtracklayer)
+library(ggplot2)
+library(scales)
+```
