@@ -105,6 +105,8 @@ GO.terms <- split2
 
 dim(GO.terms)
 
+length(unique(GO.terms$Annotation.GO.ID))
+
 ##Construct list of genes with 1 for genes in that are significant for Treatment and 0 for those that are not
 gene.vector = as.integer(ALL.vector %in% ID.vector) #since we ordered geneInfo by q_Treatment, this puts a "1" for the first 18 genes, which are the same genes in ID.vector
 
@@ -127,7 +129,7 @@ split2 <- data.frame(v1 = rep.int(GO.terms_DE$gene, sapply(split, length)), v2 =
 colnames(split2) <- c("gene", "Annotation.GO.ID")
 GO.terms_DE <- split2
 
-dim(GO.terms_DE)
+length(unique(GO.terms_DE$Annotation.GO.ID))
 ```
 
 
@@ -139,6 +141,9 @@ GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 
 colnames(GO)[1] <- "GOterm"
     
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+ 
 #Write file of results 
 write.csv(GO, "../../../output/glmmseq/GOSeq/Treatment/GOseq_DEG_Treatment.csv")
 
@@ -147,8 +152,8 @@ GO_05 <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
-#Filtering for p < 0.05
-GO_001 <- GO %>%
+#Filtering for p < 0.01
+GO_01 <- GO %>%
         dplyr::filter(over_represented_pvalue<0.001) %>%
         dplyr::arrange(., ontology, over_represented_pvalue)
 
@@ -157,7 +162,14 @@ dim(GO_05)
 head(GO_05)
 
 dim(GO_001)
-GO_001
+head(GO_01)
+
+GO_05_BP<-GO_05%>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      arrange(., over_represented_pvalue)
+
+dim(GO_05_BP)
 ```
 
 
@@ -271,6 +283,9 @@ KO.wall <-
 
 KO <- KO.wall[order(KO.wall$over_represented_pvalue), ]
 colnames(KO)[1] <- "KEGGterm"
+
+#adjust p-values 
+KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
 
 #Filtering for p < 0.05
 KO_05 <- KO %>%
