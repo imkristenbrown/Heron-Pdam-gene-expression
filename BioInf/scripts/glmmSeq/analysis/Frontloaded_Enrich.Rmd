@@ -1,5 +1,5 @@
 ---
-title: "Frontloaded genes, Enrich after glmmSeq, Slope as Base Level"
+title: "Frontloaded genes, Enrich after glmmSeq"
 author: "Zoe Dellaert"
 date: "4/24/2023"
 output: html_document
@@ -111,6 +111,8 @@ split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = un
 colnames(split2) <- c("gene", "Annotation.GO.ID")
 GO.terms <- split2
 
+length(unique(GO.terms$Annotation.GO.ID))
+
 ##Construct list of genes with 1 for genes in that are frontloaded and 0 for those that are not
 gene.vector = as.integer(ALL.vector %in% ID.vector) 
 
@@ -133,7 +135,7 @@ split2 <- data.frame(v1 = rep.int(GO.terms_front$gene, sapply(split, length)), v
 colnames(split2) <- c("gene", "Annotation.GO.ID")
 GO.terms_front <- split2
 
-dim(GO.terms_front)
+length(unique(GO.terms_front$Annotation.GO.ID))
 ```
 
 
@@ -145,6 +147,10 @@ GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 
 colnames(GO)[1] <- "GOterm"
     
+    
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+  
 #Write file of results 
 write.csv(GO, "../../../output/glmmseq/Frontloaded_GOSeq/GOseq_Frontloaded.csv")
 
@@ -164,6 +170,13 @@ head(GO_05)
 
 dim(GO_01)
 head(GO_01)
+
+GO_05_BP<-GO_05%>%
+      filter(ontology=="BP")%>%
+      filter(over_represented_pvalue != "NA") %>%
+      arrange(., over_represented_pvalue)
+
+dim(GO_05_BP)
 ```
 
 Plotting!
@@ -360,8 +373,8 @@ KO.wall <-
 KO <- KO.wall[order(KO.wall$over_represented_pvalue), ]
 colnames(KO)[1] <- "KEGGterm"
 
-#adjust p-values
-#KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method = "BH") #add adjusted p-values
+#adjust p-values 
+KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
 
 #Filtering for p < 0.05
 KO_05 <- KO %>%
