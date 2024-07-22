@@ -1,292 +1,292 @@
-"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","Module","ParentTerm","N_in_Parent"
-"1","GO:0002181",1.56122826559313e-16,1,67,90,"cytoplasmic translation","BP","Turquoise","cytoplasmic translation",9
-"2","GO:0006412",2.3281385663813e-16,1,123,219,"translation","BP","Turquoise","cytoplasmic translation",9
-"3","GO:0043043",3.13208398903398e-15,1,125,231,"peptide biosynthetic process","BP","Turquoise","cytoplasmic translation",9
-"4","GO:0006518",5.57543011215777e-15,1,145,285,"peptide metabolic process","BP","Turquoise","cytoplasmic translation",9
-"5","GO:0006614",1.28577036945717e-14,1,48,59,"SRP-dependent cotranslational protein targeting to membrane","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"6","GO:0043603",2.19212994822729e-14,1,170,359,"amide metabolic process","BP","Turquoise","cytoplasmic translation",9
-"7","GO:0043604",2.94925277377709e-14,1,136,268,"amide biosynthetic process","BP","Turquoise","cytoplasmic translation",9
-"8","GO:1901566",4.3122391112113e-14,1,247,577,"organonitrogen compound biosynthetic process","BP","Turquoise","organonitrogen compound biosynthetic process",4
-"9","GO:0034645",5.57450056616276e-14,1,308,760,"cellular macromolecule biosynthetic process","BP","Turquoise","cellular macromolecule biosynthetic process",4
-"10","GO:1901564",8.9030176181542e-14,1,648,1876,"organonitrogen compound metabolic process","BP","Turquoise","organonitrogen compound biosynthetic process",4
-"11","GO:0006613",1.14997101309939e-13,1,49,63,"cotranslational protein targeting to membrane","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"12","GO:0009059",2.0186579853031e-13,1,309,770,"macromolecule biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"13","GO:0044271",2.96183338129411e-13,1,307,768,"cellular nitrogen compound biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"14","GO:1901361",2.36524897863617e-12,1,114,227,"organic cyclic compound catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"15","GO:0045047",3.08537791255147e-12,1,50,68,"protein targeting to ER","BP","Turquoise","protein targeting to ER",14
-"16","GO:0009058",3.21642055564447e-12,1,431,1177,"biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"17","GO:0044249",4.0804481648298e-12,1,422,1149,"cellular biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"18","GO:1901576",5.9646265748351e-12,1,427,1168,"organic substance biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"19","GO:0046700",6.24612788764724e-12,1,104,203,"heterocycle catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"20","GO:0019439",7.63015119393418e-12,1,109,217,"aromatic compound catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"21","GO:0044270",1.01567862918512e-11,1,103,202,"cellular nitrogen compound catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"22","GO:0006612",1.2579548722919e-11,1,52,75,"protein targeting to membrane","BP","Turquoise","protein targeting to ER",14
-"23","GO:0072599",1.42221158912375e-11,1,50,70,"establishment of protein localization to endoplasmic reticulum","BP","Turquoise","protein targeting to ER",14
-"24","GO:0006807",1.616185504685e-11,1,858,2641,"nitrogen compound metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"25","GO:0034655",3.03145686348803e-11,1,98,191,"nucleobase-containing compound catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"26","GO:0044238",9.74697197453065e-11,1,882,2746,"primary metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"27","GO:0071704",1.85122800904511e-10,1,911,2857,"organic substance metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"28","GO:0006413",3.11199240530867e-10,0.999999999936697,56,90,"translational initiation","BP","Turquoise","cytoplasmic translation",9
-"29","GO:0008152",6.95933930975623e-10,1,937,2960,"metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"30","GO:0070972",8.32290109435809e-10,0.999999999809429,52,80,"protein localization to endoplasmic reticulum","BP","Turquoise","protein targeting to ER",14
-"31","GO:0034641",1.00837231203631e-09,1,548,1615,"cellular nitrogen compound metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"32","GO:0000956",1.73017188685762e-09,0.999999999461797,66,119,"nuclear-transcribed mRNA catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"33","GO:0044237",1.85867465380987e-09,1,897,2828,"cellular metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"34","GO:0019538",2.17275394995751e-09,1,504,1492,"protein metabolic process","BP","Turquoise","organonitrogen compound biosynthetic process",4
-"35","GO:0000184",3.2051044945581e-09,0.999999999270081,46,71,"nuclear-transcribed mRNA catabolic process, nonsense-mediated decay","BP","Turquoise","organic cyclic compound catabolic process",29
-"36","GO:0044260",3.21221044628724e-09,1,627,1911,"cellular macromolecule metabolic process","BP","Turquoise","cellular macromolecule biosynthetic process",4
-"37","GO:0006402",3.57374874936629e-09,0.999999998821987,69,128,"mRNA catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"38","GO:0006401",1.00396371390032e-08,0.999999996353517,73,141,"RNA catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"39","GO:0010467",2.33584499347187e-08,1,350,983,"gene expression","BP","Turquoise","cellular macromolecule biosynthetic process",4
-"40","GO:0090150",1.17032840294206e-07,0.999999958733431,61,113,"establishment of protein localization to membrane","BP","Turquoise","protein targeting to ER",14
-"41","GO:0044265",1.71649791010214e-07,1,154,391,"cellular macromolecule catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"42","GO:1901575",1.88241816476047e-07,1,233,639,"organic substance catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"43","GO:0009057",2.9796183724173e-07,1,172,451,"macromolecule catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"44","GO:0006139",3.43405862479236e-07,1,453,1366,"nucleobase-containing compound metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"45","GO:0043170",5.57685218797105e-07,0.999999755906062,730,2326,"macromolecule metabolic process","BP","Turquoise","cellular macromolecule biosynthetic process",4
-"46","GO:0046483",1.94199738662183e-06,0.999998770956242,469,1427,"heterocycle metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"47","GO:1901360",1.98774947932432e-06,0.999998735648419,496,1524,"organic cyclic compound metabolic process","BP","Turquoise","organic cyclic compound metabolic process",3
-"48","GO:0006725",2.5216035057104e-06,0.999998304226573,479,1465,"cellular aromatic compound metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"49","GO:0006091",5.1941023096902e-06,0.999997544559145,76,169,"generation of precursor metabolites and energy","BP","Turquoise","generation of precursor metabolites and energy",11
-"50","GO:0006119",5.4631661264037e-06,0.999998483610451,34,56,"oxidative phosphorylation","BP","Turquoise","generation of precursor metabolites and energy",11
-"51","GO:0044248",6.97625733600356e-06,0.999995629231299,236,673,"cellular catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"52","GO:0046034",8.52900606141486e-06,0.999996733339326,49,96,"ATP metabolic process","BP","Turquoise","ATP metabolic process",30
-"53","GO:0009123",9.01854542855585e-06,0.999996135028194,59,124,"nucleoside monophosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"54","GO:0022900",9.58735142470567e-06,0.999996734126536,41,75,"electron transport chain","BP","Turquoise","generation of precursor metabolites and energy",11
-"55","GO:0072594",1.29998059346402e-05,0.999993295968851,94,224,"establishment of protein localization to organelle","BP","Turquoise","protein targeting to ER",14
-"56","GO:0009126",1.37321530148602e-05,0.999994264154985,54,112,"purine nucleoside monophosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"57","GO:0009167",1.37321530148602e-05,0.999994264154985,54,112,"purine ribonucleoside monophosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"58","GO:0006605",1.38014125019717e-05,0.999993288449401,75,166,"protein targeting","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"59","GO:0006163",1.39916580421706e-05,0.999992949774842,80,187,"purine nucleotide metabolic process","BP","Turquoise","purine nucleotide metabolic process",9
-"60","GO:0006753",1.44114850881242e-05,0.999992360570369,101,249,"nucleoside phosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"61","GO:0009117",1.45798033638609e-05,0.99999259865359,99,244,"nucleotide metabolic process","BP","Turquoise","ATP metabolic process",30
-"62","GO:0009161",1.53508633576195e-05,0.999993487733346,55,115,"ribonucleoside monophosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"63","GO:0009056",1.78596753218266e-05,0.999988013713647,247,716,"catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"64","GO:0072521",1.81759586589985e-05,0.99999080163945,85,203,"purine-containing compound metabolic process","BP","Turquoise","purine nucleotide metabolic process",9
-"65","GO:0022904",2.05857575093853e-05,0.999994101831837,31,52,"respiratory electron transport chain","BP","Turquoise","generation of precursor metabolites and energy",11
-"66","GO:0045333",2.79516851307907e-05,0.999989619715772,42,80,"cellular respiration","BP","Turquoise","generation of precursor metabolites and energy",11
-"67","GO:0009141",4.57094133717366e-05,0.999978846276623,59,128,"nucleoside triphosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"68","GO:0055086",4.91478975200553e-05,0.99997138886153,111,286,"nucleobase-containing small molecule metabolic process","BP","Turquoise","ATP metabolic process",30
-"69","GO:0016070",4.93661315662955e-05,0.99996459532538,285,841,"RNA metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"70","GO:0019693",4.99760783020684e-05,0.999973382475408,81,196,"ribose phosphate metabolic process","BP","Turquoise","ribose phosphate metabolic process",8
-"71","GO:0009150",5.06889932967716e-05,0.999973492573352,77,184,"purine ribonucleotide metabolic process","BP","Turquoise","ribose phosphate metabolic process",8
-"72","GO:0042773",7.87140729322133e-05,0.999979270920734,25,40,"ATP synthesis coupled electron transport","BP","Turquoise","generation of precursor metabolites and energy",11
-"73","GO:0042775",7.87140729322133e-05,0.999979270920734,25,40,"mitochondrial ATP synthesis coupled electron transport","BP","Turquoise","generation of precursor metabolites and energy",11
-"74","GO:0009259",9.07180251422545e-05,0.999951147306308,78,190,"ribonucleotide metabolic process","BP","Turquoise","ribose phosphate metabolic process",8
-"75","GO:0009144",9.48360088535976e-05,0.999956230760021,54,117,"purine nucleoside triphosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"76","GO:0015980",9.85509192009783e-05,0.999954757411954,53,115,"energy derivation by oxidation of organic compounds","BP","Turquoise","generation of precursor metabolites and energy",11
-"77","GO:0009987",0.000120551258297209,0.999899920902048,1185,4026,"cellular process","BP","Turquoise","cellular process",1
-"78","GO:1901135",0.000133759939549983,0.999912376332477,152,413,"carbohydrate derivative metabolic process","BP","Turquoise","carbohydrate derivative metabolic process",3
-"79","GO:0042255",0.000149781595390104,0.999957755396617,24,41,"ribosome assembly","BP","Turquoise","ribosome assembly",7
-"80","GO:0042254",0.00018133859877224,0.99990211541149,72,176,"ribosome biogenesis","BP","Turquoise","ribosome assembly",7
-"81","GO:0009205",0.000257533161720828,0.999876413560925,52,115,"purine ribonucleoside triphosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"82","GO:0034660",0.000284627081353812,0.999826975639542,99,267,"ncRNA metabolic process","BP","Turquoise","ncRNA metabolic process",8
-"83","GO:0044281",0.00034014144586513,0.999753364939498,225,666,"small molecule metabolic process","BP","Turquoise","small molecule metabolic process",14
-"84","GO:0022613",0.000344085412502085,0.999786363192168,105,282,"ribonucleoprotein complex biogenesis","BP","Turquoise","ribosome assembly",7
-"85","GO:0042273",0.00037399067031949,0.999874408266313,26,49,"ribosomal large subunit biogenesis","BP","Turquoise","ribosome assembly",7
-"86","GO:0006520",0.00040810032177451,0.999800189263358,49,118,"amino acid metabolic process","BP","Turquoise","small molecule metabolic process",14
-"87","GO:0090304",0.000408252456635874,0.999683933269919,352,1099,"nucleic acid metabolic process","BP","Turquoise","nitrogen compound metabolic process",11
-"88","GO:0006734",0.000421756554115906,0.999940718353546,11,16,"NADH metabolic process","BP","Turquoise","NADH metabolic process",6
-"89","GO:0009199",0.000488669105865576,0.999756239848126,52,118,"ribonucleoside triphosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"90","GO:0070647",0.000524320694202062,0.999658884746866,118,334,"protein modification by small protein conjugation or removal","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"91","GO:0043543",0.000659721290915917,0.999707079783749,37,84,"protein acylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"92","GO:0019637",0.000772526539196886,0.999475356744783,137,390,"organophosphate metabolic process","BP","Turquoise","ribose phosphate metabolic process",8
-"93","GO:0034654",0.000952727094624882,0.999321982662739,170,496,"nucleobase-containing compound biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"94","GO:0000028",0.0011187339607421,0.99981096676047,12,17,"ribosomal small subunit assembly","BP","Turquoise","ribosome assembly",7
-"95","GO:0006886",0.00132300842745783,0.999083042377296,138,401,"intracellular protein transport","BP","Turquoise","protein targeting to ER",14
-"96","GO:0006120",0.00162138569187958,0.999619536337755,15,23,"mitochondrial electron transport, NADH to ubiquinone","BP","Turquoise","generation of precursor metabolites and energy",11
-"97","GO:0018130",0.00177564130607031,0.998701761847288,179,531,"heterocycle biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"98","GO:0032435",0.0018305922641147,0.999607421333396,12,20,"negative regulation of proteasomal ubiquitin-dependent protein catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"99","GO:0043436",0.0019670450333327,0.998658730164465,118,340,"oxoacid metabolic process","BP","Turquoise","small molecule metabolic process",14
-"100","GO:0019438",0.00239690838186504,0.998231261533961,179,535,"aromatic compound biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"101","GO:0019752",0.00242266700196283,0.998363686963466,108,311,"carboxylic acid metabolic process","BP","Turquoise","small molecule metabolic process",14
-"102","GO:0006082",0.00244200462309155,0.998318300831165,119,345,"organic acid metabolic process","BP","Turquoise","small molecule metabolic process",14
-"103","GO:0006122",0.00249024666051583,0.999755529897242,8,10,"mitochondrial electron transport, ubiquinol to cytochrome c","BP","Turquoise","generation of precursor metabolites and energy",11
-"104","GO:0009127",0.00251445811158331,0.999041146280944,23,47,"purine nucleoside monophosphate biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"105","GO:0009168",0.00251445811158331,0.999041146280944,23,47,"purine ribonucleoside monophosphate biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"106","GO:0022618",0.00255327320767929,0.998520409103728,59,152,"ribonucleoprotein complex assembly","BP","Turquoise","ribonucleoprotein complex assembly",8
-"107","GO:0061844",0.00273524623206889,0.999749228777111,7,9,"antimicrobial humoral immune response mediated by antimicrobial peptide","BP","Turquoise","antimicrobial humoral immune response mediated by antimicrobial peptide",4
-"108","GO:0032774",0.00278958414101829,0.998106761898878,109,306,"RNA biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"109","GO:0006473",0.00282431460060367,0.998704241610653,31,72,"protein acetylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"110","GO:0010257",0.00307296966905817,0.999076921738957,17,29,"NADH dehydrogenase complex assembly","BP","Turquoise","ribonucleoprotein complex assembly",8
-"111","GO:0032981",0.00307296966905817,0.999076921738957,17,29,"mitochondrial respiratory chain complex I assembly","BP","Turquoise","ribonucleoprotein complex assembly",8
-"112","GO:1901362",0.00337944388077488,0.997461610596629,188,569,"organic cyclic compound biosynthetic process","BP","Turquoise","macromolecule biosynthetic process",18
-"113","GO:0071826",0.00355122028225109,0.997879449072684,61,161,"ribonucleoprotein complex subunit organization","BP","Turquoise","ribonucleoprotein complex assembly",8
-"114","GO:0006351",0.00363284420896677,0.997512057330278,108,305,"DNA-templated transcription","BP","Turquoise","macromolecule biosynthetic process",18
-"115","GO:0097659",0.00363284420896677,0.997512057330278,108,305,"nucleic acid-templated transcription","BP","Turquoise","macromolecule biosynthetic process",18
-"116","GO:0034470",0.00412614682888778,0.997409336372391,71,194,"ncRNA processing","BP","Turquoise","ncRNA metabolic process",8
-"117","GO:0036211",0.00416796989314583,0.99664175736948,319,1040,"protein modification process","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"118","GO:0006414",0.00421167234629932,0.998270836680785,25,49,"translational elongation","BP","Turquoise","cytoplasmic translation",9
-"119","GO:0016071",0.00435041867011831,0.996880093565396,133,388,"mRNA metabolic process","BP","Turquoise","mRNA metabolic process",4
-"120","GO:0019674",0.00469215820658401,0.998698069316359,13,24,"NAD metabolic process","BP","Turquoise","NADH metabolic process",6
-"121","GO:0043981",0.00476862518292472,0.999398169044111,7,10,"histone H4-K5 acetylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"122","GO:0043982",0.00476862518292472,0.999398169044111,7,10,"histone H4-K8 acetylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"123","GO:0015031",0.00484288680396483,0.996398880104184,161,492,"protein transport","BP","Turquoise","protein targeting to ER",14
-"124","GO:0009156",0.0049890342314443,0.997941811024823,23,49,"ribonucleoside monophosphate biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"125","GO:0018205",0.00504113116256803,0.99715206121146,47,122,"peptidyl-lysine modification","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"126","GO:0072657",0.00531882765122921,0.996561216213061,76,210,"protein localization to membrane","BP","Turquoise","protein targeting to ER",14
-"127","GO:0030422",0.00533945070883716,0.999309935730053,7,10,"siRNA processing","BP","Turquoise","ncRNA metabolic process",8
-"128","GO:0006352",0.00539981947258551,0.997514807127201,28,63,"DNA-templated transcription initiation","BP","Turquoise","macromolecule biosynthetic process",18
-"129","GO:0042886",0.00541729337314271,0.995945148018895,164,504,"amide transport","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"130","GO:0006475",0.00557384552913541,0.997398962471822,28,66,"internal protein amino acid acetylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"131","GO:0033108",0.00561261087622537,0.997744052144886,23,44,"mitochondrial respiratory chain complex assembly","BP","Turquoise","mitochondrial respiratory chain complex assembly",7
-"132","GO:0015833",0.00565883905955835,0.995761833897093,163,501,"peptide transport","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"133","GO:0018394",0.00583910412698354,0.997264261549604,28,66,"peptidyl-lysine acetylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"134","GO:0009124",0.0059966117193641,0.997419031132137,24,52,"nucleoside monophosphate biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"135","GO:0061615",0.00602196196513579,0.99920163758281,7,10,"glycolytic process through fructose-6-phosphate","BP","Turquoise","purine nucleotide metabolic process",9
-"136","GO:0061620",0.00602196196513579,0.99920163758281,7,10,"glycolytic process through glucose-6-phosphate","BP","Turquoise","purine nucleotide metabolic process",9
-"137","GO:0000027",0.00610980603275295,0.998389212322804,12,21,"ribosomal large subunit assembly","BP","Turquoise","ribosome assembly",7
-"138","GO:0006959",0.00632573855587675,0.997556516385765,19,41,"humoral immune response","BP","Turquoise","antimicrobial humoral immune response mediated by antimicrobial peptide",4
-"139","GO:0006364",0.00689246624576949,0.996001671509807,48,125,"rRNA processing","BP","Turquoise","ncRNA metabolic process",8
-"140","GO:0016072",0.00701885523338893,0.995817630881376,52,139,"rRNA metabolic process","BP","Turquoise","ncRNA metabolic process",8
-"141","GO:0016573",0.00710409557179287,0.99665886683729,27,64,"histone acetylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"142","GO:0072522",0.00712555188672654,0.996402385473678,32,78,"purine-containing compound biosynthetic process","BP","Turquoise","purine nucleotide metabolic process",9
-"143","GO:0040032",0.00762676787387292,1,4,4,"post-embryonic body morphogenesis","BP","Turquoise","post-embryonic body morphogenesis",2
-"144","GO:0045184",0.0077503374494976,0.994088102731949,172,536,"establishment of protein localization","BP","Turquoise","protein targeting to ER",14
-"145","GO:0051438",0.00794349037105502,0.997241723309821,16,31,"regulation of ubiquitin-protein transferase activity","BP","Turquoise","regulation of ubiquitin-protein transferase activity",2
-"146","GO:0070646",0.00804718923223986,0.99521304540078,50,134,"protein modification by small protein removal","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"147","GO:1901605",0.00822115699320855,0.995790270930511,32,79,"alpha-amino acid metabolic process","BP","Turquoise","small molecule metabolic process",14
-"148","GO:0006164",0.00841493401987985,0.995737135156286,31,76,"purine nucleotide biosynthetic process","BP","Turquoise","purine nucleotide metabolic process",9
-"149","GO:1901137",0.00845589062620659,0.994373909812479,78,216,"carbohydrate derivative biosynthetic process","BP","Turquoise","carbohydrate derivative metabolic process",3
-"150","GO:0018393",0.00907844028703596,0.99561999568842,27,65,"internal peptidyl-lysine acetylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"151","GO:0031640",0.00929066071548301,1,4,4,"killing of cells of another organism","BP","Turquoise","killing of cells of another organism",1
-"152","GO:0043161",0.00930741968024069,0.994326485953877,53,142,"proteasome-mediated ubiquitin-dependent protein catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"153","GO:0006575",0.00936978750715689,0.995115025492147,33,80,"cellular modified amino acid metabolic process","BP","Turquoise","cellular modified amino acid metabolic process",2
-"154","GO:0044282",0.00969549215921464,0.994391016826486,44,114,"small molecule catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"155","GO:1901799",0.00989796283573627,0.996636001635925,14,29,"negative regulation of proteasomal protein catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"156","GO:0014902",0.0102278951587106,0.99565023576003,20,46,"myotube differentiation","BP","Turquoise","myotube differentiation",2
-"157","GO:0030808",0.0102786932639031,0.996395611107351,15,30,"regulation of nucleotide biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"158","GO:1900371",0.0102786932639031,0.996395611107351,15,30,"regulation of purine nucleotide biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"159","GO:0010498",0.0104673525234857,0.993498550233125,55,150,"proteasomal protein catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"160","GO:1901565",0.0104877746496863,0.992296721173325,123,375,"organonitrogen compound catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"161","GO:0016579",0.0108514279601665,0.993559129612488,46,124,"protein deubiquitination","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"162","GO:0009152",0.010917101621584,0.994404654739309,30,74,"purine ribonucleotide biosynthetic process","BP","Turquoise","ribose phosphate metabolic process",8
-"163","GO:0009060",0.0111648440824112,0.99543850195684,19,40,"aerobic respiration","BP","Turquoise","generation of precursor metabolites and energy",11
-"164","GO:0019730",0.0112311658603123,0.995917636042153,15,32,"antimicrobial humoral response","BP","Turquoise","antimicrobial humoral immune response mediated by antimicrobial peptide",4
-"165","GO:0009200",0.0113968414694133,0.998696360356137,6,8,"deoxyribonucleoside triphosphate metabolic process","BP","Turquoise","ATP metabolic process",30
-"166","GO:0006366",0.0115895750917147,0.99200010640767,86,243,"transcription by RNA polymerase II","BP","Turquoise","macromolecule biosynthetic process",18
-"167","GO:0043933",0.0119553558854807,0.990363535539544,245,785,"protein-containing complex organization","BP","Turquoise","ribonucleoprotein complex assembly",8
-"168","GO:2000059",0.012639257757055,0.995556698486339,14,29,"negative regulation of ubiquitin-dependent protein catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"169","GO:0060211",0.0129097748892917,0.999243270309858,4,5,"regulation of nuclear-transcribed mRNA poly(A) tail shortening","BP","Turquoise","mRNA metabolic process",4
-"170","GO:0060213",0.0129097748892917,0.999243270309858,4,5,"positive regulation of nuclear-transcribed mRNA poly(A) tail shortening","BP","Turquoise","mRNA metabolic process",4
-"171","GO:1900101",0.0134713013619428,0.996852222453052,9,15,"regulation of endoplasmic reticulum unfolded protein response","BP","Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
-"172","GO:0071689",0.0135728318199854,0.997847560509763,7,10,"muscle thin filament assembly","BP","Turquoise","mitochondrial respiratory chain complex assembly",7
-"173","GO:0009142",0.0136881744677586,0.993900110057602,21,47,"nucleoside triphosphate biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"174","GO:0034314",0.0136967026148278,0.99835878384702,6,8,"Arp2/3 complex-mediated actin nucleation","BP","Turquoise","mitochondrial respiratory chain complex assembly",7
-"175","GO:2001228",0.0140559550996785,0.999368079347677,3,4,"regulation of response to gamma radiation","BP","Turquoise","regulation of response to gamma radiation",2
-"176","GO:0006754",0.0148260388431097,0.994050544923102,17,36,"ATP biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"177","GO:0070918",0.0153674905649128,0.996001892665248,9,17,"regulatory ncRNA processing","BP","Turquoise","ncRNA metabolic process",8
-"178","GO:0006955",0.0154052161187017,0.988539953010889,119,374,"immune response","BP","Turquoise","antimicrobial humoral immune response mediated by antimicrobial peptide",4
-"179","GO:1903863",0.0154556671419307,0.999038507188056,4,5,"P granule assembly","BP","Turquoise","P granule assembly",3
-"180","GO:0042866",0.015721500219682,0.996430683479236,8,14,"pyruvate biosynthetic process","BP","Turquoise","small molecule metabolic process",14
-"181","GO:0043984",0.0157414602394491,0.997638735486436,6,9,"histone H4-K16 acetylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"182","GO:0018200",0.0157464480208804,0.996423860575266,8,14,"peptidyl-glutamic acid modification","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"183","GO:0006367",0.0159428758797973,0.992913941405923,20,45,"transcription initiation at RNA polymerase II promoter","BP","Turquoise","macromolecule biosynthetic process",18
-"184","GO:0042274",0.0160638222879964,0.991823894532217,27,65,"ribosomal small subunit biogenesis","BP","Turquoise","ribosome assembly",7
-"185","GO:2001169",0.0165210266910709,0.994293996261373,13,26,"regulation of ATP biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"186","GO:0009166",0.016528277366469,0.993964347236004,14,29,"nucleotide catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"187","GO:0032446",0.0166818001954441,0.988605702480788,72,214,"protein modification by small protein conjugation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"188","GO:1990048",0.0169460569398111,1,2,2,"anterograde neuronal dense core vesicle transport","BP","Turquoise","protein targeting to ER",14
-"189","GO:0006735",0.0170286366372453,0.998081012992183,5,7,"NADH regeneration","BP","Turquoise","NADH regeneration",1
-"190","GO:0061621",0.0170286366372453,0.998081012992183,5,7,"canonical glycolysis","BP","Turquoise","purine nucleotide metabolic process",9
-"191","GO:0061718",0.0170286366372453,0.998081012992183,5,7,"glucose catabolic process to pyruvate","BP","Turquoise","glucose catabolic process to pyruvate",3
-"192","GO:0006508",0.0173932496039254,0.98666789786768,142,451,"proteolysis","BP","Turquoise","organonitrogen compound biosynthetic process",4
-"193","GO:0006656",0.0174853194466589,0.996434035556963,7,12,"phosphatidylcholine biosynthetic process","BP","Turquoise","ribose phosphate metabolic process",8
-"194","GO:0071705",0.0184383207356349,0.985401964119191,182,581,"nitrogen compound transport","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"195","GO:0031099",0.0185823991115316,0.989314383916985,36,95,"regeneration","BP","Turquoise","regeneration",1
-"196","GO:0009063",0.0195249525591631,0.992349170033915,15,32,"amino acid catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"197","GO:0031929",0.0200052202257059,0.992996353554667,12,26,"TOR signaling","BP","Turquoise","TOR signaling",3
-"198","GO:0043412",0.0201389081779621,0.98305483152295,334,1119,"macromolecule modification","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"199","GO:0046085",0.0202821994053224,1,3,3,"adenosine metabolic process","BP","Turquoise","ATP metabolic process",30
-"200","GO:0071218",0.0204446715014118,0.995680356853654,7,12,"cellular response to misfolded protein","BP","Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
-"201","GO:0006006",0.0206484964073695,0.991148327536147,17,39,"glucose metabolic process","BP","Turquoise","glucose catabolic process to pyruvate",3
-"202","GO:0008209",0.0206594421118811,0.998582500579769,4,5,"androgen metabolic process","BP","Turquoise","androgen metabolic process",3
-"203","GO:0016073",0.0211232606141263,0.990640570423532,18,42,"snRNA metabolic process","BP","Turquoise","ncRNA metabolic process",8
-"204","GO:0006081",0.0215716835853911,0.992465033287939,12,25,"cellular aldehyde metabolic process","BP","Turquoise","cellular aldehyde metabolic process",1
-"205","GO:0046390",0.0216659248446681,0.987947866510099,31,81,"ribose phosphate biosynthetic process","BP","Turquoise","ribose phosphate metabolic process",8
-"206","GO:0006627",0.0220078555078641,1,3,3,"protein processing involved in protein targeting to mitochondrion","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"207","GO:0009052",0.023227163788305,1,3,3,"pentose-phosphate shunt, non-oxidative branch","BP","Turquoise","NADH metabolic process",6
-"208","GO:0009260",0.0235151701650887,0.986964030621627,30,78,"ribonucleotide biosynthetic process","BP","Turquoise","ribose phosphate metabolic process",8
-"209","GO:0051296",0.0242982471772,0.996366753256963,5,8,"establishment of meiotic spindle orientation","BP","Turquoise","protein targeting to ER",14
-"210","GO:0007021",0.0247894142383497,1,3,3,"tubulin complex assembly","BP","Turquoise","ribonucleoprotein complex assembly",8
-"211","GO:0018193",0.0252536257237601,0.980912168385196,114,361,"peptidyl-amino acid modification","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"212","GO:0051295",0.0253446320974544,0.994842201136165,6,11,"establishment of meiotic spindle localization","BP","Turquoise","protein targeting to ER",14
-"213","GO:0019362",0.0256704674737226,0.987971232541151,19,46,"pyridine nucleotide metabolic process","BP","Turquoise","NADH metabolic process",6
-"214","GO:0046496",0.0256704674737226,0.987971232541151,19,46,"nicotinamide nucleotide metabolic process","BP","Turquoise","NADH metabolic process",6
-"215","GO:0006486",0.0267488028703706,0.985259689930199,29,72,"protein glycosylation","BP","Turquoise","macromolecule glycosylation",5
-"216","GO:0043413",0.0267488028703706,0.985259689930199,29,72,"macromolecule glycosylation","BP","Turquoise","macromolecule glycosylation",5
-"217","GO:0030388",0.0267946359674043,1,3,3,"fructose 1,6-bisphosphate metabolic process","BP","Turquoise","carbohydrate derivative metabolic process",3
-"218","GO:1904779",0.0277263393986174,0.997892823203294,4,5,"regulation of protein localization to centrosome","BP","Turquoise","protein targeting to ER",14
-"219","GO:0071702",0.027933891997492,0.977341550336507,198,645,"organic substance transport","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"220","GO:2001024",0.0282222322053699,0.993214383235342,7,13,"negative regulation of response to drug","BP","Turquoise","regulation of response to gamma radiation",2
-"221","GO:0009145",0.0283156345808876,0.987054868256432,18,41,"purine nucleoside triphosphate biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"222","GO:0006706",0.0286250619567582,0.994412675468177,6,10,"steroid catabolic process","BP","Turquoise","androgen metabolic process",3
-"223","GO:0098781",0.0287139171217914,0.986626664257626,18,44,"ncRNA transcription","BP","Turquoise","macromolecule biosynthetic process",18
-"224","GO:1901292",0.0287434834802265,0.987983105758789,15,33,"nucleoside phosphate catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"225","GO:1903894",0.0287802739169704,0.996215903806932,5,7,"regulation of IRE1-mediated unfolded protein response","BP","Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
-"226","GO:0018279",0.0290235358661058,0.991459284973353,9,17,"protein N-linked glycosylation via asparagine","BP","Turquoise","macromolecule glycosylation",5
-"227","GO:0051788",0.0290417642830445,0.992970659548962,7,13,"response to misfolded protein","BP","Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
-"228","GO:0007292",0.0292642432383805,0.977722600284796,113,368,"female gamete generation","BP","Turquoise","P granule assembly",3
-"229","GO:0072710",0.0299327232980068,0.996590933959063,4,6,"response to hydroxyurea","BP","Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
-"230","GO:0019233",0.0301169494926844,0.986342972184155,17,40,"sensory perception of pain","BP","Turquoise","sensory perception of pain",4
-"231","GO:0043207",0.0316852248723462,0.976756444748974,87,270,"response to external biotic stimulus","BP","Turquoise","response to other organism",4
-"232","GO:0051707",0.0316852248723462,0.976756444748974,87,270,"response to other organism","BP","Turquoise","response to other organism",4
-"233","GO:0048477",0.0323715008681708,0.975591029030194,102,331,"oogenesis","BP","Turquoise","P granule assembly",3
-"234","GO:0045761",0.0326491836020637,0.994676915903522,5,8,"regulation of adenylate cyclase activity","BP","Turquoise","regulation of ubiquitin-protein transferase activity",2
-"235","GO:0007007",0.0330304190680265,0.988630894475362,11,21,"inner mitochondrial membrane organization","BP","Turquoise","mitochondrial respiratory chain complex assembly",7
-"236","GO:0035022",0.0330725856270059,0.996976948150106,3,5,"positive regulation of Rac protein signal transduction","BP","Turquoise","TOR signaling",3
-"237","GO:0045981",0.0333311860821583,0.988914981156287,10,20,"positive regulation of nucleotide metabolic process","BP","Turquoise","ATP metabolic process",30
-"238","GO:1900544",0.0333311860821583,0.988914981156287,10,20,"positive regulation of purine nucleotide metabolic process","BP","Turquoise","ATP metabolic process",30
-"239","GO:0070085",0.0334017251799874,0.981139601934638,29,73,"glycosylation","BP","Turquoise","macromolecule glycosylation",5
-"240","GO:0006418",0.0342749391627011,0.987930618041483,10,23,"tRNA aminoacylation for protein translation","BP","Turquoise","small molecule metabolic process",14
-"241","GO:0043038",0.0342749391627011,0.987930618041483,10,23,"amino acid activation","BP","Turquoise","small molecule metabolic process",14
-"242","GO:0043039",0.0342749391627011,0.987930618041483,10,23,"tRNA aminoacylation","BP","Turquoise","small molecule metabolic process",14
-"243","GO:0006096",0.0344128508273193,0.991331121640758,7,13,"glycolytic process","BP","Turquoise","purine nucleotide metabolic process",9
-"244","GO:1901293",0.035817616049876,0.977436288889914,40,113,"nucleoside phosphate biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"245","GO:0006308",0.0361995602098366,0.989756720863964,8,15,"DNA catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"246","GO:0065003",0.0362130659472185,0.970368776777212,197,641,"protein-containing complex assembly","BP","Turquoise","ribonucleoprotein complex assembly",8
-"247","GO:0006790",0.0363460256718285,0.976033022188493,49,136,"sulfur compound metabolic process","BP","Turquoise","sulfur compound metabolic process",2
-"248","GO:0009607",0.0364297953577924,0.972879655771209,91,284,"response to biotic stimulus","BP","Turquoise","response to other organism",4
-"249","GO:0090277",0.0367544022295515,0.982984960722612,16,41,"positive regulation of peptide hormone secretion","BP","Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
-"250","GO:0006268",0.0372617183128054,0.995421670168322,4,6,"DNA unwinding involved in DNA replication","BP","Turquoise","mitochondrial respiratory chain complex assembly",7
-"251","GO:0038034",0.0376608331949024,0.99680480836524,4,5,"signal transduction in absence of ligand","BP","Turquoise","extrinsic apoptotic signaling pathway in absence of ligand",2
-"252","GO:0097192",0.0376608331949024,0.99680480836524,4,5,"extrinsic apoptotic signaling pathway in absence of ligand","BP","Turquoise","extrinsic apoptotic signaling pathway in absence of ligand",2
-"253","GO:0080182",0.0376758463503249,0.995352800194637,4,6,"histone H3-K4 trimethylation","BP","Turquoise","protein modification by small protein conjugation or removal",19
-"254","GO:0002237",0.0379456864152117,0.976941767722598,34,96,"response to molecule of bacterial origin","BP","Turquoise","response to other organism",4
-"255","GO:0006448",0.0381388524916796,0.993484837399552,5,8,"regulation of translational elongation","BP","Turquoise","cytoplasmic translation",9
-"256","GO:0006493",0.0382561552557205,0.985297936062582,12,25,"protein O-linked glycosylation","BP","Turquoise","macromolecule glycosylation",5
-"257","GO:1903051",0.0382761286809308,0.982370228705019,16,39,"negative regulation of proteolysis involved in protein catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"258","GO:0009164",0.0385770001078399,0.993387123895139,5,8,"nucleoside catabolic process","BP","Turquoise","ATP metabolic process",30
-"259","GO:0046031",0.038717354117014,0.98850840066546,8,16,"ADP metabolic process","BP","Turquoise","purine nucleotide metabolic process",9
-"260","GO:0090305",0.0388766414762825,0.97477334452026,44,125,"nucleic acid phosphodiester bond hydrolysis","BP","Turquoise","organic cyclic compound metabolic process",3
-"261","GO:0007205",0.0393730648705605,0.995067551179941,4,6,"protein kinase C-activating G protein-coupled receptor signaling pathway","BP","Turquoise","protein kinase C-activating G protein-coupled receptor signaling pathway",1
-"262","GO:0038202",0.0396358884210999,0.989247214588319,7,14,"TORC1 signaling","BP","Turquoise","TOR signaling",3
-"263","GO:0008210",0.0397044636652317,0.98964900289519,7,13,"estrogen metabolic process","BP","Turquoise","androgen metabolic process",3
-"264","GO:0008652",0.0401027683574216,0.981977939310716,15,36,"amino acid biosynthetic process","BP","Turquoise","small molecule metabolic process",14
-"265","GO:0051276",0.0403557612156275,0.968052371256204,136,457,"chromosome organization","BP","Turquoise","mitochondrial respiratory chain complex assembly",7
-"266","GO:0000288",0.0404030262164439,0.98182279809862,15,36,"nuclear-transcribed mRNA catabolic process, deadenylation-dependent decay","BP","Turquoise","mRNA metabolic process",4
-"267","GO:0072350",0.0416544849747507,0.982541389793315,13,30,"tricarboxylic acid metabolic process","BP","Turquoise","small molecule metabolic process",14
-"268","GO:0042398",0.0419552292769048,0.98319754498945,12,27,"cellular modified amino acid biosynthetic process","BP","Turquoise","cellular modified amino acid metabolic process",2
-"269","GO:0007520",0.0423060109139469,0.981925317537918,13,32,"myoblast fusion","BP","Turquoise","myotube differentiation",2
-"270","GO:0006949",0.04300536686638,0.980873296602792,14,35,"syncytium formation","BP","Turquoise","post-embryonic body morphogenesis",2
-"271","GO:0000959",0.043113632383956,0.990611985805996,6,10,"mitochondrial RNA metabolic process","BP","Turquoise","mitochondrial RNA metabolic process",1
-"272","GO:0045010",0.0432663055032086,0.99056961206183,6,10,"actin nucleation","BP","Turquoise","mitochondrial respiratory chain complex assembly",7
-"273","GO:0009301",0.0447083726094805,0.980273959237306,14,33,"snRNA transcription","BP","Turquoise","macromolecule biosynthetic process",18
-"274","GO:0042795",0.0447083726094805,0.980273959237306,14,33,"snRNA transcription by RNA polymerase II","BP","Turquoise","macromolecule biosynthetic process",18
-"275","GO:1901606",0.0448440769896917,0.98115685068077,13,29,"alpha-amino acid catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"276","GO:0090501",0.0450525669481399,0.974714620452789,25,66,"RNA phosphodiester bond hydrolysis","BP","Turquoise","organic cyclic compound metabolic process",3
-"277","GO:0009206",0.0461317655998734,0.977810184539813,17,40,"purine ribonucleoside triphosphate biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"278","GO:0006109",0.046412003776509,0.974216983108045,24,63,"regulation of carbohydrate metabolic process","BP","Turquoise","glucose catabolic process to pyruvate",3
-"279","GO:0009165",0.047246950107009,0.969650399009395,39,112,"nucleotide biosynthetic process","BP","Turquoise","ATP metabolic process",30
-"280","GO:0016180",0.0478134882285508,0.987916725618942,6,12,"snRNA processing","BP","Turquoise","ncRNA metabolic process",8
-"281","GO:0042177",0.0478906682712896,0.974740729919994,20,54,"negative regulation of protein catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"282","GO:1902743",0.0480384217493149,0.981094567474464,11,25,"regulation of lamellipodium organization","BP","Turquoise","regulation of lamellipodium organization",1
-"283","GO:0035336",0.0481827353977043,0.996381876922702,3,4,"long-chain fatty-acyl-CoA metabolic process","BP","Turquoise","sulfur compound metabolic process",2
-"284","GO:0072524",0.0482491237515577,0.975181268082825,19,49,"pyridine-containing compound metabolic process","BP","Turquoise","NADH metabolic process",6
-"285","GO:0006999",0.0487793361763717,0.991428578427315,4,8,"nuclear pore organization","BP","Turquoise","ribonucleoprotein complex assembly",8
-"286","GO:0072523",0.0490705451319544,0.985982226311469,7,14,"purine-containing compound catabolic process","BP","Turquoise","organic cyclic compound catabolic process",29
-"287","GO:1904478",0.0493663957786184,1,2,2,"regulation of intestinal absorption","BP","Turquoise","sensory perception of pain",4
-"288","GO:1904729",0.0493663957786184,1,2,2,"regulation of intestinal lipid absorption","BP","Turquoise","sensory perception of pain",4
-"289","GO:0009092",0.0495958687127907,1,2,2,"homoserine metabolic process","BP","Turquoise","small molecule metabolic process",14
-"290","GO:0019346",0.0495958687127907,1,2,2,"transsulfuration","BP","Turquoise","small molecule metabolic process",14
-"291","GO:0044058",0.0498942358128119,0.991972237766487,4,7,"regulation of digestive system process","BP","Turquoise","sensory perception of pain",4
+"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","Module","ParentTerm","N_in_Parent"
+"1","GO:0002181",1.56122826559313e-16,1,67,90,"cytoplasmic translation","BP",6.92443766497193e-13,"Turquoise","cytoplasmic translation",9
+"2","GO:0006412",2.3281385663813e-16,1,123,219,"translation","BP",8.26070126123415e-13,"Turquoise","cytoplasmic translation",9
+"3","GO:0043043",3.13208398903398e-15,1,125,231,"peptide biosynthetic process","BP",7.43586579667835e-12,"Turquoise","cytoplasmic translation",9
+"4","GO:0006518",5.57543011215777e-15,1,145,285,"peptide metabolic process","BP",1.09904117355323e-11,"Turquoise","cytoplasmic translation",9
+"5","GO:0006614",1.28577036945717e-14,1,48,59,"SRP-dependent cotranslational protein targeting to membrane","BP",2.28108521245396e-11,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"6","GO:0043603",2.19212994822729e-14,1,170,359,"amide metabolic process","BP",3.53550703740913e-11,"Turquoise","cytoplasmic translation",9
+"7","GO:0043604",2.94925277377709e-14,1,136,268,"amide biosynthetic process","BP",4.36022445496495e-11,"Turquoise","cytoplasmic translation",9
+"8","GO:1901566",4.3122391112113e-14,1,247,577,"organonitrogen compound biosynthetic process","BP",5.88487954399997e-11,"Turquoise","organonitrogen compound biosynthetic process",4
+"9","GO:0034645",5.57450056616276e-14,1,308,760,"cellular macromolecule biosynthetic process","BP",7.06408675316382e-11,"Turquoise","cellular macromolecule biosynthetic process",4
+"10","GO:1901564",8.9030176181542e-14,1,648,1876,"organonitrogen compound metabolic process","BP",1.05298957042449e-10,"Turquoise","organonitrogen compound biosynthetic process",4
+"11","GO:0006613",1.14997101309939e-13,1,49,63,"cotranslational protein targeting to membrane","BP",1.27510223396226e-10,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"12","GO:0009059",2.0186579853031e-13,1,309,770,"macromolecule biosynthetic process","BP",2.10664772454484e-10,"Turquoise","macromolecule biosynthetic process",18
+"13","GO:0044271",2.96183338129411e-13,1,307,768,"cellular nitrogen compound biosynthetic process","BP",2.91921588986327e-10,"Turquoise","macromolecule biosynthetic process",18
+"14","GO:1901361",2.36524897863617e-12,1,114,227,"organic cyclic compound catabolic process","BP",2.09809410649922e-09,"Turquoise","organic cyclic compound catabolic process",29
+"15","GO:0045047",3.08537791255147e-12,1,50,68,"protein targeting to ER","BP",2.59375077625857e-09,"Turquoise","protein targeting to ER",14
+"16","GO:0009058",3.21642055564447e-12,1,431,1177,"biosynthetic process","BP",2.59375077625857e-09,"Turquoise","macromolecule biosynthetic process",18
+"17","GO:0044249",4.0804481648298e-12,1,422,1149,"cellular biosynthetic process","BP",3.14744482140197e-09,"Turquoise","macromolecule biosynthetic process",18
+"18","GO:1901576",5.9646265748351e-12,1,427,1168,"organic substance biosynthetic process","BP",4.40910166933956e-09,"Turquoise","macromolecule biosynthetic process",18
+"19","GO:0046700",6.24612788764724e-12,1,104,203,"heterocycle catabolic process","BP",4.43250219418999e-09,"Turquoise","organic cyclic compound catabolic process",29
+"20","GO:0019439",7.63015119393418e-12,1,109,217,"aromatic compound catabolic process","BP",5.20640432044563e-09,"Turquoise","organic cyclic compound catabolic process",29
+"21","GO:0044270",1.01567862918512e-11,1,103,202,"cellular nitrogen compound catabolic process","BP",6.67376094828638e-09,"Turquoise","organic cyclic compound catabolic process",29
+"22","GO:0006612",1.2579548722919e-11,1,52,75,"protein targeting to membrane","BP",7.97049192476091e-09,"Turquoise","protein targeting to ER",14
+"23","GO:0072599",1.42221158912375e-11,1,50,70,"establishment of protein localization to endoplasmic reticulum","BP",8.70050200091186e-09,"Turquoise","protein targeting to ER",14
+"24","GO:0006807",1.616185504685e-11,1,858,2641,"nitrogen compound metabolic process","BP",9.55758234620553e-09,"Turquoise","nitrogen compound metabolic process",11
+"25","GO:0034655",3.03145686348803e-11,1,98,191,"nucleobase-containing compound catabolic process","BP",1.68065863172316e-08,"Turquoise","organic cyclic compound catabolic process",29
+"26","GO:0044238",9.74697197453065e-11,1,882,2746,"primary metabolic process","BP",5.2400312060651e-08,"Turquoise","nitrogen compound metabolic process",11
+"27","GO:0071704",1.85122800904511e-10,1,911,2857,"organic substance metabolic process","BP",9.32831850776246e-08,"Turquoise","nitrogen compound metabolic process",11
+"28","GO:0006413",3.11199240530867e-10,0.999999999936697,56,90,"translational initiation","BP",1.48887753912703e-07,"Turquoise","cytoplasmic translation",9
+"29","GO:0008152",6.95933930975623e-10,1,937,2960,"metabolic process","BP",3.16578560754834e-07,"Turquoise","nitrogen compound metabolic process",11
+"30","GO:0070972",8.32290109435809e-10,0.999999999809429,52,80,"protein localization to endoplasmic reticulum","BP",3.69141470787517e-07,"Turquoise","protein targeting to ER",14
+"31","GO:0034641",1.00837231203631e-09,1,548,1615,"cellular nitrogen compound metabolic process","BP",4.36330077752103e-07,"Turquoise","nitrogen compound metabolic process",11
+"32","GO:0000956",1.73017188685762e-09,0.999999999461797,66,119,"nuclear-transcribed mRNA catabolic process","BP",7.13836731273049e-07,"Turquoise","organic cyclic compound catabolic process",29
+"33","GO:0044237",1.85867465380987e-09,1,897,2828,"cellular metabolic process","BP",7.49426068937293e-07,"Turquoise","nitrogen compound metabolic process",11
+"34","GO:0019538",2.17275394995751e-09,1,504,1492,"protein metabolic process","BP",8.56596173915471e-07,"Turquoise","organonitrogen compound biosynthetic process",4
+"35","GO:0000184",3.2051044945581e-09,0.999999999270081,46,71,"nuclear-transcribed mRNA catabolic process, nonsense-mediated decay","BP",1.21250692611877e-06,"Turquoise","organic cyclic compound catabolic process",29
+"36","GO:0044260",3.21221044628724e-09,1,627,1911,"cellular macromolecule metabolic process","BP",1.21250692611877e-06,"Turquoise","cellular macromolecule biosynthetic process",4
+"37","GO:0006402",3.57374874936629e-09,0.999999998821987,69,128,"mRNA catabolic process","BP",1.32087242838557e-06,"Turquoise","organic cyclic compound catabolic process",29
+"38","GO:0006401",1.00396371390032e-08,0.999999996353517,73,141,"RNA catabolic process","BP",3.63496331598074e-06,"Turquoise","organic cyclic compound catabolic process",29
+"39","GO:0010467",2.33584499347187e-08,1,350,983,"gene expression","BP",8.28804520583691e-06,"Turquoise","cellular macromolecule biosynthetic process",4
+"40","GO:0090150",1.17032840294206e-07,0.999999958733431,61,113,"establishment of protein localization to membrane","BP",3.91750871633869e-05,"Turquoise","protein targeting to ER",14
+"41","GO:0044265",1.71649791010214e-07,1,154,391,"cellular macromolecule catabolic process","BP",5.63933137465225e-05,"Turquoise","organic cyclic compound catabolic process",29
+"42","GO:1901575",1.88241816476047e-07,1,233,639,"organic substance catabolic process","BP",6.071996483821e-05,"Turquoise","organic cyclic compound catabolic process",29
+"43","GO:0009057",2.9796183724173e-07,1,172,451,"macromolecule catabolic process","BP",9.43953741875988e-05,"Turquoise","organic cyclic compound catabolic process",29
+"44","GO:0006139",3.43405862479236e-07,1,453,1366,"nucleobase-containing compound metabolic process","BP",0.000106883568530599,"Turquoise","nitrogen compound metabolic process",11
+"45","GO:0043170",5.57685218797105e-07,0.999999755906062,730,2326,"macromolecule metabolic process","BP",0.000170584370115163,"Turquoise","cellular macromolecule biosynthetic process",4
+"46","GO:0046483",1.94199738662183e-06,0.999998770956242,469,1427,"heterocycle metabolic process","BP",0.000574216260600964,"Turquoise","nitrogen compound metabolic process",11
+"47","GO:1901360",1.98774947932432e-06,0.999998735648419,496,1524,"organic cyclic compound metabolic process","BP",0.000578109237912998,"Turquoise","organic cyclic compound metabolic process",3
+"48","GO:0006725",2.5216035057104e-06,0.999998304226573,479,1465,"cellular aromatic compound metabolic process","BP",0.000721544641851746,"Turquoise","nitrogen compound metabolic process",11
+"49","GO:0006091",5.1941023096902e-06,0.999997544559145,76,169,"generation of precursor metabolites and energy","BP",0.00143982139181584,"Turquoise","generation of precursor metabolites and energy",11
+"50","GO:0006119",5.4631661264037e-06,0.999998483610451,34,56,"oxidative phosphorylation","BP",0.00146851560982618,"Turquoise","generation of precursor metabolites and energy",11
+"51","GO:0044248",6.97625733600356e-06,0.999995629231299,236,673,"cellular catabolic process","BP",0.00184725046862745,"Turquoise","organic cyclic compound catabolic process",29
+"52","GO:0046034",8.52900606141486e-06,0.999996733339326,49,96,"ATP metabolic process","BP",0.00222519259611119,"Turquoise","ATP metabolic process",30
+"53","GO:0009123",9.01854542855585e-06,0.999996135028194,59,124,"nucleoside monophosphate metabolic process","BP",0.00231881180359434,"Turquoise","ATP metabolic process",30
+"54","GO:0022900",9.58735142470567e-06,0.999996734126536,41,75,"electron transport chain","BP",0.00239824314181399,"Turquoise","generation of precursor metabolites and energy",11
+"55","GO:0072594",1.29998059346402e-05,0.999993295968851,94,224,"establishment of protein localization to organelle","BP",0.00320318829286738,"Turquoise","protein targeting to ER",14
+"56","GO:0009126",1.37321530148602e-05,0.999994264154985,54,112,"purine nucleoside monophosphate metabolic process","BP",0.00326467812263306,"Turquoise","ATP metabolic process",30
+"57","GO:0009167",1.37321530148602e-05,0.999994264154985,54,112,"purine ribonucleoside monophosphate metabolic process","BP",0.00326467812263306,"Turquoise","ATP metabolic process",30
+"58","GO:0006605",1.38014125019717e-05,0.999993288449401,75,166,"protein targeting","BP",0.00326467812263306,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"59","GO:0006163",1.39916580421706e-05,0.999992949774842,80,187,"purine nucleotide metabolic process","BP",0.00326613164902828,"Turquoise","purine nucleotide metabolic process",9
+"60","GO:0006753",1.44114850881242e-05,0.999992360570369,101,249,"nucleoside phosphate metabolic process","BP",0.00331491066657397,"Turquoise","ATP metabolic process",30
+"61","GO:0009117",1.45798033638609e-05,0.99999259865359,99,244,"nucleotide metabolic process","BP",0.00331491066657397,"Turquoise","ATP metabolic process",30
+"62","GO:0009161",1.53508633576195e-05,0.999993487733346,55,115,"ribonucleoside monophosphate metabolic process","BP",0.00337274538577855,"Turquoise","ATP metabolic process",30
+"63","GO:0009056",1.78596753218266e-05,0.999988013713647,247,716,"catabolic process","BP",0.00377200595100626,"Turquoise","organic cyclic compound catabolic process",29
+"64","GO:0072521",1.81759586589985e-05,0.99999080163945,85,203,"purine-containing compound metabolic process","BP",0.00379364332434463,"Turquoise","purine nucleotide metabolic process",9
+"65","GO:0022904",2.05857575093853e-05,0.999994101831837,31,52,"respiratory electron transport chain","BP",0.00410350476375286,"Turquoise","generation of precursor metabolites and energy",11
+"66","GO:0045333",2.79516851307907e-05,0.999989619715772,42,80,"cellular respiration","BP",0.00528403668629634,"Turquoise","generation of precursor metabolites and energy",11
+"67","GO:0009141",4.57094133717366e-05,0.999978846276623,59,128,"nucleoside triphosphate metabolic process","BP",0.00827480308804061,"Turquoise","ATP metabolic process",30
+"68","GO:0055086",4.91478975200553e-05,0.99997138886153,111,286,"nucleobase-containing small molecule metabolic process","BP",0.00875804540117648,"Turquoise","ATP metabolic process",30
+"69","GO:0016070",4.93661315662955e-05,0.99996459532538,285,841,"RNA metabolic process","BP",0.00875804540117648,"Turquoise","nitrogen compound metabolic process",11
+"70","GO:0019693",4.99760783020684e-05,0.999973382475408,81,196,"ribose phosphate metabolic process","BP",0.00877847133818808,"Turquoise","ribose phosphate metabolic process",8
+"71","GO:0009150",5.06889932967716e-05,0.999973492573352,77,184,"purine ribonucleotide metabolic process","BP",0.00881640617723554,"Turquoise","ribose phosphate metabolic process",8
+"72","GO:0042773",7.87140729322133e-05,0.999979270920734,25,40,"ATP synthesis coupled electron transport","BP",0.0130169119094363,"Turquoise","generation of precursor metabolites and energy",11
+"73","GO:0042775",7.87140729322133e-05,0.999979270920734,25,40,"mitochondrial ATP synthesis coupled electron transport","BP",0.0130169119094363,"Turquoise","generation of precursor metabolites and energy",11
+"74","GO:0009259",9.07180251422545e-05,0.999951147306308,78,190,"ribonucleotide metabolic process","BP",0.014765398936227,"Turquoise","ribose phosphate metabolic process",8
+"75","GO:0009144",9.48360088535976e-05,0.999956230760021,54,117,"purine nucleoside triphosphate metabolic process","BP",0.0151575282258709,"Turquoise","ATP metabolic process",30
+"76","GO:0015980",9.85509192009783e-05,0.999954757411954,53,115,"energy derivation by oxidation of organic compounds","BP",0.0156106415852192,"Turquoise","generation of precursor metabolites and energy",11
+"77","GO:0009987",0.000120551258297209,0.999899920902048,1185,4026,"cellular process","BP",0.0187605252057087,"Turquoise","cellular process",1
+"78","GO:1901135",0.000133759939549983,0.999912376332477,152,413,"carbohydrate derivative metabolic process","BP",0.0206350877178804,"Turquoise","carbohydrate derivative metabolic process",3
+"79","GO:0042255",0.000149781595390104,0.999957755396617,24,41,"ribosome assembly","BP",0.0229075455501366,"Turquoise","ribosome assembly",7
+"80","GO:0042254",0.00018133859877224,0.99990211541149,72,176,"ribosome biogenesis","BP",0.0272637972950703,"Turquoise","ribosome assembly",7
+"81","GO:0009205",0.000257533161720828,0.999876413560925,52,115,"purine ribonucleoside triphosphate metabolic process","BP",0.0365511665767137,"Turquoise","ATP metabolic process",30
+"82","GO:0034660",0.000284627081353812,0.999826975639542,99,267,"ncRNA metabolic process","BP",0.0395795050442123,"Turquoise","ncRNA metabolic process",8
+"83","GO:0044281",0.00034014144586513,0.999753364939498,225,666,"small molecule metabolic process","BP",0.0457155256901005,"Turquoise","small molecule metabolic process",14
+"84","GO:0022613",0.000344085412502085,0.999786363192168,105,282,"ribonucleoprotein complex biogenesis","BP",0.0458978894977406,"Turquoise","ribosome assembly",7
+"85","GO:0042273",0.00037399067031949,0.999874408266313,26,49,"ribosomal large subunit biogenesis","BP",0.0495146901652095,"Turquoise","ribosome assembly",7
+"86","GO:0006520",0.00040810032177451,0.999800189263358,49,118,"amino acid metabolic process","BP",0.0528058017620159,"Turquoise","small molecule metabolic process",14
+"87","GO:0090304",0.000408252456635874,0.999683933269919,352,1099,"nucleic acid metabolic process","BP",0.0528058017620159,"Turquoise","nitrogen compound metabolic process",11
+"88","GO:0006734",0.000421756554115906,0.999940718353546,11,16,"NADH metabolic process","BP",0.0530665462877325,"Turquoise","NADH metabolic process",6
+"89","GO:0009199",0.000488669105865576,0.999756239848126,52,118,"ribonucleoside triphosphate metabolic process","BP",0.0597895076355943,"Turquoise","ATP metabolic process",30
+"90","GO:0070647",0.000524320694202062,0.999658884746866,118,334,"protein modification by small protein conjugation or removal","BP",0.0632787308560462,"Turquoise","protein modification by small protein conjugation or removal",19
+"91","GO:0043543",0.000659721290915917,0.999707079783749,37,84,"protein acylation","BP",0.0781966538146861,"Turquoise","protein modification by small protein conjugation or removal",19
+"92","GO:0019637",0.000772526539196886,0.999475356744783,137,390,"organophosphate metabolic process","BP",0.0878550854608459,"Turquoise","ribose phosphate metabolic process",8
+"93","GO:0034654",0.000952727094624882,0.999321982662739,170,496,"nucleobase-containing compound biosynthetic process","BP",0.105639571160875,"Turquoise","macromolecule biosynthetic process",18
+"94","GO:0000028",0.0011187339607421,0.99981096676047,12,17,"ribosomal small subunit assembly","BP",0.121021092667839,"Turquoise","ribosome assembly",7
+"95","GO:0006886",0.00132300842745783,0.999083042377296,138,401,"intracellular protein transport","BP",0.138067603008996,"Turquoise","protein targeting to ER",14
+"96","GO:0006120",0.00162138569187958,0.999619536337755,15,23,"mitochondrial electron transport, NADH to ubiquinone","BP",0.162514144404721,"Turquoise","generation of precursor metabolites and energy",11
+"97","GO:0018130",0.00177564130607031,0.998701761847288,179,531,"heterocycle biosynthetic process","BP",0.175986884977616,"Turquoise","macromolecule biosynthetic process",18
+"98","GO:0032435",0.0018305922641147,0.999607421333396,12,20,"negative regulation of proteasomal ubiquitin-dependent protein catabolic process","BP",0.179428383191486,"Turquoise","organic cyclic compound catabolic process",29
+"99","GO:0043436",0.0019670450333327,0.998658730164465,118,340,"oxoacid metabolic process","BP",0.189659488784541,"Turquoise","small molecule metabolic process",14
+"100","GO:0019438",0.00239690838186504,0.998231261533961,179,535,"aromatic compound biosynthetic process","BP",0.224125412386301,"Turquoise","macromolecule biosynthetic process",18
+"101","GO:0019752",0.00242266700196283,0.998363686963466,108,311,"carboxylic acid metabolic process","BP",0.225028980533102,"Turquoise","small molecule metabolic process",14
+"102","GO:0006082",0.00244200462309155,0.998318300831165,119,345,"organic acid metabolic process","BP",0.225643770928475,"Turquoise","small molecule metabolic process",14
+"103","GO:0006122",0.00249024666051583,0.999755529897242,8,10,"mitochondrial electron transport, ubiquinol to cytochrome c","BP",0.228764109526151,"Turquoise","generation of precursor metabolites and energy",11
+"104","GO:0009127",0.00251445811158331,0.999041146280944,23,47,"purine nucleoside monophosphate biosynthetic process","BP",0.228764109526151,"Turquoise","ATP metabolic process",30
+"105","GO:0009168",0.00251445811158331,0.999041146280944,23,47,"purine ribonucleoside monophosphate biosynthetic process","BP",0.228764109526151,"Turquoise","ATP metabolic process",30
+"106","GO:0022618",0.00255327320767929,0.998520409103728,59,152,"ribonucleoprotein complex assembly","BP",0.231110306007338,"Turquoise","ribonucleoprotein complex assembly",8
+"107","GO:0061844",0.00273524623206889,0.999749228777111,7,9,"antimicrobial humoral immune response mediated by antimicrobial peptide","BP",0.245080825268355,"Turquoise","antimicrobial humoral immune response mediated by antimicrobial peptide",4
+"108","GO:0032774",0.00278958414101829,0.998106761898878,109,306,"RNA biosynthetic process","BP",0.247450061229028,"Turquoise","macromolecule biosynthetic process",18
+"109","GO:0006473",0.00282431460060367,0.998704241610653,31,72,"protein acetylation","BP",0.249284404623431,"Turquoise","protein modification by small protein conjugation or removal",19
+"110","GO:0010257",0.00307296966905817,0.999076921738957,17,29,"NADH dehydrogenase complex assembly","BP",0.264648324751267,"Turquoise","ribonucleoprotein complex assembly",8
+"111","GO:0032981",0.00307296966905817,0.999076921738957,17,29,"mitochondrial respiratory chain complex I assembly","BP",0.264648324751267,"Turquoise","ribonucleoprotein complex assembly",8
+"112","GO:1901362",0.00337944388077488,0.997461610596629,188,569,"organic cyclic compound biosynthetic process","BP",0.286864659755154,"Turquoise","macromolecule biosynthetic process",18
+"113","GO:0071826",0.00355122028225109,0.997879449072684,61,161,"ribonucleoprotein complex subunit organization","BP",0.298406067068151,"Turquoise","ribonucleoprotein complex assembly",8
+"114","GO:0006351",0.00363284420896677,0.997512057330278,108,305,"DNA-templated transcription","BP",0.301072987439011,"Turquoise","macromolecule biosynthetic process",18
+"115","GO:0097659",0.00363284420896677,0.997512057330278,108,305,"nucleic acid-templated transcription","BP",0.301072987439011,"Turquoise","macromolecule biosynthetic process",18
+"116","GO:0034470",0.00412614682888778,0.997409336372391,71,194,"ncRNA processing","BP",0.332736231324082,"Turquoise","ncRNA metabolic process",8
+"117","GO:0036211",0.00416796989314583,0.99664175736948,319,1040,"protein modification process","BP",0.333080873307658,"Turquoise","protein modification by small protein conjugation or removal",19
+"118","GO:0006414",0.00421167234629932,0.998270836680785,25,49,"translational elongation","BP",0.335064031819265,"Turquoise","cytoplasmic translation",9
+"119","GO:0016071",0.00435041867011831,0.996880093565396,133,388,"mRNA metabolic process","BP",0.344557042975754,"Turquoise","mRNA metabolic process",4
+"120","GO:0019674",0.00469215820658401,0.998698069316359,13,24,"NAD metabolic process","BP",0.368334419216845,"Turquoise","NADH metabolic process",6
+"121","GO:0043981",0.00476862518292472,0.999398169044111,7,10,"histone H4-K5 acetylation","BP",0.369535968940503,"Turquoise","protein modification by small protein conjugation or removal",19
+"122","GO:0043982",0.00476862518292472,0.999398169044111,7,10,"histone H4-K8 acetylation","BP",0.369535968940503,"Turquoise","protein modification by small protein conjugation or removal",19
+"123","GO:0015031",0.00484288680396483,0.996398880104184,161,492,"protein transport","BP",0.373555020822348,"Turquoise","protein targeting to ER",14
+"124","GO:0009156",0.0049890342314443,0.997941811024823,23,49,"ribonucleoside monophosphate biosynthetic process","BP",0.383162148485079,"Turquoise","ATP metabolic process",30
+"125","GO:0018205",0.00504113116256803,0.99715206121146,47,122,"peptidyl-lysine modification","BP",0.385494430841032,"Turquoise","protein modification by small protein conjugation or removal",19
+"126","GO:0072657",0.00531882765122921,0.996561216213061,76,210,"protein localization to membrane","BP",0.401386419599492,"Turquoise","protein targeting to ER",14
+"127","GO:0030422",0.00533945070883716,0.999309935730053,7,10,"siRNA processing","BP",0.401386419599492,"Turquoise","ncRNA metabolic process",8
+"128","GO:0006352",0.00539981947258551,0.997514807127201,28,63,"DNA-templated transcription initiation","BP",0.403815973667751,"Turquoise","macromolecule biosynthetic process",18
+"129","GO:0042886",0.00541729337314271,0.995945148018895,164,504,"amide transport","BP",0.403815973667751,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"130","GO:0006475",0.00557384552913541,0.997398962471822,28,66,"internal protein amino acid acetylation","BP",0.413747253273604,"Turquoise","protein modification by small protein conjugation or removal",19
+"131","GO:0033108",0.00561261087622537,0.997744052144886,23,44,"mitochondrial respiratory chain complex assembly","BP",0.41488887314631,"Turquoise","mitochondrial respiratory chain complex assembly",7
+"132","GO:0015833",0.00565883905955835,0.995761833897093,163,501,"peptide transport","BP",0.416570389027488,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"133","GO:0018394",0.00583910412698354,0.997264261549604,28,66,"peptidyl-lysine acetylation","BP",0.428064240978574,"Turquoise","protein modification by small protein conjugation or removal",19
+"134","GO:0009124",0.0059966117193641,0.997419031132137,24,52,"nucleoside monophosphate biosynthetic process","BP",0.434291167575098,"Turquoise","ATP metabolic process",30
+"135","GO:0061615",0.00602196196513579,0.99920163758281,7,10,"glycolytic process through fructose-6-phosphate","BP",0.434291167575098,"Turquoise","purine nucleotide metabolic process",9
+"136","GO:0061620",0.00602196196513579,0.99920163758281,7,10,"glycolytic process through glucose-6-phosphate","BP",0.434291167575098,"Turquoise","purine nucleotide metabolic process",9
+"137","GO:0000027",0.00610980603275295,0.998389212322804,12,21,"ribosomal large subunit assembly","BP",0.435317545490241,"Turquoise","ribosome assembly",7
+"138","GO:0006959",0.00632573855587675,0.997556516385765,19,41,"humoral immune response","BP",0.447111265815974,"Turquoise","antimicrobial humoral immune response mediated by antimicrobial peptide",4
+"139","GO:0006364",0.00689246624576949,0.996001671509807,48,125,"rRNA processing","BP",0.47952644574979,"Turquoise","ncRNA metabolic process",8
+"140","GO:0016072",0.00701885523338893,0.995817630881376,52,139,"rRNA metabolic process","BP",0.480778033573564,"Turquoise","ncRNA metabolic process",8
+"141","GO:0016573",0.00710409557179287,0.99665886683729,27,64,"histone acetylation","BP",0.484346421541822,"Turquoise","protein modification by small protein conjugation or removal",19
+"142","GO:0072522",0.00712555188672654,0.996402385473678,32,78,"purine-containing compound biosynthetic process","BP",0.484346421541822,"Turquoise","purine nucleotide metabolic process",9
+"143","GO:0040032",0.00762676787387292,1,4,4,"post-embryonic body morphogenesis","BP",0.51643698034496,"Turquoise","post-embryonic body morphogenesis",2
+"144","GO:0045184",0.0077503374494976,0.994088102731949,172,536,"establishment of protein localization","BP",0.522808884758695,"Turquoise","protein targeting to ER",14
+"145","GO:0051438",0.00794349037105502,0.997241723309821,16,31,"regulation of ubiquitin-protein transferase activity","BP",0.529794972454463,"Turquoise","regulation of ubiquitin-protein transferase activity",2
+"146","GO:0070646",0.00804718923223986,0.99521304540078,50,134,"protein modification by small protein removal","BP",0.53075704930079,"Turquoise","protein modification by small protein conjugation or removal",19
+"147","GO:1901605",0.00822115699320855,0.995790270930511,32,79,"alpha-amino acid metabolic process","BP",0.536801207097236,"Turquoise","small molecule metabolic process",14
+"148","GO:0006164",0.00841493401987985,0.995737135156286,31,76,"purine nucleotide biosynthetic process","BP",0.546847415555635,"Turquoise","purine nucleotide metabolic process",9
+"149","GO:1901137",0.00845589062620659,0.994373909812479,78,216,"carbohydrate derivative biosynthetic process","BP",0.547503487589529,"Turquoise","carbohydrate derivative metabolic process",3
+"150","GO:0018393",0.00907844028703596,0.99561999568842,27,65,"internal peptidyl-lysine acetylation","BP",0.584202331698877,"Turquoise","protein modification by small protein conjugation or removal",19
+"151","GO:0031640",0.00929066071548301,1,4,4,"killing of cells of another organism","BP",0.591838467910932,"Turquoise","killing of cells of another organism",1
+"152","GO:0043161",0.00930741968024069,0.994326485953877,53,142,"proteasome-mediated ubiquitin-dependent protein catabolic process","BP",0.591838467910932,"Turquoise","organic cyclic compound catabolic process",29
+"153","GO:0006575",0.00936978750715689,0.995115025492147,33,80,"cellular modified amino acid metabolic process","BP",0.593676429158823,"Turquoise","cellular modified amino acid metabolic process",2
+"154","GO:0044282",0.00969549215921464,0.994391016826486,44,114,"small molecule catabolic process","BP",0.612127140201519,"Turquoise","organic cyclic compound catabolic process",29
+"155","GO:1901799",0.00989796283573627,0.996636001635925,14,29,"negative regulation of proteasomal protein catabolic process","BP",0.620493846886209,"Turquoise","organic cyclic compound catabolic process",29
+"156","GO:0014902",0.0102278951587106,0.99565023576003,20,46,"myotube differentiation","BP",0.637602437744423,"Turquoise","myotube differentiation",2
+"157","GO:0030808",0.0102786932639031,0.996395611107351,15,30,"regulation of nucleotide biosynthetic process","BP",0.637602437744423,"Turquoise","ATP metabolic process",30
+"158","GO:1900371",0.0102786932639031,0.996395611107351,15,30,"regulation of purine nucleotide biosynthetic process","BP",0.637602437744423,"Turquoise","ATP metabolic process",30
+"159","GO:0010498",0.0104673525234857,0.993498550233125,55,150,"proteasomal protein catabolic process","BP",0.646054201597518,"Turquoise","organic cyclic compound catabolic process",29
+"160","GO:1901565",0.0104877746496863,0.992296721173325,123,375,"organonitrogen compound catabolic process","BP",0.646054201597518,"Turquoise","organic cyclic compound catabolic process",29
+"161","GO:0016579",0.0108514279601665,0.993559129612488,46,124,"protein deubiquitination","BP",0.661564204265684,"Turquoise","protein modification by small protein conjugation or removal",19
+"162","GO:0009152",0.010917101621584,0.994404654739309,30,74,"purine ribonucleotide biosynthetic process","BP",0.663288698179866,"Turquoise","ribose phosphate metabolic process",8
+"163","GO:0009060",0.0111648440824112,0.99543850195684,19,40,"aerobic respiration","BP",0.672647354931209,"Turquoise","generation of precursor metabolites and energy",11
+"164","GO:0019730",0.0112311658603123,0.995917636042153,15,32,"antimicrobial humoral response","BP",0.672647354931209,"Turquoise","antimicrobial humoral immune response mediated by antimicrobial peptide",4
+"165","GO:0009200",0.0113968414694133,0.998696360356137,6,8,"deoxyribonucleoside triphosphate metabolic process","BP",0.678494511774702,"Turquoise","ATP metabolic process",30
+"166","GO:0006366",0.0115895750917147,0.99200010640767,86,243,"transcription by RNA polymerase II","BP",0.687661042481972,"Turquoise","macromolecule biosynthetic process",18
+"167","GO:0043933",0.0119553558854807,0.990363535539544,245,785,"protein-containing complex organization","BP",0.704651059017651,"Turquoise","ribonucleoprotein complex assembly",8
+"168","GO:2000059",0.012639257757055,0.995556698486339,14,29,"negative regulation of ubiquitin-dependent protein catabolic process","BP",0.735190399566927,"Turquoise","organic cyclic compound catabolic process",29
+"169","GO:0060211",0.0129097748892917,0.999243270309858,4,5,"regulation of nuclear-transcribed mRNA poly(A) tail shortening","BP",0.743611416593909,"Turquoise","mRNA metabolic process",4
+"170","GO:0060213",0.0129097748892917,0.999243270309858,4,5,"positive regulation of nuclear-transcribed mRNA poly(A) tail shortening","BP",0.743611416593909,"Turquoise","mRNA metabolic process",4
+"171","GO:1900101",0.0134713013619428,0.996852222453052,9,15,"regulation of endoplasmic reticulum unfolded protein response","BP",0.768470602772437,"Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
+"172","GO:0071689",0.0135728318199854,0.997847560509763,7,10,"muscle thin filament assembly","BP",0.771780799097309,"Turquoise","mitochondrial respiratory chain complex assembly",7
+"173","GO:0009142",0.0136881744677586,0.993900110057602,21,47,"nucleoside triphosphate biosynthetic process","BP",0.77386369773777,"Turquoise","ATP metabolic process",30
+"174","GO:0034314",0.0136967026148278,0.99835878384702,6,8,"Arp2/3 complex-mediated actin nucleation","BP",0.77386369773777,"Turquoise","mitochondrial respiratory chain complex assembly",7
+"175","GO:2001228",0.0140559550996785,0.999368079347677,3,4,"regulation of response to gamma radiation","BP",0.789135124757584,"Turquoise","regulation of response to gamma radiation",2
+"176","GO:0006754",0.0148260388431097,0.994050544923102,17,36,"ATP biosynthetic process","BP",0.819404221543952,"Turquoise","ATP metabolic process",30
+"177","GO:0070918",0.0153674905649128,0.996001892665248,9,17,"regulatory ncRNA processing","BP",0.833243716956973,"Turquoise","ncRNA metabolic process",8
+"178","GO:0006955",0.0154052161187017,0.988539953010889,119,374,"immune response","BP",0.833243716956973,"Turquoise","antimicrobial humoral immune response mediated by antimicrobial peptide",4
+"179","GO:1903863",0.0154556671419307,0.999038507188056,4,5,"P granule assembly","BP",0.833431582872317,"Turquoise","P granule assembly",3
+"180","GO:0042866",0.015721500219682,0.996430683479236,8,14,"pyruvate biosynthetic process","BP",0.838912115130448,"Turquoise","small molecule metabolic process",14
+"181","GO:0043984",0.0157414602394491,0.997638735486436,6,9,"histone H4-K16 acetylation","BP",0.838912115130448,"Turquoise","protein modification by small protein conjugation or removal",19
+"182","GO:0018200",0.0157464480208804,0.996423860575266,8,14,"peptidyl-glutamic acid modification","BP",0.838912115130448,"Turquoise","protein modification by small protein conjugation or removal",19
+"183","GO:0006367",0.0159428758797973,0.992913941405923,20,45,"transcription initiation at RNA polymerase II promoter","BP",0.84683401492061,"Turquoise","macromolecule biosynthetic process",18
+"184","GO:0042274",0.0160638222879964,0.991823894532217,27,65,"ribosomal small subunit biogenesis","BP",0.849856636160849,"Turquoise","ribosome assembly",7
+"185","GO:2001169",0.0165210266910709,0.994293996261373,13,26,"regulation of ATP biosynthetic process","BP",0.864979848845212,"Turquoise","ATP metabolic process",30
+"186","GO:0009166",0.016528277366469,0.993964347236004,14,29,"nucleotide catabolic process","BP",0.864979848845212,"Turquoise","organic cyclic compound catabolic process",29
+"187","GO:0032446",0.0166818001954441,0.988605702480788,72,214,"protein modification by small protein conjugation","BP",0.870446521374629,"Turquoise","protein modification by small protein conjugation or removal",19
+"188","GO:1990048",0.0169460569398111,1,2,2,"anterograde neuronal dense core vesicle transport","BP",0.870619719254668,"Turquoise","protein targeting to ER",14
+"189","GO:0006735",0.0170286366372453,0.998081012992183,5,7,"NADH regeneration","BP",0.870619719254668,"Turquoise","NADH regeneration",1
+"190","GO:0061621",0.0170286366372453,0.998081012992183,5,7,"canonical glycolysis","BP",0.870619719254668,"Turquoise","purine nucleotide metabolic process",9
+"191","GO:0061718",0.0170286366372453,0.998081012992183,5,7,"glucose catabolic process to pyruvate","BP",0.870619719254668,"Turquoise","glucose catabolic process to pyruvate",3
+"192","GO:0006508",0.0173932496039254,0.98666789786768,142,451,"proteolysis","BP",0.881638974923545,"Turquoise","organonitrogen compound biosynthetic process",4
+"193","GO:0006656",0.0174853194466589,0.996434035556963,7,12,"phosphatidylcholine biosynthetic process","BP",0.883780775792521,"Turquoise","ribose phosphate metabolic process",8
+"194","GO:0071705",0.0184383207356349,0.985401964119191,182,581,"nitrogen compound transport","BP",0.924051548505365,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"195","GO:0031099",0.0185823991115316,0.989314383916985,36,95,"regeneration","BP",0.92417155491626,"Turquoise","regeneration",1
+"196","GO:0009063",0.0195249525591631,0.992349170033915,15,32,"amino acid catabolic process","BP",0.951626877340969,"Turquoise","organic cyclic compound catabolic process",29
+"197","GO:0031929",0.0200052202257059,0.992996353554667,12,26,"TOR signaling","BP",0.96706433794073,"Turquoise","TOR signaling",3
+"198","GO:0043412",0.0201389081779621,0.98305483152295,334,1119,"macromolecule modification","BP",0.967275536693077,"Turquoise","protein modification by small protein conjugation or removal",19
+"199","GO:0046085",0.0202821994053224,1,3,3,"adenosine metabolic process","BP",0.967275536693077,"Turquoise","ATP metabolic process",30
+"200","GO:0071218",0.0204446715014118,0.995680356853654,7,12,"cellular response to misfolded protein","BP",0.969478685526552,"Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
+"201","GO:0006006",0.0206484964073695,0.991148327536147,17,39,"glucose metabolic process","BP",0.969627414039371,"Turquoise","glucose catabolic process to pyruvate",3
+"202","GO:0008209",0.0206594421118811,0.998582500579769,4,5,"androgen metabolic process","BP",0.969627414039371,"Turquoise","androgen metabolic process",3
+"203","GO:0016073",0.0211232606141263,0.990640570423532,18,42,"snRNA metabolic process","BP",0.98878038668922,"Turquoise","ncRNA metabolic process",8
+"204","GO:0006081",0.0215716835853911,0.992465033287939,12,25,"cellular aldehyde metabolic process","BP",0.999176792122925,"Turquoise","cellular aldehyde metabolic process",1
+"205","GO:0046390",0.0216659248446681,0.987947866510099,31,81,"ribose phosphate biosynthetic process","BP",0.999176792122925,"Turquoise","ribose phosphate metabolic process",8
+"206","GO:0006627",0.0220078555078641,1,3,3,"protein processing involved in protein targeting to mitochondrion","BP",1,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"207","GO:0009052",0.023227163788305,1,3,3,"pentose-phosphate shunt, non-oxidative branch","BP",1,"Turquoise","NADH metabolic process",6
+"208","GO:0009260",0.0235151701650887,0.986964030621627,30,78,"ribonucleotide biosynthetic process","BP",1,"Turquoise","ribose phosphate metabolic process",8
+"209","GO:0051296",0.0242982471772,0.996366753256963,5,8,"establishment of meiotic spindle orientation","BP",1,"Turquoise","protein targeting to ER",14
+"210","GO:0007021",0.0247894142383497,1,3,3,"tubulin complex assembly","BP",1,"Turquoise","ribonucleoprotein complex assembly",8
+"211","GO:0018193",0.0252536257237601,0.980912168385196,114,361,"peptidyl-amino acid modification","BP",1,"Turquoise","protein modification by small protein conjugation or removal",19
+"212","GO:0051295",0.0253446320974544,0.994842201136165,6,11,"establishment of meiotic spindle localization","BP",1,"Turquoise","protein targeting to ER",14
+"213","GO:0019362",0.0256704674737226,0.987971232541151,19,46,"pyridine nucleotide metabolic process","BP",1,"Turquoise","NADH metabolic process",6
+"214","GO:0046496",0.0256704674737226,0.987971232541151,19,46,"nicotinamide nucleotide metabolic process","BP",1,"Turquoise","NADH metabolic process",6
+"215","GO:0006486",0.0267488028703706,0.985259689930199,29,72,"protein glycosylation","BP",1,"Turquoise","macromolecule glycosylation",5
+"216","GO:0043413",0.0267488028703706,0.985259689930199,29,72,"macromolecule glycosylation","BP",1,"Turquoise","macromolecule glycosylation",5
+"217","GO:0030388",0.0267946359674043,1,3,3,"fructose 1,6-bisphosphate metabolic process","BP",1,"Turquoise","carbohydrate derivative metabolic process",3
+"218","GO:1904779",0.0277263393986174,0.997892823203294,4,5,"regulation of protein localization to centrosome","BP",1,"Turquoise","protein targeting to ER",14
+"219","GO:0071702",0.027933891997492,0.977341550336507,198,645,"organic substance transport","BP",1,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"220","GO:2001024",0.0282222322053699,0.993214383235342,7,13,"negative regulation of response to drug","BP",1,"Turquoise","regulation of response to gamma radiation",2
+"221","GO:0009145",0.0283156345808876,0.987054868256432,18,41,"purine nucleoside triphosphate biosynthetic process","BP",1,"Turquoise","ATP metabolic process",30
+"222","GO:0006706",0.0286250619567582,0.994412675468177,6,10,"steroid catabolic process","BP",1,"Turquoise","androgen metabolic process",3
+"223","GO:0098781",0.0287139171217914,0.986626664257626,18,44,"ncRNA transcription","BP",1,"Turquoise","macromolecule biosynthetic process",18
+"224","GO:1901292",0.0287434834802265,0.987983105758789,15,33,"nucleoside phosphate catabolic process","BP",1,"Turquoise","organic cyclic compound catabolic process",29
+"225","GO:1903894",0.0287802739169704,0.996215903806932,5,7,"regulation of IRE1-mediated unfolded protein response","BP",1,"Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
+"226","GO:0018279",0.0290235358661058,0.991459284973353,9,17,"protein N-linked glycosylation via asparagine","BP",1,"Turquoise","macromolecule glycosylation",5
+"227","GO:0051788",0.0290417642830445,0.992970659548962,7,13,"response to misfolded protein","BP",1,"Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
+"228","GO:0007292",0.0292642432383805,0.977722600284796,113,368,"female gamete generation","BP",1,"Turquoise","P granule assembly",3
+"229","GO:0072710",0.0299327232980068,0.996590933959063,4,6,"response to hydroxyurea","BP",1,"Turquoise","regulation of endoplasmic reticulum unfolded protein response",5
+"230","GO:0019233",0.0301169494926844,0.986342972184155,17,40,"sensory perception of pain","BP",1,"Turquoise","sensory perception of pain",4
+"231","GO:0043207",0.0316852248723462,0.976756444748974,87,270,"response to external biotic stimulus","BP",1,"Turquoise","response to other organism",4
+"232","GO:0051707",0.0316852248723462,0.976756444748974,87,270,"response to other organism","BP",1,"Turquoise","response to other organism",4
+"233","GO:0048477",0.0323715008681708,0.975591029030194,102,331,"oogenesis","BP",1,"Turquoise","P granule assembly",3
+"234","GO:0045761",0.0326491836020637,0.994676915903522,5,8,"regulation of adenylate cyclase activity","BP",1,"Turquoise","regulation of ubiquitin-protein transferase activity",2
+"235","GO:0007007",0.0330304190680265,0.988630894475362,11,21,"inner mitochondrial membrane organization","BP",1,"Turquoise","mitochondrial respiratory chain complex assembly",7
+"236","GO:0035022",0.0330725856270059,0.996976948150106,3,5,"positive regulation of Rac protein signal transduction","BP",1,"Turquoise","TOR signaling",3
+"237","GO:0045981",0.0333311860821583,0.988914981156287,10,20,"positive regulation of nucleotide metabolic process","BP",1,"Turquoise","ATP metabolic process",30
+"238","GO:1900544",0.0333311860821583,0.988914981156287,10,20,"positive regulation of purine nucleotide metabolic process","BP",1,"Turquoise","ATP metabolic process",30
+"239","GO:0070085",0.0334017251799874,0.981139601934638,29,73,"glycosylation","BP",1,"Turquoise","macromolecule glycosylation",5
+"240","GO:0006418",0.0342749391627011,0.987930618041483,10,23,"tRNA aminoacylation for protein translation","BP",1,"Turquoise","small molecule metabolic process",14
+"241","GO:0043038",0.0342749391627011,0.987930618041483,10,23,"amino acid activation","BP",1,"Turquoise","small molecule metabolic process",14
+"242","GO:0043039",0.0342749391627011,0.987930618041483,10,23,"tRNA aminoacylation","BP",1,"Turquoise","small molecule metabolic process",14
+"243","GO:0006096",0.0344128508273193,0.991331121640758,7,13,"glycolytic process","BP",1,"Turquoise","purine nucleotide metabolic process",9
+"244","GO:1901293",0.035817616049876,0.977436288889914,40,113,"nucleoside phosphate biosynthetic process","BP",1,"Turquoise","ATP metabolic process",30
+"245","GO:0006308",0.0361995602098366,0.989756720863964,8,15,"DNA catabolic process","BP",1,"Turquoise","organic cyclic compound catabolic process",29
+"246","GO:0065003",0.0362130659472185,0.970368776777212,197,641,"protein-containing complex assembly","BP",1,"Turquoise","ribonucleoprotein complex assembly",8
+"247","GO:0006790",0.0363460256718285,0.976033022188493,49,136,"sulfur compound metabolic process","BP",1,"Turquoise","sulfur compound metabolic process",2
+"248","GO:0009607",0.0364297953577924,0.972879655771209,91,284,"response to biotic stimulus","BP",1,"Turquoise","response to other organism",4
+"249","GO:0090277",0.0367544022295515,0.982984960722612,16,41,"positive regulation of peptide hormone secretion","BP",1,"Turquoise","SRP-dependent cotranslational protein targeting to membrane",9
+"250","GO:0006268",0.0372617183128054,0.995421670168322,4,6,"DNA unwinding involved in DNA replication","BP",1,"Turquoise","mitochondrial respiratory chain complex assembly",7
+"251","GO:0038034",0.0376608331949024,0.99680480836524,4,5,"signal transduction in absence of ligand","BP",1,"Turquoise","extrinsic apoptotic signaling pathway in absence of ligand",2
+"252","GO:0097192",0.0376608331949024,0.99680480836524,4,5,"extrinsic apoptotic signaling pathway in absence of ligand","BP",1,"Turquoise","extrinsic apoptotic signaling pathway in absence of ligand",2
+"253","GO:0080182",0.0376758463503249,0.995352800194637,4,6,"histone H3-K4 trimethylation","BP",1,"Turquoise","protein modification by small protein conjugation or removal",19
+"254","GO:0002237",0.0379456864152117,0.976941767722598,34,96,"response to molecule of bacterial origin","BP",1,"Turquoise","response to other organism",4
+"255","GO:0006448",0.0381388524916796,0.993484837399552,5,8,"regulation of translational elongation","BP",1,"Turquoise","cytoplasmic translation",9
+"256","GO:0006493",0.0382561552557205,0.985297936062582,12,25,"protein O-linked glycosylation","BP",1,"Turquoise","macromolecule glycosylation",5
+"257","GO:1903051",0.0382761286809308,0.982370228705019,16,39,"negative regulation of proteolysis involved in protein catabolic process","BP",1,"Turquoise","organic cyclic compound catabolic process",29
+"258","GO:0009164",0.0385770001078399,0.993387123895139,5,8,"nucleoside catabolic process","BP",1,"Turquoise","ATP metabolic process",30
+"259","GO:0046031",0.038717354117014,0.98850840066546,8,16,"ADP metabolic process","BP",1,"Turquoise","purine nucleotide metabolic process",9
+"260","GO:0090305",0.0388766414762825,0.97477334452026,44,125,"nucleic acid phosphodiester bond hydrolysis","BP",1,"Turquoise","organic cyclic compound metabolic process",3
+"261","GO:0007205",0.0393730648705605,0.995067551179941,4,6,"protein kinase C-activating G protein-coupled receptor signaling pathway","BP",1,"Turquoise","protein kinase C-activating G protein-coupled receptor signaling pathway",1
+"262","GO:0038202",0.0396358884210999,0.989247214588319,7,14,"TORC1 signaling","BP",1,"Turquoise","TOR signaling",3
+"263","GO:0008210",0.0397044636652317,0.98964900289519,7,13,"estrogen metabolic process","BP",1,"Turquoise","androgen metabolic process",3
+"264","GO:0008652",0.0401027683574216,0.981977939310716,15,36,"amino acid biosynthetic process","BP",1,"Turquoise","small molecule metabolic process",14
+"265","GO:0051276",0.0403557612156275,0.968052371256204,136,457,"chromosome organization","BP",1,"Turquoise","mitochondrial respiratory chain complex assembly",7
+"266","GO:0000288",0.0404030262164439,0.98182279809862,15,36,"nuclear-transcribed mRNA catabolic process, deadenylation-dependent decay","BP",1,"Turquoise","mRNA metabolic process",4
+"267","GO:0072350",0.0416544849747507,0.982541389793315,13,30,"tricarboxylic acid metabolic process","BP",1,"Turquoise","small molecule metabolic process",14
+"268","GO:0042398",0.0419552292769048,0.98319754498945,12,27,"cellular modified amino acid biosynthetic process","BP",1,"Turquoise","cellular modified amino acid metabolic process",2
+"269","GO:0007520",0.0423060109139469,0.981925317537918,13,32,"myoblast fusion","BP",1,"Turquoise","myotube differentiation",2
+"270","GO:0006949",0.04300536686638,0.980873296602792,14,35,"syncytium formation","BP",1,"Turquoise","post-embryonic body morphogenesis",2
+"271","GO:0000959",0.043113632383956,0.990611985805996,6,10,"mitochondrial RNA metabolic process","BP",1,"Turquoise","mitochondrial RNA metabolic process",1
+"272","GO:0045010",0.0432663055032086,0.99056961206183,6,10,"actin nucleation","BP",1,"Turquoise","mitochondrial respiratory chain complex assembly",7
+"273","GO:0009301",0.0447083726094805,0.980273959237306,14,33,"snRNA transcription","BP",1,"Turquoise","macromolecule biosynthetic process",18
+"274","GO:0042795",0.0447083726094805,0.980273959237306,14,33,"snRNA transcription by RNA polymerase II","BP",1,"Turquoise","macromolecule biosynthetic process",18
+"275","GO:1901606",0.0448440769896917,0.98115685068077,13,29,"alpha-amino acid catabolic process","BP",1,"Turquoise","organic cyclic compound catabolic process",29
+"276","GO:0090501",0.0450525669481399,0.974714620452789,25,66,"RNA phosphodiester bond hydrolysis","BP",1,"Turquoise","organic cyclic compound metabolic process",3
+"277","GO:0009206",0.0461317655998734,0.977810184539813,17,40,"purine ribonucleoside triphosphate biosynthetic process","BP",1,"Turquoise","ATP metabolic process",30
+"278","GO:0006109",0.046412003776509,0.974216983108045,24,63,"regulation of carbohydrate metabolic process","BP",1,"Turquoise","glucose catabolic process to pyruvate",3
+"279","GO:0009165",0.047246950107009,0.969650399009395,39,112,"nucleotide biosynthetic process","BP",1,"Turquoise","ATP metabolic process",30
+"280","GO:0016180",0.0478134882285508,0.987916725618942,6,12,"snRNA processing","BP",1,"Turquoise","ncRNA metabolic process",8
+"281","GO:0042177",0.0478906682712896,0.974740729919994,20,54,"negative regulation of protein catabolic process","BP",1,"Turquoise","organic cyclic compound catabolic process",29
+"282","GO:1902743",0.0480384217493149,0.981094567474464,11,25,"regulation of lamellipodium organization","BP",1,"Turquoise","regulation of lamellipodium organization",1
+"283","GO:0035336",0.0481827353977043,0.996381876922702,3,4,"long-chain fatty-acyl-CoA metabolic process","BP",1,"Turquoise","sulfur compound metabolic process",2
+"284","GO:0072524",0.0482491237515577,0.975181268082825,19,49,"pyridine-containing compound metabolic process","BP",1,"Turquoise","NADH metabolic process",6
+"285","GO:0006999",0.0487793361763717,0.991428578427315,4,8,"nuclear pore organization","BP",1,"Turquoise","ribonucleoprotein complex assembly",8
+"286","GO:0072523",0.0490705451319544,0.985982226311469,7,14,"purine-containing compound catabolic process","BP",1,"Turquoise","organic cyclic compound catabolic process",29
+"287","GO:1904478",0.0493663957786184,1,2,2,"regulation of intestinal absorption","BP",1,"Turquoise","sensory perception of pain",4
+"288","GO:1904729",0.0493663957786184,1,2,2,"regulation of intestinal lipid absorption","BP",1,"Turquoise","sensory perception of pain",4
+"289","GO:0009092",0.0495958687127907,1,2,2,"homoserine metabolic process","BP",1,"Turquoise","small molecule metabolic process",14
+"290","GO:0019346",0.0495958687127907,1,2,2,"transsulfuration","BP",1,"Turquoise","small molecule metabolic process",14
+"291","GO:0044058",0.0498942358128119,0.991972237766487,4,7,"regulation of digestive system process","BP",1,"Turquoise","sensory perception of pain",4

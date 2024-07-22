@@ -45,6 +45,7 @@ library(GenomicRanges)
 library(rtracklayer)
 library(rrvgo)
 library(scales)
+library(dplyr)
 ```
 
 ## Load in data
@@ -164,6 +165,24 @@ ALL.vector <- c(geneInfo$gene_id)
 LENGTH.vector <- as.integer(geneInfo$Length)
 ```
 
+```{r}
+##Get a list of GO Terms for the all 9012 genes
+GO.terms <- geneInfo %>%
+  dplyr::select(gene_id, GOs) %>% dplyr::rename("GO.terms" = GOs)
+
+dim(GO.terms) #9012    2
+
+sum(is.na(GO.terms$GO.terms)) #4,448 genes out of 9,012 do not have GO annotation
+sum(!is.na(GO.terms$GO.terms))
+
+##Format to have one goterm per row with gene ID repeated
+split <- strsplit(as.character(GO.terms$GO.terms), ";") 
+split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
+colnames(split2) <- c("gene", "GO.terms")
+GO.terms<-split2
+```
+
+
 #### Brown
 
 ```{r}
@@ -172,21 +191,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #942
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector #set names
@@ -200,6 +207,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+    
 #Filtering for p < 0.05
 GO_05_brown <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -286,8 +296,6 @@ freq_fig_brown
 ggsave("../../output/WGCNA/GO_analysis/Parent_by_mod/Brown_Parent_filtp01.pdf", freq_fig_brown, width = 5, height = 4, units = c("in"), dpi=300)
 ```
 
-
-
 This is only 41 terms that fall into 12 parent terms
 
 ```{r}
@@ -332,21 +340,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #425
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
@@ -360,6 +356,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
 #Filtering for p < 0.05
 GO_05_red <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -415,7 +414,6 @@ The reduced list of terms is 85 terms that falls under 26 parent terms.
 ```{r}
 write.csv(go_results_BP_reduced, "../../output/WGCNA/GO_analysis/goseq_red_filtered.csv")
 ```
-
 
 What about for p < 0.01?
 
@@ -490,21 +488,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #396
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
@@ -518,6 +504,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
 #Filtering for p < 0.05
 GO_05_black <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -540,21 +529,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #220
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
@@ -568,6 +545,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
 #Filtering for p < 0.05
 GO_05_pink <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -590,21 +570,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #154
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
@@ -618,6 +586,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
 #Filtering for p < 0.05
 GO_05_salmon <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -640,21 +611,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #1989
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
@@ -668,6 +627,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
 #Filtering for p < 0.05
 GO_05_blue <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -688,7 +650,7 @@ dim(go_results_BP)
 GO_05_UP <- rbind(GO_05_brown,GO_05_red,GO_05_black,GO_05_pink,GO_05_salmon,GO_05_blue)
 
 length(GO_05_UP$GOterm) #3810 enriched GO terms
-length(unique(GO_05_UP$GOterm)) #3617 enriched GO terms
+length(unique(GO_05_UP$GOterm)) #3617 unique enriched GO terms
 
 # Collapse GO terms that are duplicated accross modules - sort by GO term and p-value, then keep the row with the lowest p-value, collapsing the module names so you know which modules were represented
 
@@ -709,16 +671,6 @@ write.csv(GO_05_UP, file = "../../output/WGCNA/GO_analysis/goseq_pattern_calcifi
 
 ## Calcification - Down - By Module
 
-```{r}
-### Generate vector with names of all genes 
-ALL.vector <- c(geneInfo$gene_id)
-```
-
-```{r}
-### Generate length vector for all genes 
-LENGTH.vector <- as.integer(geneInfo$Length)
-```
-
 #### Turquoise
 
 ```{r}
@@ -727,21 +679,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #2558
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector #set names
@@ -755,6 +695,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
 #Filtering for p < 0.05
 GO_05_turquoise <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -903,21 +846,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #219
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
@@ -931,6 +862,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
 #Filtering for p < 0.05
 GO_05_magenta <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -1054,7 +988,6 @@ Top5Plot
 ggsave("../../output/WGCNA/GO_analysis/Top10_BP_by_mod/Magenta_allterms_top5parent_filtp01.pdf", Top5Plot, width = 5, height = 5, units = c("in"), dpi=300, limitsize=FALSE)
 ```
 
-
 #### Lightcyan
 
 ```{r}
@@ -1063,21 +996,9 @@ ID.vector <- geneInfo %>%
   pull(gene_id)
 
 length(ID.vector) #65
-
-##Get a list of GO Terms for the all 9012 genes
-GO.terms <- geneInfo %>%
-  dplyr::select(gene_id, GOs) %>% rename(GOs = "GO.terms")
-
-dim(GO.terms) #9012    2
 ```
 
 ```{r}
-##Format to have one goterm per row with gene ID repeated
-split <- strsplit(as.character(GO.terms$GO.terms), ";") 
-split2 <- data.frame(v1 = rep.int(GO.terms$gene, sapply(split, length)), v2 = unlist(split)) 
-colnames(split2) <- c("gene", "GO.terms")
-GO.terms<-split2
-
 ##Construct list of genes with 1 for genes in module and 0 for genes not in the module
 gene.vector=as.integer(ALL.vector %in% ID.vector) 
 names(gene.vector)<-ALL.vector#set names
@@ -1091,6 +1012,9 @@ colnames(GO)[1] <- "GOterm"
 ```
 
 ```{r}
+#adjust p-values 
+GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
+
 #Filtering for p < 0.05
 GO_05_lightcyan <- GO %>%
         dplyr::filter(over_represented_pvalue<0.05) %>%
@@ -1111,7 +1035,7 @@ dim(go_results_BP)
 GO_05_DOWN <- rbind(GO_05_turquoise,GO_05_magenta,GO_05_lightcyan)
 
 length(GO_05_DOWN$GOterm) #1072 enriched GO terms
-length(unique(GO_05_DOWN$GOterm)) #1070 enriched GO terms
+length(unique(GO_05_DOWN$GOterm)) #1070 unique enriched GO terms
 
 # Collapse GO terms that are duplicated accross modules - sort by GO term and p-value, then keep the row with the lowest p-value, collapsing the module names so you know which modules were represented
 

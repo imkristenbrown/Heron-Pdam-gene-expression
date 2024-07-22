@@ -1,86 +1,86 @@
-"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","Module","ParentTerm","N_in_Parent"
-"1","GO:0035725",0.000248541641879886,0.999968263672578,7,31,"sodium ion transmembrane transport","BP","Red","sodium ion transmembrane transport",9
-"2","GO:0006814",0.00100362113259389,0.999832849074129,7,38,"sodium ion transport","BP","Red","sodium ion transmembrane transport",9
-"3","GO:0000707",0.00268500309054561,1,2,2,"meiotic DNA recombinase assembly","BP","Red","meiotic DNA recombinase assembly",3
-"4","GO:0000730",0.00268500309054561,1,2,2,"DNA recombinase assembly","BP","Red","meiotic DNA recombinase assembly",3
-"5","GO:0042148",0.00268500309054561,1,2,2,"strand invasion","BP","Red","strand invasion",7
-"6","GO:0090735",0.00268500309054561,1,2,2,"DNA repair complex assembly","BP","Red","meiotic DNA recombinase assembly",3
-"7","GO:0070212",0.00470551386409984,0.999935530709527,2,3,"protein poly-ADP-ribosylation","BP","Red","protein poly-ADP-ribosylation",1
-"8","GO:0030007",0.00552345422872241,0.999917722146733,2,3,"intracellular potassium ion homeostasis","BP","Red","intracellular potassium ion homeostasis",3
-"9","GO:0036376",0.00552345422872241,0.999917722146733,2,3,"sodium ion export across plasma membrane","BP","Red","sodium ion export across plasma membrane",2
-"10","GO:1902808",0.0055577605844726,0.999120683564698,5,25,"positive regulation of cell cycle G1/S phase transition","BP","Red","positive regulation of cell cycle G1/S phase transition",8
-"11","GO:0046466",0.00587752632525211,0.999319762882288,4,16,"membrane lipid catabolic process","BP","Red","membrane lipid catabolic process",6
-"12","GO:0002028",0.00632253781546319,0.998953237064752,5,28,"regulation of sodium ion transport","BP","Red","sodium ion transmembrane transport",9
-"13","GO:0086010",0.00633455087771159,0.999547661340259,3,10,"membrane depolarization during action potential","BP","Red","membrane depolarization during action potential",4
-"14","GO:0000724",0.00831520242886887,0.997906706472614,7,52,"double-strand break repair via homologous recombination","BP","Red","strand invasion",7
-"15","GO:0000725",0.00831520242886887,0.997906706472614,7,52,"recombinational repair","BP","Red","strand invasion",7
-"16","GO:1901992",0.00912686006947217,0.997981389298055,6,39,"positive regulation of mitotic cell cycle phase transition","BP","Red","positive regulation of cell cycle G1/S phase transition",8
-"17","GO:0140115",0.0106619475812899,0.99968458968198,2,4,"export across plasma membrane","BP","Red","sodium ion export across plasma membrane",2
-"18","GO:1990573",0.0106619475812899,0.99968458968198,2,4,"potassium ion import across plasma membrane","BP","Red","sodium ion transmembrane transport",9
-"19","GO:0015701",0.010802549992257,0.999036675983101,3,11,"bicarbonate transport","BP","Red","bicarbonate transport",1
-"20","GO:0051055",0.0123486192212224,0.998143616988163,4,21,"negative regulation of lipid biosynthetic process","BP","Red","membrane lipid catabolic process",6
-"21","GO:0098655",0.0132134007784649,0.994310091432974,14,161,"monoatomic cation transmembrane transport","BP","Red","monoatomic cation transmembrane transport",8
-"22","GO:1900087",0.0133620471368579,0.997957457814727,4,20,"positive regulation of G1/S transition of mitotic cell cycle","BP","Red","positive regulation of cell cycle G1/S phase transition",8
-"23","GO:0019377",0.0139435947447237,0.998632010326715,3,11,"glycolipid catabolic process","BP","Red","membrane lipid catabolic process",6
-"24","GO:0007143",0.0141206214187247,0.997101286978505,5,33,"female meiotic nuclear division","BP","Red","positive regulation of cell cycle G1/S phase transition",8
-"25","GO:0045988",0.0141231421370771,0.999438962911961,2,5,"negative regulation of striated muscle contraction","BP","Red","negative regulation of striated muscle contraction",2
-"26","GO:1903053",0.0142619714302226,0.997073286527179,5,32,"regulation of extracellular matrix organization","BP","Red","regulation of extracellular matrix organization",2
-"27","GO:1901989",0.0160034323132202,0.995959115156663,6,44,"positive regulation of cell cycle phase transition","BP","Red","positive regulation of cell cycle G1/S phase transition",8
-"28","GO:0030509",0.0164870958563138,0.997281734965803,4,22,"BMP signaling pathway","BP","Red","BMP signaling pathway",4
-"29","GO:0032042",0.0166199336975284,0.99822260064375,3,12,"mitochondrial DNA metabolic process","BP","Red","mitochondrial DNA metabolic process",2
-"30","GO:0071805",0.0177676683011241,0.996987657044632,4,23,"potassium ion transmembrane transport","BP","Red","sodium ion transmembrane transport",9
-"31","GO:0045003",0.0179845004159782,0.999187315299354,2,5,"double-strand break repair via synthesis-dependent strand annealing","BP","Red","strand invasion",7
-"32","GO:2001137",0.0180736790153243,0.999181119456146,2,5,"positive regulation of endocytic recycling","BP","Red","positive regulation of endocytic recycling",2
-"33","GO:0010248",0.0180852010795711,0.999180317714779,2,5,"establishment or maintenance of transmembrane electrochemical gradient","BP","Red","monoatomic cation transmembrane transport",8
-"34","GO:1904357",0.0192499019357365,0.99775771172685,3,14,"negative regulation of telomere maintenance via telomere lengthening","BP","Red","strand invasion",7
-"35","GO:0046498",0.0214467165509401,0.998934726331684,2,5,"S-adenosylhomocysteine metabolic process","BP","Red","S-adenosylhomocysteine metabolic process",8
-"36","GO:1903115",0.0228273040137374,0.998728019850516,2,6,"regulation of actin filament-based movement","BP","Red","regulation of actin filament-based movement",1
-"37","GO:0006883",0.0232828978415767,0.998688747909666,2,6,"intracellular sodium ion homeostasis","BP","Red","intracellular potassium ion homeostasis",3
-"38","GO:0098662",0.0233100448135685,0.989932804144358,12,141,"inorganic cation transmembrane transport","BP","Red","monoatomic cation transmembrane transport",8
-"39","GO:0046128",0.0234311575954763,0.994484258409033,5,36,"purine ribonucleoside metabolic process","BP","Red","S-adenosylhomocysteine metabolic process",8
-"40","GO:0030206",0.0244664310318534,0.998695042318203,2,5,"chondroitin sulfate biosynthetic process","BP","Red","S-adenosylhomocysteine metabolic process",8
-"41","GO:1902600",0.0246766601986998,0.994112160499583,5,36,"proton transmembrane transport","BP","Red","monoatomic cation transmembrane transport",8
-"42","GO:0071772",0.0253747781061849,0.995159546405519,4,25,"response to BMP","BP","Red","BMP signaling pathway",4
-"43","GO:0071773",0.0253747781061849,0.995159546405519,4,25,"cellular response to BMP stimulus","BP","Red","BMP signaling pathway",4
-"44","GO:0007400",0.0255009803469878,0.99849150246488,2,6,"neuroblast fate determination","BP","Red","neuroblast fate determination",2
-"45","GO:0006813",0.0267867048010784,0.994783462398435,4,26,"potassium ion transport","BP","Red","sodium ion transmembrane transport",9
-"46","GO:0098660",0.0270756415189751,0.987593551156705,13,160,"inorganic ion transmembrane transport","BP","Red","monoatomic cation transmembrane transport",8
-"47","GO:1902476",0.0287367726930626,0.994280423014032,4,26,"chloride transmembrane transport","BP","Red","monoatomic cation transmembrane transport",8
-"48","GO:0042278",0.0290335094341767,0.992740796719668,5,38,"purine nucleoside metabolic process","BP","Red","S-adenosylhomocysteine metabolic process",8
-"49","GO:0006023",0.0295699027401227,0.994085258284809,4,25,"aminoglycan biosynthetic process","BP","Red","S-adenosylhomocysteine metabolic process",8
-"50","GO:0045143",0.0296668096493516,0.995833178952418,3,16,"homologous chromosome segregation","BP","Red","positive regulation of cell cycle G1/S phase transition",8
-"51","GO:0051899",0.029813819352966,0.995804477204354,3,16,"membrane depolarization","BP","Red","membrane depolarization during action potential",4
-"52","GO:0030510",0.0300079064590756,0.992417283201735,5,39,"regulation of BMP signaling pathway","BP","Red","BMP signaling pathway",4
-"53","GO:1901879",0.0302344609527317,0.993844062228875,4,28,"regulation of protein depolymerization","BP","Red","regulation of extracellular matrix organization",2
-"54","GO:0006821",0.0331677587932092,0.993071291299445,4,27,"chloride transport","BP","Red","monoatomic cation transmembrane transport",8
-"55","GO:0035066",0.0340152446606225,0.994960418065247,3,16,"positive regulation of histone acetylation","BP","Red","positive regulation of histone acetylation",3
-"56","GO:0000038",0.0346038444498652,0.997454271503706,2,7,"very long-chain fatty acid metabolic process","BP","Red","membrane lipid catabolic process",6
-"57","GO:1901657",0.0349695517514299,0.98808112630932,7,67,"glycosyl compound metabolic process","BP","Red","S-adenosylhomocysteine metabolic process",8
-"58","GO:0051580",0.0355571929053273,0.997344923240876,2,7,"regulation of neurotransmitter uptake","BP","Red","positive regulation of endocytic recycling",2
-"59","GO:0006302",0.0362928242315696,0.986415156670738,8,85,"double-strand break repair","BP","Red","strand invasion",7
-"60","GO:0055075",0.0371102913606008,0.997163211573183,2,7,"potassium ion homeostasis","BP","Red","intracellular potassium ion homeostasis",3
-"61","GO:0061073",0.0390100819094182,1,1,1,"ciliary body morphogenesis","BP","Red","ciliary body morphogenesis",1
-"62","GO:0035177",0.0390332444738591,1,1,1,"larval foraging behavior","BP","Red","larval foraging behavior",1
-"63","GO:0002143",0.039063360952174,1,1,1,"tRNA wobble position uridine thiolation","BP","Red","tRNA wobble position uridine thiolation",2
-"64","GO:0032447",0.039063360952174,1,1,1,"protein urmylation","BP","Red","protein urmylation",1
-"65","GO:0045989",0.0393509925817648,0.996893370087616,2,7,"positive regulation of striated muscle contraction","BP","Red","negative regulation of striated muscle contraction",2
-"66","GO:0006432",0.0396039808400883,1,1,1,"phenylalanyl-tRNA aminoacylation","BP","Red","tRNA wobble position uridine thiolation",2
-"67","GO:0010644",0.0399591007067292,0.996818593618951,2,7,"cell communication by electrical coupling","BP","Red","cell communication by electrical coupling",1
-"68","GO:0030497",0.0402844499670119,1,1,1,"fatty acid elongation","BP","Red","membrane lipid catabolic process",6
-"69","GO:0042761",0.0402844499670119,1,1,1,"very long-chain fatty acid biosynthetic process","BP","Red","membrane lipid catabolic process",6
-"70","GO:0007127",0.0403702103765391,0.988869249523658,5,44,"meiosis I","BP","Red","positive regulation of cell cycle G1/S phase transition",8
-"71","GO:0070407",0.0406844168621913,1,1,1,"oxidation-dependent protein catabolic process","BP","Red","oxidation-dependent protein catabolic process",1
-"72","GO:0035065",0.0421762003640297,0.990433158180189,4,29,"regulation of histone acetylation","BP","Red","positive regulation of histone acetylation",3
-"73","GO:0010766",0.0422752601218567,0.996400827724961,2,8,"negative regulation of sodium ion transport","BP","Red","sodium ion transmembrane transport",9
-"74","GO:1902306",0.0422752601218567,0.996400827724961,2,8,"negative regulation of sodium ion transmembrane transport","BP","Red","sodium ion transmembrane transport",9
-"75","GO:2000650",0.0422752601218567,0.996400827724961,2,8,"negative regulation of sodium ion transmembrane transporter activity","BP","Red","sodium ion transmembrane transport",9
-"76","GO:0048867",0.0428697932691188,0.996321979499006,2,8,"stem cell fate determination","BP","Red","neuroblast fate determination",2
-"77","GO:0016233",0.0432581034552695,0.996270141949382,2,8,"telomere capping","BP","Red","strand invasion",7
-"78","GO:0098661",0.045692907645156,0.989336659697818,4,30,"inorganic anion transmembrane transport","BP","Red","monoatomic cation transmembrane transport",8
-"79","GO:0031573",0.0461921278682672,0.995869894213903,2,8,"mitotic intra-S DNA damage checkpoint signaling","BP","Red","positive regulation of cell cycle G1/S phase transition",8
-"80","GO:2000758",0.0468945982712288,0.99198899363459,3,18,"positive regulation of peptidyl-lysine acetylation","BP","Red","positive regulation of histone acetylation",3
-"81","GO:0050650",0.0473793858885752,0.995854607252562,2,7,"chondroitin sulfate proteoglycan biosynthetic process","BP","Red","S-adenosylhomocysteine metabolic process",8
-"82","GO:0086009",0.0482894195309006,0.99557464131512,2,8,"membrane repolarization","BP","Red","membrane depolarization during action potential",4
-"83","GO:0086011",0.0482894195309006,0.99557464131512,2,8,"membrane repolarization during action potential","BP","Red","membrane depolarization during action potential",4
-"84","GO:0006024",0.0485657786122412,0.991645151784427,3,17,"glycosaminoglycan biosynthetic process","BP","Red","S-adenosylhomocysteine metabolic process",8
-"85","GO:0000002",0.0490064180975252,0.991479093013107,3,18,"mitochondrial genome maintenance","BP","Red","mitochondrial DNA metabolic process",2
+"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","Module","ParentTerm","N_in_Parent"
+"1","GO:0035725",0.000248541641879886,0.999968263672578,7,31,"sodium ion transmembrane transport","BP",1,"Red","sodium ion transmembrane transport",9
+"2","GO:0006814",0.00100362113259389,0.999832849074129,7,38,"sodium ion transport","BP",1,"Red","sodium ion transmembrane transport",9
+"3","GO:0000707",0.00268500309054561,1,2,2,"meiotic DNA recombinase assembly","BP",1,"Red","meiotic DNA recombinase assembly",3
+"4","GO:0000730",0.00268500309054561,1,2,2,"DNA recombinase assembly","BP",1,"Red","meiotic DNA recombinase assembly",3
+"5","GO:0042148",0.00268500309054561,1,2,2,"strand invasion","BP",1,"Red","strand invasion",7
+"6","GO:0090735",0.00268500309054561,1,2,2,"DNA repair complex assembly","BP",1,"Red","meiotic DNA recombinase assembly",3
+"7","GO:0070212",0.00470551386409984,0.999935530709527,2,3,"protein poly-ADP-ribosylation","BP",1,"Red","protein poly-ADP-ribosylation",1
+"8","GO:0030007",0.00552345422872241,0.999917722146733,2,3,"intracellular potassium ion homeostasis","BP",1,"Red","intracellular potassium ion homeostasis",3
+"9","GO:0036376",0.00552345422872241,0.999917722146733,2,3,"sodium ion export across plasma membrane","BP",1,"Red","sodium ion export across plasma membrane",2
+"10","GO:1902808",0.0055577605844726,0.999120683564698,5,25,"positive regulation of cell cycle G1/S phase transition","BP",1,"Red","positive regulation of cell cycle G1/S phase transition",8
+"11","GO:0046466",0.00587752632525211,0.999319762882288,4,16,"membrane lipid catabolic process","BP",1,"Red","membrane lipid catabolic process",6
+"12","GO:0002028",0.00632253781546319,0.998953237064752,5,28,"regulation of sodium ion transport","BP",1,"Red","sodium ion transmembrane transport",9
+"13","GO:0086010",0.00633455087771159,0.999547661340259,3,10,"membrane depolarization during action potential","BP",1,"Red","membrane depolarization during action potential",4
+"14","GO:0000724",0.00831520242886887,0.997906706472614,7,52,"double-strand break repair via homologous recombination","BP",1,"Red","strand invasion",7
+"15","GO:0000725",0.00831520242886887,0.997906706472614,7,52,"recombinational repair","BP",1,"Red","strand invasion",7
+"16","GO:1901992",0.00912686006947217,0.997981389298055,6,39,"positive regulation of mitotic cell cycle phase transition","BP",1,"Red","positive regulation of cell cycle G1/S phase transition",8
+"17","GO:0140115",0.0106619475812899,0.99968458968198,2,4,"export across plasma membrane","BP",1,"Red","sodium ion export across plasma membrane",2
+"18","GO:1990573",0.0106619475812899,0.99968458968198,2,4,"potassium ion import across plasma membrane","BP",1,"Red","sodium ion transmembrane transport",9
+"19","GO:0015701",0.010802549992257,0.999036675983101,3,11,"bicarbonate transport","BP",1,"Red","bicarbonate transport",1
+"20","GO:0051055",0.0123486192212224,0.998143616988163,4,21,"negative regulation of lipid biosynthetic process","BP",1,"Red","membrane lipid catabolic process",6
+"21","GO:0098655",0.0132134007784649,0.994310091432974,14,161,"monoatomic cation transmembrane transport","BP",1,"Red","monoatomic cation transmembrane transport",8
+"22","GO:1900087",0.0133620471368579,0.997957457814727,4,20,"positive regulation of G1/S transition of mitotic cell cycle","BP",1,"Red","positive regulation of cell cycle G1/S phase transition",8
+"23","GO:0019377",0.0139435947447237,0.998632010326715,3,11,"glycolipid catabolic process","BP",1,"Red","membrane lipid catabolic process",6
+"24","GO:0007143",0.0141206214187247,0.997101286978505,5,33,"female meiotic nuclear division","BP",1,"Red","positive regulation of cell cycle G1/S phase transition",8
+"25","GO:0045988",0.0141231421370771,0.999438962911961,2,5,"negative regulation of striated muscle contraction","BP",1,"Red","negative regulation of striated muscle contraction",2
+"26","GO:1903053",0.0142619714302226,0.997073286527179,5,32,"regulation of extracellular matrix organization","BP",1,"Red","regulation of extracellular matrix organization",2
+"27","GO:1901989",0.0160034323132202,0.995959115156663,6,44,"positive regulation of cell cycle phase transition","BP",1,"Red","positive regulation of cell cycle G1/S phase transition",8
+"28","GO:0030509",0.0164870958563138,0.997281734965803,4,22,"BMP signaling pathway","BP",1,"Red","BMP signaling pathway",4
+"29","GO:0032042",0.0166199336975284,0.99822260064375,3,12,"mitochondrial DNA metabolic process","BP",1,"Red","mitochondrial DNA metabolic process",2
+"30","GO:0071805",0.0177676683011241,0.996987657044632,4,23,"potassium ion transmembrane transport","BP",1,"Red","sodium ion transmembrane transport",9
+"31","GO:0045003",0.0179845004159782,0.999187315299354,2,5,"double-strand break repair via synthesis-dependent strand annealing","BP",1,"Red","strand invasion",7
+"32","GO:2001137",0.0180736790153243,0.999181119456146,2,5,"positive regulation of endocytic recycling","BP",1,"Red","positive regulation of endocytic recycling",2
+"33","GO:0010248",0.0180852010795711,0.999180317714779,2,5,"establishment or maintenance of transmembrane electrochemical gradient","BP",1,"Red","monoatomic cation transmembrane transport",8
+"34","GO:1904357",0.0192499019357365,0.99775771172685,3,14,"negative regulation of telomere maintenance via telomere lengthening","BP",1,"Red","strand invasion",7
+"35","GO:0046498",0.0214467165509401,0.998934726331684,2,5,"S-adenosylhomocysteine metabolic process","BP",1,"Red","S-adenosylhomocysteine metabolic process",8
+"36","GO:1903115",0.0228273040137374,0.998728019850516,2,6,"regulation of actin filament-based movement","BP",1,"Red","regulation of actin filament-based movement",1
+"37","GO:0006883",0.0232828978415767,0.998688747909666,2,6,"intracellular sodium ion homeostasis","BP",1,"Red","intracellular potassium ion homeostasis",3
+"38","GO:0098662",0.0233100448135685,0.989932804144358,12,141,"inorganic cation transmembrane transport","BP",1,"Red","monoatomic cation transmembrane transport",8
+"39","GO:0046128",0.0234311575954763,0.994484258409033,5,36,"purine ribonucleoside metabolic process","BP",1,"Red","S-adenosylhomocysteine metabolic process",8
+"40","GO:0030206",0.0244664310318534,0.998695042318203,2,5,"chondroitin sulfate biosynthetic process","BP",1,"Red","S-adenosylhomocysteine metabolic process",8
+"41","GO:1902600",0.0246766601986998,0.994112160499583,5,36,"proton transmembrane transport","BP",1,"Red","monoatomic cation transmembrane transport",8
+"42","GO:0071772",0.0253747781061849,0.995159546405519,4,25,"response to BMP","BP",1,"Red","BMP signaling pathway",4
+"43","GO:0071773",0.0253747781061849,0.995159546405519,4,25,"cellular response to BMP stimulus","BP",1,"Red","BMP signaling pathway",4
+"44","GO:0007400",0.0255009803469878,0.99849150246488,2,6,"neuroblast fate determination","BP",1,"Red","neuroblast fate determination",2
+"45","GO:0006813",0.0267867048010784,0.994783462398435,4,26,"potassium ion transport","BP",1,"Red","sodium ion transmembrane transport",9
+"46","GO:0098660",0.0270756415189751,0.987593551156705,13,160,"inorganic ion transmembrane transport","BP",1,"Red","monoatomic cation transmembrane transport",8
+"47","GO:1902476",0.0287367726930626,0.994280423014032,4,26,"chloride transmembrane transport","BP",1,"Red","monoatomic cation transmembrane transport",8
+"48","GO:0042278",0.0290335094341767,0.992740796719668,5,38,"purine nucleoside metabolic process","BP",1,"Red","S-adenosylhomocysteine metabolic process",8
+"49","GO:0006023",0.0295699027401227,0.994085258284809,4,25,"aminoglycan biosynthetic process","BP",1,"Red","S-adenosylhomocysteine metabolic process",8
+"50","GO:0045143",0.0296668096493516,0.995833178952418,3,16,"homologous chromosome segregation","BP",1,"Red","positive regulation of cell cycle G1/S phase transition",8
+"51","GO:0051899",0.029813819352966,0.995804477204354,3,16,"membrane depolarization","BP",1,"Red","membrane depolarization during action potential",4
+"52","GO:0030510",0.0300079064590756,0.992417283201735,5,39,"regulation of BMP signaling pathway","BP",1,"Red","BMP signaling pathway",4
+"53","GO:1901879",0.0302344609527317,0.993844062228875,4,28,"regulation of protein depolymerization","BP",1,"Red","regulation of extracellular matrix organization",2
+"54","GO:0006821",0.0331677587932092,0.993071291299445,4,27,"chloride transport","BP",1,"Red","monoatomic cation transmembrane transport",8
+"55","GO:0035066",0.0340152446606225,0.994960418065247,3,16,"positive regulation of histone acetylation","BP",1,"Red","positive regulation of histone acetylation",3
+"56","GO:0000038",0.0346038444498652,0.997454271503706,2,7,"very long-chain fatty acid metabolic process","BP",1,"Red","membrane lipid catabolic process",6
+"57","GO:1901657",0.0349695517514299,0.98808112630932,7,67,"glycosyl compound metabolic process","BP",1,"Red","S-adenosylhomocysteine metabolic process",8
+"58","GO:0051580",0.0355571929053273,0.997344923240876,2,7,"regulation of neurotransmitter uptake","BP",1,"Red","positive regulation of endocytic recycling",2
+"59","GO:0006302",0.0362928242315696,0.986415156670738,8,85,"double-strand break repair","BP",1,"Red","strand invasion",7
+"60","GO:0055075",0.0371102913606008,0.997163211573183,2,7,"potassium ion homeostasis","BP",1,"Red","intracellular potassium ion homeostasis",3
+"61","GO:0061073",0.0390100819094182,1,1,1,"ciliary body morphogenesis","BP",1,"Red","ciliary body morphogenesis",1
+"62","GO:0035177",0.0390332444738591,1,1,1,"larval foraging behavior","BP",1,"Red","larval foraging behavior",1
+"63","GO:0002143",0.039063360952174,1,1,1,"tRNA wobble position uridine thiolation","BP",1,"Red","tRNA wobble position uridine thiolation",2
+"64","GO:0032447",0.039063360952174,1,1,1,"protein urmylation","BP",1,"Red","protein urmylation",1
+"65","GO:0045989",0.0393509925817648,0.996893370087616,2,7,"positive regulation of striated muscle contraction","BP",1,"Red","negative regulation of striated muscle contraction",2
+"66","GO:0006432",0.0396039808400883,1,1,1,"phenylalanyl-tRNA aminoacylation","BP",1,"Red","tRNA wobble position uridine thiolation",2
+"67","GO:0010644",0.0399591007067292,0.996818593618951,2,7,"cell communication by electrical coupling","BP",1,"Red","cell communication by electrical coupling",1
+"68","GO:0030497",0.0402844499670119,1,1,1,"fatty acid elongation","BP",1,"Red","membrane lipid catabolic process",6
+"69","GO:0042761",0.0402844499670119,1,1,1,"very long-chain fatty acid biosynthetic process","BP",1,"Red","membrane lipid catabolic process",6
+"70","GO:0007127",0.0403702103765391,0.988869249523658,5,44,"meiosis I","BP",1,"Red","positive regulation of cell cycle G1/S phase transition",8
+"71","GO:0070407",0.0406844168621913,1,1,1,"oxidation-dependent protein catabolic process","BP",1,"Red","oxidation-dependent protein catabolic process",1
+"72","GO:0035065",0.0421762003640297,0.990433158180189,4,29,"regulation of histone acetylation","BP",1,"Red","positive regulation of histone acetylation",3
+"73","GO:0010766",0.0422752601218567,0.996400827724961,2,8,"negative regulation of sodium ion transport","BP",1,"Red","sodium ion transmembrane transport",9
+"74","GO:1902306",0.0422752601218567,0.996400827724961,2,8,"negative regulation of sodium ion transmembrane transport","BP",1,"Red","sodium ion transmembrane transport",9
+"75","GO:2000650",0.0422752601218567,0.996400827724961,2,8,"negative regulation of sodium ion transmembrane transporter activity","BP",1,"Red","sodium ion transmembrane transport",9
+"76","GO:0048867",0.0428697932691188,0.996321979499006,2,8,"stem cell fate determination","BP",1,"Red","neuroblast fate determination",2
+"77","GO:0016233",0.0432581034552695,0.996270141949382,2,8,"telomere capping","BP",1,"Red","strand invasion",7
+"78","GO:0098661",0.045692907645156,0.989336659697818,4,30,"inorganic anion transmembrane transport","BP",1,"Red","monoatomic cation transmembrane transport",8
+"79","GO:0031573",0.0461921278682672,0.995869894213903,2,8,"mitotic intra-S DNA damage checkpoint signaling","BP",1,"Red","positive regulation of cell cycle G1/S phase transition",8
+"80","GO:2000758",0.0468945982712288,0.99198899363459,3,18,"positive regulation of peptidyl-lysine acetylation","BP",1,"Red","positive regulation of histone acetylation",3
+"81","GO:0050650",0.0473793858885752,0.995854607252562,2,7,"chondroitin sulfate proteoglycan biosynthetic process","BP",1,"Red","S-adenosylhomocysteine metabolic process",8
+"82","GO:0086009",0.0482894195309006,0.99557464131512,2,8,"membrane repolarization","BP",1,"Red","membrane depolarization during action potential",4
+"83","GO:0086011",0.0482894195309006,0.99557464131512,2,8,"membrane repolarization during action potential","BP",1,"Red","membrane depolarization during action potential",4
+"84","GO:0006024",0.0485657786122412,0.991645151784427,3,17,"glycosaminoglycan biosynthetic process","BP",1,"Red","S-adenosylhomocysteine metabolic process",8
+"85","GO:0000002",0.0490064180975252,0.991479093013107,3,18,"mitochondrial genome maintenance","BP",1,"Red","mitochondrial DNA metabolic process",2

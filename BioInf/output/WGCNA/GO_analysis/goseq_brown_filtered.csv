@@ -1,158 +1,158 @@
-"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","Module","ParentTerm","N_in_Parent"
-"1","GO:0018107",4.26818707434879e-05,0.999990576053163,15,47,"peptidyl-threonine phosphorylation","BP","Brown","peptidyl-threonine phosphorylation",3
-"2","GO:0006082",4.36816560489148e-05,0.999977508255549,60,345,"organic acid metabolic process","BP","Brown","organic acid metabolic process",17
-"3","GO:0043436",5.39336399389108e-05,0.999972158469648,59,340,"oxoacid metabolic process","BP","Brown","organic acid metabolic process",17
-"4","GO:0018210",7.44824752416918e-05,0.999982523898425,15,49,"peptidyl-threonine modification","BP","Brown","peptidyl-threonine phosphorylation",3
-"5","GO:0032787",8.10113591913604e-05,0.999966532583815,33,159,"monocarboxylic acid metabolic process","BP","Brown","organic acid metabolic process",17
-"6","GO:0019752",0.00020183573651578,0.999893214581832,53,311,"carboxylic acid metabolic process","BP","Brown","organic acid metabolic process",17
-"7","GO:0044272",0.000408423305284905,0.999878449558514,16,61,"sulfur compound biosynthetic process","BP","Brown","sulfur compound biosynthetic process",11
-"8","GO:0006631",0.000437693479710902,0.999832821209884,23,105,"fatty acid metabolic process","BP","Brown","organic acid metabolic process",17
-"9","GO:0044242",0.000705231619106849,0.999777217793908,16,64,"cellular lipid catabolic process","BP","Brown","cellular lipid catabolic process",21
-"10","GO:0016042",0.000941747822063598,0.999667693910341,18,78,"lipid catabolic process","BP","Brown","cellular lipid catabolic process",21
-"11","GO:0006121",0.00120244419295686,1,3,3,"mitochondrial electron transport, succinate to ubiquinone","BP","Brown","mitochondrial electron transport, succinate to ubiquinone",5
-"12","GO:0044282",0.00150460101878285,0.999362413851002,23,114,"small molecule catabolic process","BP","Brown","small molecule catabolic process",11
-"13","GO:0046939",0.00160205545254047,0.999701500425813,8,23,"nucleotide phosphorylation","BP","Brown","nucleotide phosphorylation",22
-"14","GO:0006090",0.00164081712202023,0.999693068180637,8,23,"pyruvate metabolic process","BP","Brown","organic acid metabolic process",17
-"15","GO:0006790",0.00179006535378652,0.999183949328457,26,136,"sulfur compound metabolic process","BP","Brown","sulfur compound biosynthetic process",11
-"16","GO:0006084",0.00187862903966991,0.999826065788679,5,10,"acetyl-CoA metabolic process","BP","Brown","sulfur compound biosynthetic process",11
-"17","GO:0005996",0.00232023293872076,0.999163045654407,16,71,"monosaccharide metabolic process","BP","Brown","monosaccharide metabolic process",16
-"18","GO:0035384",0.00263639069391985,0.999625018381053,6,15,"thioester biosynthetic process","BP","Brown","sulfur compound biosynthetic process",11
-"19","GO:0071616",0.00263639069391985,0.999625018381053,6,15,"acyl-CoA biosynthetic process","BP","Brown","sulfur compound biosynthetic process",11
-"20","GO:0046503",0.00276105036168868,0.999603477886762,6,15,"glycerolipid catabolic process","BP","Brown","cellular lipid catabolic process",21
-"21","GO:0016054",0.0031483975728384,0.998823901251109,16,73,"organic acid catabolic process","BP","Brown","small molecule catabolic process",11
-"22","GO:0046395",0.0031483975728384,0.998823901251109,16,73,"carboxylic acid catabolic process","BP","Brown","small molecule catabolic process",11
-"23","GO:0009062",0.00376039125282632,0.99897212986229,10,37,"fatty acid catabolic process","BP","Brown","small molecule catabolic process",11
-"24","GO:0006629",0.00453041268495722,0.99722314451756,51,340,"lipid metabolic process","BP","Brown","cellular lipid catabolic process",21
-"25","GO:0072329",0.00467323907373711,0.99857134146449,11,44,"monocarboxylic acid catabolic process","BP","Brown","small molecule catabolic process",11
-"26","GO:0006165",0.00555325698495071,0.998841578519988,7,22,"nucleoside diphosphate phosphorylation","BP","Brown","nucleotide phosphorylation",22
-"27","GO:0046461",0.00568226472757501,0.999495103278687,4,8,"neutral lipid catabolic process","BP","Brown","cellular lipid catabolic process",21
-"28","GO:0046464",0.00568226472757501,0.999495103278687,4,8,"acylglycerol catabolic process","BP","Brown","cellular lipid catabolic process",21
-"29","GO:0006310",0.0056996779683227,0.997637232691003,17,86,"DNA recombination","BP","Brown","DNA recombination",2
-"30","GO:0005975",0.00570217351437847,0.997094794380336,27,156,"carbohydrate metabolic process","BP","Brown","monosaccharide metabolic process",16
-"31","GO:0006089",0.00590141754480008,0.999469735042861,4,8,"lactate metabolic process","BP","Brown","lactate metabolic process",2
-"32","GO:0009068",0.00612727451932269,0.999443286457351,4,8,"aspartate family amino acid catabolic process","BP","Brown","small molecule catabolic process",11
-"33","GO:0016052",0.00662017077885728,0.998008184276163,10,40,"carbohydrate catabolic process","BP","Brown","monosaccharide metabolic process",16
-"34","GO:0006672",0.00729558055747442,0.998379321091559,7,23,"ceramide metabolic process","BP","Brown","cellular lipid catabolic process",21
-"35","GO:0006096",0.00774325467762396,0.998849488248853,5,13,"glycolytic process","BP","Brown","nucleotide phosphorylation",22
-"36","GO:0090522",0.00858279108210202,0.999539275279444,3,5,"vesicle tethering involved in exocytosis","BP","Brown","vesicle tethering",4
-"37","GO:0099022",0.00858279108210202,0.999539275279444,3,5,"vesicle tethering","BP","Brown","vesicle tethering",4
-"38","GO:0016053",0.00895779733408346,0.995614538403498,22,124,"organic acid biosynthetic process","BP","Brown","organic acid metabolic process",17
-"39","GO:0046394",0.00895779733408346,0.995614538403498,22,124,"carboxylic acid biosynthetic process","BP","Brown","organic acid metabolic process",17
-"40","GO:0000973",0.00910478451918841,1,2,2,"post-transcriptional tethering of RNA polymerase II gene DNA at nuclear periphery","BP","Brown","post-transcriptional tethering of RNA polymerase II gene DNA at nuclear periphery",1
-"41","GO:0019240",0.00955675839716166,1,2,2,"citrulline biosynthetic process","BP","Brown","organic acid metabolic process",17
-"42","GO:0019318",0.0100666064552811,0.996324404381679,12,55,"hexose metabolic process","BP","Brown","monosaccharide metabolic process",16
-"43","GO:0030539",0.0101064777053306,0.997565728166853,7,25,"male genitalia development","BP","Brown","male genitalia development",3
-"44","GO:0051316",0.0101457897657524,1,2,2,"attachment of spindle microtubules to kinetochore involved in meiotic chromosome segregation","BP","Brown","male genitalia development",3
-"45","GO:0033866",0.0101492122983541,0.997927861623057,6,19,"nucleoside bisphosphate biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"46","GO:0034030",0.0101492122983541,0.997927861623057,6,19,"ribonucleoside bisphosphate biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"47","GO:0034033",0.0101492122983541,0.997927861623057,6,19,"purine nucleoside bisphosphate biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"48","GO:0072524",0.0108157099376963,0.996222880785981,11,49,"pyridine-containing compound metabolic process","BP","Brown","pyridine-containing compound metabolic process",4
-"49","GO:0098719",0.010885629306392,1,2,2,"sodium ion import across plasma membrane","BP","Brown","sodium ion import across plasma membrane",1
-"50","GO:0006757",0.0109333064456457,0.998182400649424,5,14,"ATP generation from ADP","BP","Brown","nucleotide phosphorylation",22
-"51","GO:0042350",0.0110138315825541,1,2,2,"GDP-L-fucose biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"52","GO:0042351",0.0110138315825541,1,2,2,"'de novo' GDP-L-fucose biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"53","GO:0042866",0.0110633216081475,0.998155227420942,5,14,"pyruvate biosynthetic process","BP","Brown","organic acid metabolic process",17
-"54","GO:0009106",0.0111221972251477,1,2,2,"lipoate metabolic process","BP","Brown","sulfur compound biosynthetic process",11
-"55","GO:0006556",0.0112657265005701,1,2,2,"S-adenosylmethionine biosynthetic process","BP","Brown","sulfur compound biosynthetic process",11
-"56","GO:0019626",0.0114479056433673,1,2,2,"short-chain fatty acid catabolic process","BP","Brown","cellular lipid catabolic process",21
-"57","GO:1901568",0.012390747264392,0.995575480227783,11,50,"fatty acid derivative metabolic process","BP","Brown","cellular lipid catabolic process",21
-"58","GO:0009260",0.0140679220803471,0.993902189689186,15,78,"ribonucleotide biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"59","GO:0016051",0.0149818238886877,0.994485047182075,11,51,"carbohydrate biosynthetic process","BP","Brown","monosaccharide metabolic process",16
-"60","GO:0044281",0.0151302994012285,0.989006017743396,87,666,"small molecule metabolic process","BP","Brown","organic acid metabolic process",17
-"61","GO:0005978",0.0152358816477297,0.997951303526012,4,10,"glycogen biosynthetic process","BP","Brown","monosaccharide metabolic process",16
-"62","GO:0009250",0.0152358816477297,0.997951303526012,4,10,"glucan biosynthetic process","BP","Brown","monosaccharide metabolic process",16
-"63","GO:0015980",0.016321775355887,0.991818338424887,20,115,"energy derivation by oxidation of organic compounds","BP","Brown","mitochondrial electron transport, succinate to ubiquinone",5
-"64","GO:0006112",0.0171587025979281,0.994801030871279,8,33,"energy reserve metabolic process","BP","Brown","mitochondrial electron transport, succinate to ubiquinone",5
-"65","GO:0006091",0.0174257860024399,0.990212903436338,27,169,"generation of precursor metabolites and energy","BP","Brown","mitochondrial electron transport, succinate to ubiquinone",5
-"66","GO:0051791",0.0177432944557703,0.998517690274388,3,6,"medium-chain fatty acid metabolic process","BP","Brown","organic acid metabolic process",17
-"67","GO:0006637",0.0178104748265526,0.995124862146637,7,27,"acyl-CoA metabolic process","BP","Brown","sulfur compound biosynthetic process",11
-"68","GO:0035383",0.0178104748265526,0.995124862146637,7,27,"thioester metabolic process","BP","Brown","sulfur compound biosynthetic process",11
-"69","GO:0044255",0.0188498490559134,0.987955539634477,42,292,"cellular lipid metabolic process","BP","Brown","cellular lipid catabolic process",21
-"70","GO:0031648",0.0190105406225169,0.99621519260276,5,16,"protein destabilization","BP","Brown","protein destabilization",1
-"71","GO:0046390",0.0194022050373061,0.991222305603323,15,81,"ribose phosphate biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"72","GO:0009152",0.0198904234072441,0.991264975009096,14,74,"purine ribonucleotide biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"73","GO:0033865",0.0199584339705533,0.993211789015596,9,40,"nucleoside bisphosphate metabolic process","BP","Brown","nucleotide phosphorylation",22
-"74","GO:0033875",0.0199584339705533,0.993211789015596,9,40,"ribonucleoside bisphosphate metabolic process","BP","Brown","nucleotide phosphorylation",22
-"75","GO:0034032",0.0199584339705533,0.993211789015596,9,40,"purine nucleoside bisphosphate metabolic process","BP","Brown","nucleotide phosphorylation",22
-"76","GO:0046031",0.0201049137445482,0.995937796452199,5,16,"ADP metabolic process","BP","Brown","nucleotide phosphorylation",22
-"77","GO:0046605",0.0204570676762177,0.993566712741062,8,34,"regulation of centrosome cycle","BP","Brown","regulation of centrosome cycle",5
-"78","GO:0046949",0.0204734353418186,0.99687318619374,4,11,"fatty-acyl-CoA biosynthetic process","BP","Brown","cellular lipid catabolic process",21
-"79","GO:0019320",0.0207575964293207,0.995770317777571,5,16,"hexose catabolic process","BP","Brown","monosaccharide metabolic process",16
-"80","GO:0072330",0.0217271015496957,0.990336383724264,14,75,"monocarboxylic acid biosynthetic process","BP","Brown","organic acid metabolic process",17
-"81","GO:0097164",0.0220048595790318,0.990933405160162,12,61,"ammonium ion metabolic process","BP","Brown","ammonium ion metabolic process",1
-"82","GO:0006805",0.0227071040212314,0.992715384584697,8,34,"xenobiotic metabolic process","BP","Brown","xenobiotic metabolic process",3
-"83","GO:0000209",0.0237086902161136,0.988089135755185,18,106,"protein polyubiquitination","BP","Brown","peptidyl-threonine phosphorylation",3
-"84","GO:0006164",0.0245372181977269,0.988896783583898,14,76,"purine nucleotide biosynthetic process","BP","Brown","purine nucleotide biosynthetic process",2
-"85","GO:0034501",0.024899663945994,0.995843580734972,4,12,"protein localization to kinetochore","BP","Brown","protein localization to kinetochore",6
-"86","GO:0005977",0.0253154731530315,0.992461952120965,7,29,"glycogen metabolic process","BP","Brown","monosaccharide metabolic process",16
-"87","GO:0034198",0.0253637745064137,0.99336630350521,6,23,"cellular response to amino acid starvation","BP","Brown","cellular response to amino acid starvation",3
-"88","GO:0006099",0.0276534784277228,0.99261816010814,6,23,"tricarboxylic acid cycle","BP","Brown","mitochondrial electron transport, succinate to ubiquinone",5
-"89","GO:1901606",0.0276834113537694,0.991598700761134,7,29,"alpha-amino acid catabolic process","BP","Brown","small molecule catabolic process",11
-"90","GO:0031281",0.0276852051606439,0.999019005928312,2,3,"positive regulation of cyclase activity","BP","Brown","positive regulation of cyclase activity",2
-"91","GO:0000052",0.0279127642559436,0.999006435540884,2,3,"citrulline metabolic process","BP","Brown","organic acid metabolic process",17
-"92","GO:0046364",0.027970887272134,0.992513171639832,6,23,"monosaccharide biosynthetic process","BP","Brown","monosaccharide metabolic process",16
-"93","GO:0090154",0.0280245400904281,0.996926070897432,3,7,"positive regulation of sphingolipid biosynthetic process","BP","Brown","cellular lipid catabolic process",21
-"94","GO:0009201",0.0281038906017315,0.989785850481558,9,42,"ribonucleoside triphosphate biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"95","GO:0010826",0.0281361152944523,0.996908950677229,3,7,"negative regulation of centrosome duplication","BP","Brown","regulation of centrosome cycle",5
-"96","GO:0046606",0.0281361152944523,0.996908950677229,3,7,"negative regulation of centrosome cycle","BP","Brown","regulation of centrosome cycle",5
-"97","GO:0030575",0.0283776519770766,0.996871791813653,3,7,"nuclear body organization","BP","Brown","nuclear body organization",2
-"98","GO:0051684",0.0284013090818994,0.998979248579001,2,3,"maintenance of Golgi location","BP","Brown","vesicle tethering",4
-"99","GO:0042537",0.0284463664227312,0.996861196298526,3,7,"benzene-containing compound metabolic process","BP","Brown","benzene-containing compound metabolic process",1
-"100","GO:0006684",0.0287834839643164,0.99680905902666,3,7,"sphingomyelin metabolic process","BP","Brown","cellular lipid catabolic process",21
-"101","GO:1901615",0.0289735366344456,0.983310217768188,25,163,"organic hydroxy compound metabolic process","BP","Brown","lactate metabolic process",2
-"102","GO:2000193",0.0294127328287233,0.996711057036804,3,7,"positive regulation of fatty acid transport","BP","Brown","protein localization to kinetochore",6
-"103","GO:0042816",0.029677326638315,0.998906964704232,2,3,"vitamin B6 metabolic process","BP","Brown","small molecule catabolic process",11
-"104","GO:1903026",0.0300180412647661,0.998887354555809,2,3,"negative regulation of RNA polymerase II regulatory region sequence-specific DNA binding","BP","Brown","positive regulation of cyclase activity",2
-"105","GO:0044262",0.0300469377130859,0.986466484054373,13,71,"cellular carbohydrate metabolic process","BP","Brown","monosaccharide metabolic process",16
-"106","GO:0006073",0.0300886784201218,0.990661520529577,7,30,"cellular glucan metabolic process","BP","Brown","monosaccharide metabolic process",16
-"107","GO:0044042",0.0300886784201218,0.990661520529577,7,30,"glucan metabolic process","BP","Brown","monosaccharide metabolic process",16
-"108","GO:0072522",0.0302231624727888,0.985905311860462,14,78,"purine-containing compound biosynthetic process","BP","Brown","purine nucleotide biosynthetic process",2
-"109","GO:0006086",0.0305184685893231,0.998858317518984,2,3,"acetyl-CoA biosynthetic process from pyruvate","BP","Brown","sulfur compound biosynthetic process",11
-"110","GO:0042364",0.0307552584069342,0.996499022607204,3,7,"water-soluble vitamin biosynthetic process","BP","Brown","small molecule catabolic process",11
-"111","GO:0006754",0.0309259690370314,0.989390691688803,8,36,"ATP biosynthetic process","BP","Brown","nucleotide phosphorylation",22
-"112","GO:1990928",0.0310449542373477,0.99142252563181,6,24,"response to amino acid starvation","BP","Brown","cellular response to amino acid starvation",3
-"113","GO:0042182",0.0310849394010315,0.998825113441818,2,3,"ketone catabolic process","BP","Brown","small molecule catabolic process",11
-"114","GO:0046368",0.0311287095549361,0.998822533082945,2,3,"GDP-L-fucose metabolic process","BP","Brown","nucleotide phosphorylation",22
-"115","GO:0036066",0.0312907918281791,0.998812959569392,2,3,"protein O-linked fucosylation","BP","Brown","protein O-linked fucosylation",2
-"116","GO:0042594",0.0314602815049234,0.98300014981637,20,125,"response to starvation","BP","Brown","cellular response to amino acid starvation",3
-"117","GO:0034638",0.0315709343546865,0.998796344673873,2,3,"phosphatidylcholine catabolic process","BP","Brown","cellular lipid catabolic process",21
-"118","GO:0072350",0.0316340596574273,0.99007546992974,7,30,"tricarboxylic acid metabolic process","BP","Brown","organic acid metabolic process",17
-"119","GO:0009064",0.0322344791879289,0.992413842853235,5,18,"glutamine family amino acid metabolic process","BP","Brown","organic acid metabolic process",17
-"120","GO:0071466",0.0327931439891386,0.986922351876236,10,50,"cellular response to xenobiotic stimulus","BP","Brown","xenobiotic metabolic process",3
-"121","GO:0000002",0.033732014039288,0.991962157530218,5,18,"mitochondrial genome maintenance","BP","Brown","mitochondrial genome maintenance",1
-"122","GO:0016310",0.0340977760497123,0.975706221034488,59,451,"phosphorylation","BP","Brown","nucleotide phosphorylation",22
-"123","GO:0008156",0.0369648156420908,0.990875507997032,5,19,"negative regulation of DNA replication","BP","Brown","DNA recombination",2
-"124","GO:0035337",0.0379124254440775,0.992601441188333,4,13,"fatty-acyl-CoA metabolic process","BP","Brown","cellular lipid catabolic process",21
-"125","GO:0003341",0.0379331638347579,0.984410251116515,10,53,"cilium movement","BP","Brown","regulation of centrosome cycle",5
-"126","GO:0032368",0.0380856933154637,0.985264963681517,9,45,"regulation of lipid transport","BP","Brown","protein localization to kinetochore",6
-"127","GO:0001523",0.0382764990959426,0.992507138135705,4,13,"retinoid metabolic process","BP","Brown","cellular lipid catabolic process",21
-"128","GO:0030183",0.0382963670615141,0.986172361485026,8,39,"B cell differentiation","BP","Brown","B cell differentiation",1
-"129","GO:0005976",0.039140619884966,0.98477962973253,9,45,"polysaccharide metabolic process","BP","Brown","monosaccharide metabolic process",16
-"130","GO:1905952",0.0391624283018271,0.981614114374197,13,74,"regulation of lipid localization","BP","Brown","protein localization to kinetochore",6
-"131","GO:0008210",0.039647326460215,0.992149277985574,4,13,"estrogen metabolic process","BP","Brown","cellular lipid catabolic process",21
-"132","GO:1901570",0.0402840395954318,0.985345169771951,8,38,"fatty acid derivative biosynthetic process","BP","Brown","cellular lipid catabolic process",21
-"133","GO:0051255",0.0405837201078513,0.99451847250714,3,8,"spindle midzone assembly","BP","Brown","regulation of centrosome cycle",5
-"134","GO:0000096",0.0409585914754072,0.989598151316642,5,19,"sulfur amino acid metabolic process","BP","Brown","sulfur compound biosynthetic process",11
-"135","GO:0090153",0.0414929400612886,0.994344956134904,3,8,"regulation of sphingolipid biosynthetic process","BP","Brown","cellular lipid catabolic process",21
-"136","GO:1905038",0.0414929400612886,0.994344956134904,3,8,"regulation of membrane lipid metabolic process","BP","Brown","cellular lipid catabolic process",21
-"137","GO:0015740",0.041852535985564,0.994275875456765,3,8,"C4-dicarboxylate transport","BP","Brown","C4-dicarboxylate transport",3
-"138","GO:0006793",0.0420748059597113,0.967563128525877,93,755,"phosphorus metabolic process","BP","Brown","nucleotide phosphorylation",22
-"139","GO:0034644",0.0422761249584055,0.982293662037234,10,53,"cellular response to UV","BP","Brown","cellular response to UV",1
-"140","GO:0036473",0.0427722304806818,0.994098032203947,3,8,"cell death in response to oxidative stress","BP","Brown","xenobiotic metabolic process",3
-"141","GO:0046365",0.0428168972606072,0.98899073623455,5,19,"monosaccharide catabolic process","BP","Brown","monosaccharide metabolic process",16
-"142","GO:1903825",0.042966649516858,0.984121601126696,8,39,"organic acid transmembrane transport","BP","Brown","C4-dicarboxylate transport",3
-"143","GO:1905039",0.042966649516858,0.984121601126696,8,39,"carboxylic acid transmembrane transport","BP","Brown","C4-dicarboxylate transport",3
-"144","GO:0006694",0.0431099065949728,0.985411225194167,7,32,"steroid biosynthetic process","BP","Brown","cellular lipid catabolic process",21
-"145","GO:0071459",0.0445771197780935,0.990667159259471,4,14,"protein localization to chromosome, centromeric region","BP","Brown","protein localization to kinetochore",6
-"146","GO:0036065",0.0449207968644651,0.993676116176546,3,8,"fucosylation","BP","Brown","protein O-linked fucosylation",2
-"147","GO:0009063",0.0450227783442349,0.984615979311251,7,32,"amino acid catabolic process","BP","Brown","small molecule catabolic process",11
-"148","GO:0006006",0.0453281205968415,0.983065353174084,8,39,"glucose metabolic process","BP","Brown","monosaccharide metabolic process",16
-"149","GO:0048808",0.0458932829076867,0.987862680190954,5,20,"male genitalia morphogenesis","BP","Brown","male genitalia development",3
-"150","GO:0019362",0.0460811185566713,0.98148539990474,9,46,"pyridine nucleotide metabolic process","BP","Brown","pyridine-containing compound metabolic process",4
-"151","GO:0046496",0.0460811185566713,0.98148539990474,9,46,"nicotinamide nucleotide metabolic process","BP","Brown","pyridine-containing compound metabolic process",4
-"152","GO:0006904",0.0464863369305797,0.985664313865977,6,26,"vesicle docking involved in exocytosis","BP","Brown","vesicle tethering",4
-"153","GO:0034502",0.0472028458363291,0.982173921880783,8,40,"protein localization to chromosome","BP","Brown","protein localization to kinetochore",6
-"154","GO:0006101",0.0474428657537718,0.98529513019661,6,26,"citrate metabolic process","BP","Brown","organic acid metabolic process",17
-"155","GO:0051292",0.0482168629934752,0.996748112803339,2,4,"nuclear pore complex assembly","BP","Brown","nuclear body organization",2
-"156","GO:0072525",0.0487987170597561,0.984768371143283,6,26,"pyridine-containing compound biosynthetic process","BP","Brown","pyridine-containing compound metabolic process",4
-"157","GO:0006796",0.0494512307163894,0.961658736136622,91,743,"phosphate-containing compound metabolic process","BP","Brown","nucleotide phosphorylation",22
+"","GOterm","over_represented_pvalue","under_represented_pvalue","numDEInCat","numInCat","term","ontology","bh_adjust","Module","ParentTerm","N_in_Parent"
+"1","GO:0018107",4.26818707434879e-05,0.999990576053163,15,47,"peptidyl-threonine phosphorylation","BP",0.110708037137685,"Brown","peptidyl-threonine phosphorylation",3
+"2","GO:0006082",4.36816560489148e-05,0.999977508255549,60,345,"organic acid metabolic process","BP",0.110708037137685,"Brown","organic acid metabolic process",17
+"3","GO:0043436",5.39336399389108e-05,0.999972158469648,59,340,"oxoacid metabolic process","BP",0.119604588269527,"Brown","organic acid metabolic process",17
+"4","GO:0018210",7.44824752416918e-05,0.999982523898425,15,49,"peptidyl-threonine modification","BP",0.143722252341392,"Brown","peptidyl-threonine phosphorylation",3
+"5","GO:0032787",8.10113591913604e-05,0.999966532583815,33,159,"monocarboxylic acid metabolic process","BP",0.143722252341392,"Brown","organic acid metabolic process",17
+"6","GO:0019752",0.00020183573651578,0.999893214581832,53,311,"carboxylic acid metabolic process","BP",0.298397316793871,"Brown","organic acid metabolic process",17
+"7","GO:0044272",0.000408423305284905,0.999878449558514,16,61,"sulfur compound biosynthetic process","BP",0.483055857270633,"Brown","sulfur compound biosynthetic process",11
+"8","GO:0006631",0.000437693479710902,0.999832821209884,23,105,"fatty acid metabolic process","BP",0.485320001471945,"Brown","organic acid metabolic process",17
+"9","GO:0044242",0.000705231619106849,0.999777217793908,16,64,"cellular lipid catabolic process","BP",0.658500744977611,"Brown","cellular lipid catabolic process",21
+"10","GO:0016042",0.000941747822063598,0.999667693910341,18,78,"lipid catabolic process","BP",0.805336678034038,"Brown","cellular lipid catabolic process",21
+"11","GO:0006121",0.00120244419295686,1,3,3,"mitochondrial electron transport, succinate to ubiquinone","BP",0.888856767801985,"Brown","mitochondrial electron transport, succinate to ubiquinone",5
+"12","GO:0044282",0.00150460101878285,0.999362413851002,23,114,"small molecule catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"13","GO:0046939",0.00160205545254047,0.999701500425813,8,23,"nucleotide phosphorylation","BP",1,"Brown","nucleotide phosphorylation",22
+"14","GO:0006090",0.00164081712202023,0.999693068180637,8,23,"pyruvate metabolic process","BP",1,"Brown","organic acid metabolic process",17
+"15","GO:0006790",0.00179006535378652,0.999183949328457,26,136,"sulfur compound metabolic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"16","GO:0006084",0.00187862903966991,0.999826065788679,5,10,"acetyl-CoA metabolic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"17","GO:0005996",0.00232023293872076,0.999163045654407,16,71,"monosaccharide metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"18","GO:0035384",0.00263639069391985,0.999625018381053,6,15,"thioester biosynthetic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"19","GO:0071616",0.00263639069391985,0.999625018381053,6,15,"acyl-CoA biosynthetic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"20","GO:0046503",0.00276105036168868,0.999603477886762,6,15,"glycerolipid catabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"21","GO:0016054",0.0031483975728384,0.998823901251109,16,73,"organic acid catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"22","GO:0046395",0.0031483975728384,0.998823901251109,16,73,"carboxylic acid catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"23","GO:0009062",0.00376039125282632,0.99897212986229,10,37,"fatty acid catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"24","GO:0006629",0.00453041268495722,0.99722314451756,51,340,"lipid metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"25","GO:0072329",0.00467323907373711,0.99857134146449,11,44,"monocarboxylic acid catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"26","GO:0006165",0.00555325698495071,0.998841578519988,7,22,"nucleoside diphosphate phosphorylation","BP",1,"Brown","nucleotide phosphorylation",22
+"27","GO:0046461",0.00568226472757501,0.999495103278687,4,8,"neutral lipid catabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"28","GO:0046464",0.00568226472757501,0.999495103278687,4,8,"acylglycerol catabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"29","GO:0006310",0.0056996779683227,0.997637232691003,17,86,"DNA recombination","BP",1,"Brown","DNA recombination",2
+"30","GO:0005975",0.00570217351437847,0.997094794380336,27,156,"carbohydrate metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"31","GO:0006089",0.00590141754480008,0.999469735042861,4,8,"lactate metabolic process","BP",1,"Brown","lactate metabolic process",2
+"32","GO:0009068",0.00612727451932269,0.999443286457351,4,8,"aspartate family amino acid catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"33","GO:0016052",0.00662017077885728,0.998008184276163,10,40,"carbohydrate catabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"34","GO:0006672",0.00729558055747442,0.998379321091559,7,23,"ceramide metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"35","GO:0006096",0.00774325467762396,0.998849488248853,5,13,"glycolytic process","BP",1,"Brown","nucleotide phosphorylation",22
+"36","GO:0090522",0.00858279108210202,0.999539275279444,3,5,"vesicle tethering involved in exocytosis","BP",1,"Brown","vesicle tethering",4
+"37","GO:0099022",0.00858279108210202,0.999539275279444,3,5,"vesicle tethering","BP",1,"Brown","vesicle tethering",4
+"38","GO:0016053",0.00895779733408346,0.995614538403498,22,124,"organic acid biosynthetic process","BP",1,"Brown","organic acid metabolic process",17
+"39","GO:0046394",0.00895779733408346,0.995614538403498,22,124,"carboxylic acid biosynthetic process","BP",1,"Brown","organic acid metabolic process",17
+"40","GO:0000973",0.00910478451918841,1,2,2,"post-transcriptional tethering of RNA polymerase II gene DNA at nuclear periphery","BP",1,"Brown","post-transcriptional tethering of RNA polymerase II gene DNA at nuclear periphery",1
+"41","GO:0019240",0.00955675839716166,1,2,2,"citrulline biosynthetic process","BP",1,"Brown","organic acid metabolic process",17
+"42","GO:0019318",0.0100666064552811,0.996324404381679,12,55,"hexose metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"43","GO:0030539",0.0101064777053306,0.997565728166853,7,25,"male genitalia development","BP",1,"Brown","male genitalia development",3
+"44","GO:0051316",0.0101457897657524,1,2,2,"attachment of spindle microtubules to kinetochore involved in meiotic chromosome segregation","BP",1,"Brown","male genitalia development",3
+"45","GO:0033866",0.0101492122983541,0.997927861623057,6,19,"nucleoside bisphosphate biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"46","GO:0034030",0.0101492122983541,0.997927861623057,6,19,"ribonucleoside bisphosphate biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"47","GO:0034033",0.0101492122983541,0.997927861623057,6,19,"purine nucleoside bisphosphate biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"48","GO:0072524",0.0108157099376963,0.996222880785981,11,49,"pyridine-containing compound metabolic process","BP",1,"Brown","pyridine-containing compound metabolic process",4
+"49","GO:0098719",0.010885629306392,1,2,2,"sodium ion import across plasma membrane","BP",1,"Brown","sodium ion import across plasma membrane",1
+"50","GO:0006757",0.0109333064456457,0.998182400649424,5,14,"ATP generation from ADP","BP",1,"Brown","nucleotide phosphorylation",22
+"51","GO:0042350",0.0110138315825541,1,2,2,"GDP-L-fucose biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"52","GO:0042351",0.0110138315825541,1,2,2,"'de novo' GDP-L-fucose biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"53","GO:0042866",0.0110633216081475,0.998155227420942,5,14,"pyruvate biosynthetic process","BP",1,"Brown","organic acid metabolic process",17
+"54","GO:0009106",0.0111221972251477,1,2,2,"lipoate metabolic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"55","GO:0006556",0.0112657265005701,1,2,2,"S-adenosylmethionine biosynthetic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"56","GO:0019626",0.0114479056433673,1,2,2,"short-chain fatty acid catabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"57","GO:1901568",0.012390747264392,0.995575480227783,11,50,"fatty acid derivative metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"58","GO:0009260",0.0140679220803471,0.993902189689186,15,78,"ribonucleotide biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"59","GO:0016051",0.0149818238886877,0.994485047182075,11,51,"carbohydrate biosynthetic process","BP",1,"Brown","monosaccharide metabolic process",16
+"60","GO:0044281",0.0151302994012285,0.989006017743396,87,666,"small molecule metabolic process","BP",1,"Brown","organic acid metabolic process",17
+"61","GO:0005978",0.0152358816477297,0.997951303526012,4,10,"glycogen biosynthetic process","BP",1,"Brown","monosaccharide metabolic process",16
+"62","GO:0009250",0.0152358816477297,0.997951303526012,4,10,"glucan biosynthetic process","BP",1,"Brown","monosaccharide metabolic process",16
+"63","GO:0015980",0.016321775355887,0.991818338424887,20,115,"energy derivation by oxidation of organic compounds","BP",1,"Brown","mitochondrial electron transport, succinate to ubiquinone",5
+"64","GO:0006112",0.0171587025979281,0.994801030871279,8,33,"energy reserve metabolic process","BP",1,"Brown","mitochondrial electron transport, succinate to ubiquinone",5
+"65","GO:0006091",0.0174257860024399,0.990212903436338,27,169,"generation of precursor metabolites and energy","BP",1,"Brown","mitochondrial electron transport, succinate to ubiquinone",5
+"66","GO:0051791",0.0177432944557703,0.998517690274388,3,6,"medium-chain fatty acid metabolic process","BP",1,"Brown","organic acid metabolic process",17
+"67","GO:0006637",0.0178104748265526,0.995124862146637,7,27,"acyl-CoA metabolic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"68","GO:0035383",0.0178104748265526,0.995124862146637,7,27,"thioester metabolic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"69","GO:0044255",0.0188498490559134,0.987955539634477,42,292,"cellular lipid metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"70","GO:0031648",0.0190105406225169,0.99621519260276,5,16,"protein destabilization","BP",1,"Brown","protein destabilization",1
+"71","GO:0046390",0.0194022050373061,0.991222305603323,15,81,"ribose phosphate biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"72","GO:0009152",0.0198904234072441,0.991264975009096,14,74,"purine ribonucleotide biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"73","GO:0033865",0.0199584339705533,0.993211789015596,9,40,"nucleoside bisphosphate metabolic process","BP",1,"Brown","nucleotide phosphorylation",22
+"74","GO:0033875",0.0199584339705533,0.993211789015596,9,40,"ribonucleoside bisphosphate metabolic process","BP",1,"Brown","nucleotide phosphorylation",22
+"75","GO:0034032",0.0199584339705533,0.993211789015596,9,40,"purine nucleoside bisphosphate metabolic process","BP",1,"Brown","nucleotide phosphorylation",22
+"76","GO:0046031",0.0201049137445482,0.995937796452199,5,16,"ADP metabolic process","BP",1,"Brown","nucleotide phosphorylation",22
+"77","GO:0046605",0.0204570676762177,0.993566712741062,8,34,"regulation of centrosome cycle","BP",1,"Brown","regulation of centrosome cycle",5
+"78","GO:0046949",0.0204734353418186,0.99687318619374,4,11,"fatty-acyl-CoA biosynthetic process","BP",1,"Brown","cellular lipid catabolic process",21
+"79","GO:0019320",0.0207575964293207,0.995770317777571,5,16,"hexose catabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"80","GO:0072330",0.0217271015496957,0.990336383724264,14,75,"monocarboxylic acid biosynthetic process","BP",1,"Brown","organic acid metabolic process",17
+"81","GO:0097164",0.0220048595790318,0.990933405160162,12,61,"ammonium ion metabolic process","BP",1,"Brown","ammonium ion metabolic process",1
+"82","GO:0006805",0.0227071040212314,0.992715384584697,8,34,"xenobiotic metabolic process","BP",1,"Brown","xenobiotic metabolic process",3
+"83","GO:0000209",0.0237086902161136,0.988089135755185,18,106,"protein polyubiquitination","BP",1,"Brown","peptidyl-threonine phosphorylation",3
+"84","GO:0006164",0.0245372181977269,0.988896783583898,14,76,"purine nucleotide biosynthetic process","BP",1,"Brown","purine nucleotide biosynthetic process",2
+"85","GO:0034501",0.024899663945994,0.995843580734972,4,12,"protein localization to kinetochore","BP",1,"Brown","protein localization to kinetochore",6
+"86","GO:0005977",0.0253154731530315,0.992461952120965,7,29,"glycogen metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"87","GO:0034198",0.0253637745064137,0.99336630350521,6,23,"cellular response to amino acid starvation","BP",1,"Brown","cellular response to amino acid starvation",3
+"88","GO:0006099",0.0276534784277228,0.99261816010814,6,23,"tricarboxylic acid cycle","BP",1,"Brown","mitochondrial electron transport, succinate to ubiquinone",5
+"89","GO:1901606",0.0276834113537694,0.991598700761134,7,29,"alpha-amino acid catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"90","GO:0031281",0.0276852051606439,0.999019005928312,2,3,"positive regulation of cyclase activity","BP",1,"Brown","positive regulation of cyclase activity",2
+"91","GO:0000052",0.0279127642559436,0.999006435540884,2,3,"citrulline metabolic process","BP",1,"Brown","organic acid metabolic process",17
+"92","GO:0046364",0.027970887272134,0.992513171639832,6,23,"monosaccharide biosynthetic process","BP",1,"Brown","monosaccharide metabolic process",16
+"93","GO:0090154",0.0280245400904281,0.996926070897432,3,7,"positive regulation of sphingolipid biosynthetic process","BP",1,"Brown","cellular lipid catabolic process",21
+"94","GO:0009201",0.0281038906017315,0.989785850481558,9,42,"ribonucleoside triphosphate biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"95","GO:0010826",0.0281361152944523,0.996908950677229,3,7,"negative regulation of centrosome duplication","BP",1,"Brown","regulation of centrosome cycle",5
+"96","GO:0046606",0.0281361152944523,0.996908950677229,3,7,"negative regulation of centrosome cycle","BP",1,"Brown","regulation of centrosome cycle",5
+"97","GO:0030575",0.0283776519770766,0.996871791813653,3,7,"nuclear body organization","BP",1,"Brown","nuclear body organization",2
+"98","GO:0051684",0.0284013090818994,0.998979248579001,2,3,"maintenance of Golgi location","BP",1,"Brown","vesicle tethering",4
+"99","GO:0042537",0.0284463664227312,0.996861196298526,3,7,"benzene-containing compound metabolic process","BP",1,"Brown","benzene-containing compound metabolic process",1
+"100","GO:0006684",0.0287834839643164,0.99680905902666,3,7,"sphingomyelin metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"101","GO:1901615",0.0289735366344456,0.983310217768188,25,163,"organic hydroxy compound metabolic process","BP",1,"Brown","lactate metabolic process",2
+"102","GO:2000193",0.0294127328287233,0.996711057036804,3,7,"positive regulation of fatty acid transport","BP",1,"Brown","protein localization to kinetochore",6
+"103","GO:0042816",0.029677326638315,0.998906964704232,2,3,"vitamin B6 metabolic process","BP",1,"Brown","small molecule catabolic process",11
+"104","GO:1903026",0.0300180412647661,0.998887354555809,2,3,"negative regulation of RNA polymerase II regulatory region sequence-specific DNA binding","BP",1,"Brown","positive regulation of cyclase activity",2
+"105","GO:0044262",0.0300469377130859,0.986466484054373,13,71,"cellular carbohydrate metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"106","GO:0006073",0.0300886784201218,0.990661520529577,7,30,"cellular glucan metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"107","GO:0044042",0.0300886784201218,0.990661520529577,7,30,"glucan metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"108","GO:0072522",0.0302231624727888,0.985905311860462,14,78,"purine-containing compound biosynthetic process","BP",1,"Brown","purine nucleotide biosynthetic process",2
+"109","GO:0006086",0.0305184685893231,0.998858317518984,2,3,"acetyl-CoA biosynthetic process from pyruvate","BP",1,"Brown","sulfur compound biosynthetic process",11
+"110","GO:0042364",0.0307552584069342,0.996499022607204,3,7,"water-soluble vitamin biosynthetic process","BP",1,"Brown","small molecule catabolic process",11
+"111","GO:0006754",0.0309259690370314,0.989390691688803,8,36,"ATP biosynthetic process","BP",1,"Brown","nucleotide phosphorylation",22
+"112","GO:1990928",0.0310449542373477,0.99142252563181,6,24,"response to amino acid starvation","BP",1,"Brown","cellular response to amino acid starvation",3
+"113","GO:0042182",0.0310849394010315,0.998825113441818,2,3,"ketone catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"114","GO:0046368",0.0311287095549361,0.998822533082945,2,3,"GDP-L-fucose metabolic process","BP",1,"Brown","nucleotide phosphorylation",22
+"115","GO:0036066",0.0312907918281791,0.998812959569392,2,3,"protein O-linked fucosylation","BP",1,"Brown","protein O-linked fucosylation",2
+"116","GO:0042594",0.0314602815049234,0.98300014981637,20,125,"response to starvation","BP",1,"Brown","cellular response to amino acid starvation",3
+"117","GO:0034638",0.0315709343546865,0.998796344673873,2,3,"phosphatidylcholine catabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"118","GO:0072350",0.0316340596574273,0.99007546992974,7,30,"tricarboxylic acid metabolic process","BP",1,"Brown","organic acid metabolic process",17
+"119","GO:0009064",0.0322344791879289,0.992413842853235,5,18,"glutamine family amino acid metabolic process","BP",1,"Brown","organic acid metabolic process",17
+"120","GO:0071466",0.0327931439891386,0.986922351876236,10,50,"cellular response to xenobiotic stimulus","BP",1,"Brown","xenobiotic metabolic process",3
+"121","GO:0000002",0.033732014039288,0.991962157530218,5,18,"mitochondrial genome maintenance","BP",1,"Brown","mitochondrial genome maintenance",1
+"122","GO:0016310",0.0340977760497123,0.975706221034488,59,451,"phosphorylation","BP",1,"Brown","nucleotide phosphorylation",22
+"123","GO:0008156",0.0369648156420908,0.990875507997032,5,19,"negative regulation of DNA replication","BP",1,"Brown","DNA recombination",2
+"124","GO:0035337",0.0379124254440775,0.992601441188333,4,13,"fatty-acyl-CoA metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"125","GO:0003341",0.0379331638347579,0.984410251116515,10,53,"cilium movement","BP",1,"Brown","regulation of centrosome cycle",5
+"126","GO:0032368",0.0380856933154637,0.985264963681517,9,45,"regulation of lipid transport","BP",1,"Brown","protein localization to kinetochore",6
+"127","GO:0001523",0.0382764990959426,0.992507138135705,4,13,"retinoid metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"128","GO:0030183",0.0382963670615141,0.986172361485026,8,39,"B cell differentiation","BP",1,"Brown","B cell differentiation",1
+"129","GO:0005976",0.039140619884966,0.98477962973253,9,45,"polysaccharide metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"130","GO:1905952",0.0391624283018271,0.981614114374197,13,74,"regulation of lipid localization","BP",1,"Brown","protein localization to kinetochore",6
+"131","GO:0008210",0.039647326460215,0.992149277985574,4,13,"estrogen metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"132","GO:1901570",0.0402840395954318,0.985345169771951,8,38,"fatty acid derivative biosynthetic process","BP",1,"Brown","cellular lipid catabolic process",21
+"133","GO:0051255",0.0405837201078513,0.99451847250714,3,8,"spindle midzone assembly","BP",1,"Brown","regulation of centrosome cycle",5
+"134","GO:0000096",0.0409585914754072,0.989598151316642,5,19,"sulfur amino acid metabolic process","BP",1,"Brown","sulfur compound biosynthetic process",11
+"135","GO:0090153",0.0414929400612886,0.994344956134904,3,8,"regulation of sphingolipid biosynthetic process","BP",1,"Brown","cellular lipid catabolic process",21
+"136","GO:1905038",0.0414929400612886,0.994344956134904,3,8,"regulation of membrane lipid metabolic process","BP",1,"Brown","cellular lipid catabolic process",21
+"137","GO:0015740",0.041852535985564,0.994275875456765,3,8,"C4-dicarboxylate transport","BP",1,"Brown","C4-dicarboxylate transport",3
+"138","GO:0006793",0.0420748059597113,0.967563128525877,93,755,"phosphorus metabolic process","BP",1,"Brown","nucleotide phosphorylation",22
+"139","GO:0034644",0.0422761249584055,0.982293662037234,10,53,"cellular response to UV","BP",1,"Brown","cellular response to UV",1
+"140","GO:0036473",0.0427722304806818,0.994098032203947,3,8,"cell death in response to oxidative stress","BP",1,"Brown","xenobiotic metabolic process",3
+"141","GO:0046365",0.0428168972606072,0.98899073623455,5,19,"monosaccharide catabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"142","GO:1903825",0.042966649516858,0.984121601126696,8,39,"organic acid transmembrane transport","BP",1,"Brown","C4-dicarboxylate transport",3
+"143","GO:1905039",0.042966649516858,0.984121601126696,8,39,"carboxylic acid transmembrane transport","BP",1,"Brown","C4-dicarboxylate transport",3
+"144","GO:0006694",0.0431099065949728,0.985411225194167,7,32,"steroid biosynthetic process","BP",1,"Brown","cellular lipid catabolic process",21
+"145","GO:0071459",0.0445771197780935,0.990667159259471,4,14,"protein localization to chromosome, centromeric region","BP",1,"Brown","protein localization to kinetochore",6
+"146","GO:0036065",0.0449207968644651,0.993676116176546,3,8,"fucosylation","BP",1,"Brown","protein O-linked fucosylation",2
+"147","GO:0009063",0.0450227783442349,0.984615979311251,7,32,"amino acid catabolic process","BP",1,"Brown","small molecule catabolic process",11
+"148","GO:0006006",0.0453281205968415,0.983065353174084,8,39,"glucose metabolic process","BP",1,"Brown","monosaccharide metabolic process",16
+"149","GO:0048808",0.0458932829076867,0.987862680190954,5,20,"male genitalia morphogenesis","BP",1,"Brown","male genitalia development",3
+"150","GO:0019362",0.0460811185566713,0.98148539990474,9,46,"pyridine nucleotide metabolic process","BP",1,"Brown","pyridine-containing compound metabolic process",4
+"151","GO:0046496",0.0460811185566713,0.98148539990474,9,46,"nicotinamide nucleotide metabolic process","BP",1,"Brown","pyridine-containing compound metabolic process",4
+"152","GO:0006904",0.0464863369305797,0.985664313865977,6,26,"vesicle docking involved in exocytosis","BP",1,"Brown","vesicle tethering",4
+"153","GO:0034502",0.0472028458363291,0.982173921880783,8,40,"protein localization to chromosome","BP",1,"Brown","protein localization to kinetochore",6
+"154","GO:0006101",0.0474428657537718,0.98529513019661,6,26,"citrate metabolic process","BP",1,"Brown","organic acid metabolic process",17
+"155","GO:0051292",0.0482168629934752,0.996748112803339,2,4,"nuclear pore complex assembly","BP",1,"Brown","nuclear body organization",2
+"156","GO:0072525",0.0487987170597561,0.984768371143283,6,26,"pyridine-containing compound biosynthetic process","BP",1,"Brown","pyridine-containing compound metabolic process",4
+"157","GO:0006796",0.0494512307163894,0.961658736136622,91,743,"phosphate-containing compound metabolic process","BP",1,"Brown","nucleotide phosphorylation",22
