@@ -1026,19 +1026,19 @@ heatmappval <- as.data.frame(heatmappval)
 
 calc_signif <- rownames(heatmappval[heatmappval$Calcification.per.day < 0.05,])
 
-origin_signif <- rownames(heatmappval[heatmappval$Origin < 0.01,]) 
+origin_signif <- rownames(heatmappval[heatmappval$Origin < 0.05,]) 
 
-density_signif <- rownames(heatmappval[heatmappval$CaCO3.Density..g.ml. < 0.05,])
+colony_signif <- rownames(heatmappval[heatmappval$Colony < 0.05,])
 
 # Calc up mods:
 calc_up <- rownames(moduleTraitCor_both[moduleTraitCor_both$Calcification.per.day > 0,])
 
-calc_up <- calc_up[calc_up %in% calc_signif & calc_up %in% origin_signif & calc_up %in% density_signif]
+calc_up <- calc_up[calc_up %in% calc_signif & calc_up %in% origin_signif & calc_up %in% colony_signif]
 
 # Calc down mods:
 calc_down <- rownames(moduleTraitCor_both[moduleTraitCor_both$Calcification.per.day < 0,])
 
-calc_down <- calc_down[calc_down %in% calc_signif & calc_down %in% origin_signif & calc_down %in% density_signif]
+calc_down <- calc_down[calc_down %in% calc_signif & calc_down %in% origin_signif & calc_down %in% colony_signif]
 ```
 
 ```{r}
