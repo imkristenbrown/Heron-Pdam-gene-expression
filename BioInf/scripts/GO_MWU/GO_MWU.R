@@ -18,7 +18,7 @@
 
 
 # Edit these to match your data file names: 
-input="magenta_module.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
+input="DE_Origin.csv" # two columns of comma-separated values: gene id, continuous measure of significance. To perform standard GO enrichment analysis based on Fisher's exact test, use binary measure (0 or 1, i.e., either sgnificant or not).
 goAnnotations="gene_to_go.tab" # two-column, tab-delimited, one line per gene, multiple GO terms separated by semicolon. If you have multiple lines per gene, use nrify_GOtable.pl prior to running this script.
 goDatabase="go.obo" # download from http://www.geneontology.org/GO.downloads.ontology.shtml
 goDivision="BP" # either MF, or BP, or CC
@@ -35,7 +35,7 @@ gomwuStats(input, goDatabase, goAnnotations, goDivision,
 	clusterCutHeight=0.25, # threshold for merging similar (gene-sharing) terms. See README for details.
 #	Alternative="g" # by default the MWU test is two-tailed; specify "g" or "l" of you want to test for "greater" or "less" instead. 
 #	Module=TRUE,Alternative="g" # un-remark this if you are analyzing a SIGNED WGCNA module (values: 0 for not in module genes, kME for in-module genes). In the call to gomwuPlot below, specify absValue=0.001 (count number of "good genes" that fall into the module)
-Module=TRUE # un-remark this if you are analyzing an UNSIGNED WGCNA module 
+#Module=TRUE # un-remark this if you are analyzing an UNSIGNED WGCNA module 
 )
 # do not continue if the printout shows that no GO terms pass 10% FDR.
 
@@ -43,7 +43,7 @@ Module=TRUE # un-remark this if you are analyzing an UNSIGNED WGCNA module
 # ----------- Plotting results
 
 #quartz()
-png(filename = paste0(input, "_plot.png"), width = 800, height = 800)
+png(filename = paste0(goDivision, "_", input, "_plot.png"), width = 800, height = 800)
 results=gomwuPlot(input,goAnnotations,goDivision,
  	absValue=0.001,  # genes with the measure value exceeding this will be counted as "good genes". This setting is for signed log-pvalues. Specify absValue=0.001 if you are doing Fisher's exact test for standard GO enrichment or analyzing a WGCNA module (all non-zero genes = "good genes").
  #	absValue=1, # un-remark this if you are using log2-fold changes

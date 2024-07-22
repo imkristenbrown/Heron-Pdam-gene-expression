@@ -1,0 +1,184 @@
+---
+title: "WGCNA GOMWU Analysis - Plotting"
+author: "Zoe Dellaert"
+date: "7/21/2024"
+output: html_document
+---
+
+# WGCNA GO Analysis GO_MWU
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+sessionInfo() #provides list of loaded packages and version of R. 
+```
+First, load the necessary packages.
+
+```{r load_libraries, include = TRUE}
+if ("rrvgo" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("rrvgo")
+if ("GO.db" %in% rownames(installed.packages()) == 'FALSE') BiocManager::install("GO.db")
+#BiocManager::install("org.Ce.eg.db", force=TRUE) #install if needed
+
+library(tidyverse)
+library(lintr)
+library(lattice)
+library(dplyr)
+library(ggplot2)
+library(rrvgo)
+library(GO.db)
+library(tidyr)
+library(forcats)
+library(scales)
+sessionInfo() #list of packages after library-ing these packages
+```
+
+```{r}
+calc_up_mods <- c("brown", "red", "blue")
+calc_down_mods <- c("turquoise","magenta")
+
+all_mods <- c(calc_up_mods, calc_down_mods)
+```
+
+
+```{r}
+for (mod in all_mods){
+  module_name <- paste0(mod, "_module")
+  
+  print(module_name)
+  file_name <- paste0("MWU_BP_", mod, "_module")
+
+  data <- read.table(paste0("../../../output/WGCNA/GO_MWU/",file_name,".csv"), header = TRUE)
+
+    nterms_05 <- data %>% dplyr::filter(p.adj<0.05) %>%
+    filter(!str_detect(name, "obsolete")) %>% nrow()
+  
+  if (nterms_05 > 0){
+  # Plot terms p.adj < 0.05
+  
+  freq_fig <- data %>% dplyr::filter(p.adj<0.05) %>%
+    filter(!str_detect(name, "obsolete")) %>%
+    ggplot(aes(y=nseqs,x=reorder(name, nseqs)))+
+    geom_point(size=3, color="black")+
+    geom_segment(aes(x=name, xend=name, y=0, yend=nseqs)) +
+    geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+    coord_flip()+
+    scale_y_continuous(limits=c(0,430))+
+    scale_x_discrete(labels = label_wrap(30)) +
+    labs(title = paste0("Enriched Biological Process GO Terms,\n", str_to_title(mod) ," Module"), x="Term", y="Number of Significant (p.adj < 0.05)\nGO Terms in Module", colour="p-value") +
+    theme_classic() + 
+    theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 8), 
+              plot.title = element_text(hjust = 0.5, size = 8))
+
+  print(freq_fig)
+  
+  ggsave(paste0("../../../output/WGCNA/GO_MWU/", mod,"_filtp05.pdf"), freq_fig, width = 4, height = 5, units = c("in"), dpi=300)
+  
+  # Plot terms p.adj < 0.01
+  
+  freq_fig <- data %>% dplyr::filter(p.adj<0.01) %>%
+    filter(!str_detect(name, "obsolete")) %>%
+    ggplot(aes(y=nseqs,x=reorder(name, nseqs)))+
+    geom_point(size=3, color="black")+
+    geom_segment(aes(x=name, xend=name, y=0, yend=nseqs)) +
+    geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+    coord_flip()+
+    scale_y_continuous(limits=c(0,420))+
+    scale_x_discrete(labels = label_wrap(30)) +
+    labs(title = paste0("Enriched Biological Process GO Terms,\n", str_to_title(mod) ," Module"), x="Term", y="Number of Significant (p.adj < 0.01)\nGO Terms in Module", colour="p-value") +
+    theme_classic() + 
+    theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 8), 
+              plot.title = element_text(hjust = 0.5, size = 8))
+
+  print(freq_fig)
+  
+  ggsave(paste0("../../../output/WGCNA/GO_MWU/", mod,"_filtp01.pdf"), freq_fig, width = 4, height = 5, units = c("in"), dpi=300)
+  
+  # Reduce terms and plot by parent term
+  data <- data %>% dplyr::filter(p.adj<0.05) %>%
+    filter(!str_detect(name, "obsolete"))
+
+  split <- strsplit(as.character(data$term), ";") 
+  split2 <- data.frame("name" = rep.int(data$name, sapply(split, length)),
+                     "term" = unlist(split),
+                     "p.adj" = rep.int(data$p.adj, sapply(split, length)),
+                     "nseqs" = rep.int(data$nseqs, sapply(split, length))) 
+  
+  library(rrvgo)
+  #Reduce/collapse GO term set with the rrvgo package 
+  simMatrix <- calculateSimMatrix(split2$term,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont="BP",
+                                method="Rel")
+  
+  #calculate similarity 
+  scores <- setNames(-log(as.numeric(split2$p.adj)), split2$term)
+  reducedTerms <- reduceSimMatrix(simMatrix,
+                                  scores,
+                                  threshold=0.7,
+                                  orgdb="org.Ce.eg.db")
+  
+  #keep only the goterms from the reduced list
+  data_reduced <- split2 %>% filter(term %in% reducedTerms$go)
+
+  #add in parent terms to list of go terms 
+  data_reduced$ParentTerm <- reducedTerms$parentTerm[match(data_reduced$term, reducedTerms$go)]
+    
+  length(unique(data_reduced$term))
+  length(unique(data_reduced$name))
+  length(unique(data_reduced$ParentTerm))
+  
+  print(paste0("The p.adj < 0.05 terms enriched by GO_MWU in the ",mod," module have been reduced to ", length(unique(data_reduced$term)), " terms, with ",length(unique(data_reduced$name)), " unique term descriptions, and belonging to ", length(unique(data_reduced$ParentTerm)), " unique parent terms."))
+
+  data_reduced <- data_reduced %>% group_by(ParentTerm) %>% mutate("N_in_Parent" = n()) %>% ungroup()
+
+  assign(paste0(module_name, "_reduced"),data_reduced)
+    
+  parent_fig <- ggplot(data_reduced, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
+  geom_point(size=3, color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(limits=c(0,13))+
+   scale_x_discrete(labels = label_wrap(30)) +
+  labs(title = paste0("Enriched Biological Process Parent Terms,\n", str_to_title(mod) ," Module"), x="Parent Term", y="Number of Significant (p.adj < 0.05)\nGO Terms in Module", colour="p-value") +
+  theme_classic() + 
+  theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 8), 
+              plot.title = element_text(hjust = 0.5, size = 8))
+
+  parent_fig
+
+  ggsave(paste0("../../../output/WGCNA/GO_MWU/Parent_", mod,"_filtp05.pdf"), parent_fig, width = 4, height = 5, units = c("in"), dpi=300)
+  } else {
+    print("This test returned no GO terms with FDR-corrected p-value < 0.05")
+  }
+}
+```
+
+Resize blue module parent plot:
+```{r}
+mod <- "blue"
+
+parent_fig <- ggplot(blue_module_reduced, aes(y=N_in_Parent,x=reorder(ParentTerm, N_in_Parent)))+
+  geom_point(size=3, color="black")+
+  geom_segment(aes(x=ParentTerm, xend=ParentTerm, y=0, yend=N_in_Parent)) +
+  geom_hline(yintercept = 0, linetype="solid", color = 'black', size=0.5, show.legend = TRUE)+
+  coord_flip()+
+  scale_y_continuous(limits=c(0,13))+
+   scale_x_discrete(labels = label_wrap(30)) +
+  labs(title = paste0("Enriched Biological Process Parent Terms,\n", str_to_title(mod) ," Module"), x="Parent Term", y="Number of Significant (p.adj < 0.05)\nGO Terms in Module", colour="p-value") +
+  theme_classic() + 
+  theme(axis.text.y = element_text(size = 8), 
+              axis.title = element_text(size = 8), 
+              plot.title = element_text(hjust = 0.5, size = 8))
+
+  parent_fig
+
+  ggsave(paste0("../../../output/WGCNA/GO_MWU/Parent_", mod,"_filtp05.pdf"), parent_fig, width = 4, height = 8, units = c("in"), dpi=300)
+```
+
+
