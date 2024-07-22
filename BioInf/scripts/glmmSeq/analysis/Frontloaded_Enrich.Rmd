@@ -144,10 +144,7 @@ GO.wall <- goseq(pwf, gene2cat=GO.terms, method="Wallenius", use_genes_without_c
 GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 
 colnames(GO)[1] <- "GOterm"
-
-#adjust p-values 
-GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-   
+    
 #Write file of results 
 write.csv(GO, "../../../output/glmmseq/Frontloaded_GOSeq/GOseq_Frontloaded.csv")
 
@@ -364,7 +361,7 @@ KO <- KO.wall[order(KO.wall$over_represented_pvalue), ]
 colnames(KO)[1] <- "KEGGterm"
 
 #adjust p-values
-KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method = "BH") #add adjusted p-values
+#KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method = "BH") #add adjusted p-values
 
 #Filtering for p < 0.05
 KO_05 <- KO %>%

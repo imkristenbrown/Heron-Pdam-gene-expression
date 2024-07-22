@@ -212,24 +212,21 @@ GO <- GO.wall[order(GO.wall$over_represented_pvalue),]
 
 colnames(GO)[1] <- "GOterm"
 
-#adjust p-values 
-GO$bh_adjust <- p.adjust(GO$over_represented_pvalue, method="BH") #add adjusted p-values
-    
 #Write file of results 
 write.csv(GO, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin.csv")
 
 #Filtering for p < 0.05
 GO_05 <- GO %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 
 dim(GO_05)
 head(GO_05)
 
 #Filtering for p < 0.05
 GO_01 <- GO %>%
-        dplyr::filter(bh_adjust<0.01) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.01) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 
 dim(GO_01)
 head(GO_01)
@@ -429,13 +426,11 @@ KO.wall <-
 
 KO <- KO.wall[order(KO.wall$over_represented_pvalue), ]
 colnames(KO)[1] <- "KEGGterm"
-#adjust p-values 
-KO$bh_adjust <- p.adjust(KO$over_represented_pvalue, method="BH") #add adjusted p-values
- 
+
 #Filtering for p < 0.05
 KO_05 <- KO %>%
-  dplyr::filter(bh_adjust < 0.05) %>%
-  dplyr::arrange(., bh_adjust)
+  dplyr::filter(over_represented_pvalue < 0.05) %>%
+  dplyr::arrange(., over_represented_pvalue)
 
 head(KO_05)
 dim(KO_05)
@@ -445,7 +440,8 @@ write.csv(KO, "../../../output/glmmseq/GOSeq/GOseq_KEGG_Origin.csv")
 ```
 
 Over-represented KEGG terms, p = 0.05:
-None by adjusted p-value. 
+"K01052" "K01539" "K05658" "K05619" "K11789" "K01363" "K13348" "K01345" "K24436" "K17592" "K25493" "K24125" "K12825" "K08059" "K05929" "K19721" "K14480" "K03671" "K06711" "K13443" "K18405"
+
 
 ## Part 3: Direction of FC
 
@@ -475,29 +471,26 @@ GO.wall_upSlope <- goseq(pwf_upSlope, ID.vector_upSlope, gene2cat=GO.terms, meth
 GO_upSlope <- GO.wall_upSlope[order(GO.wall_upSlope$over_represented_pvalue),]
 
 colnames(GO_upSlope)[1] <- "GOterm"
-
-#adjust p-values 
-GO_upSlope$bh_adjust <- p.adjust(GO_upSlope$over_represented_pvalue, method="BH") #add adjusted p-values
-
+    
 #Write file of results 
 write.csv(GO_upSlope, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_upSlope.csv")
 
 #Filtering for p < 0.05
 GO_upSlope_05 <- GO_upSlope %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 
 #Filtering for p < 0.05
 GO_upSlope_01 <- GO_upSlope %>%
-        dplyr::filter(bh_adjust<0.01) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.01) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 
 dim(GO_upSlope_05)
 dim(GO_upSlope_01)
 
 ```
 
-There are 7 over-represented GO terms (by padjust <0.05) in the 346 significant DEGs by Origin that are upregulated in the Slope origin in both treatments
+There are 422 over-represented GO terms (by p <0.05) in the 346 significant DEGs by Origin that are upregulated in the Slope origin in both treatments
 
 Plotting!
 
@@ -508,36 +501,36 @@ for (category in ontologies) {
     
     go_results <- GO_upSlope_05
     
-    # go_results<-go_results%>%
-    #   filter(ontology==category)%>%
-    #   filter(over_represented_pvalue != "NA") %>%
-    #   filter(numInCat>10)%>%
-    #   arrange(., over_represented_pvalue)
-    # 
-    #   #Reduce/collapse GO term set with the rrvgo package 
-    #   simMatrix <- calculateSimMatrix(go_results$GOterm,
-    #                             orgdb="org.Ce.eg.db", #c. elegans database
-    #                             ont=category,
-    #                             method="Rel")
-    # #calculate similarity 
-    # scores <- setNames(-log(go_results$over_represented_pvalue), go_results$GOterm)
-    # reducedTerms <- reduceSimMatrix(simMatrix,
-    #                             scores,
-    #                             threshold=0.7,
-    #                             orgdb="org.Ce.eg.db")
-    # 
-    # #keep only the goterms from the reduced list
-    # go_results<-go_results%>%
-    #   filter(GOterm %in% reducedTerms$go)
-    # 
-    # #add in parent terms to list of go terms 
-    # go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
-    # 
+    go_results<-go_results%>%
+      filter(ontology==category)%>%
+      filter(over_represented_pvalue != "NA") %>%
+      filter(numInCat>10)%>%
+      arrange(., over_represented_pvalue)
+    
+      #Reduce/collapse GO term set with the rrvgo package 
+      simMatrix <- calculateSimMatrix(go_results$GOterm,
+                                orgdb="org.Ce.eg.db", #c. elegans database
+                                ont=category,
+                                method="Rel")
+    #calculate similarity 
+    scores <- setNames(-log(go_results$over_represented_pvalue), go_results$GOterm)
+    reducedTerms <- reduceSimMatrix(simMatrix,
+                                scores,
+                                threshold=0.7,
+                                orgdb="org.Ce.eg.db")
+    
+    #keep only the goterms from the reduced list
+    go_results<-go_results%>%
+      filter(GOterm %in% reducedTerms$go)
+    
+    #add in parent terms to list of go terms 
+    go_results$ParentTerm<-reducedTerms$parentTerm[match(go_results$GOterm, reducedTerms$go)]
+   
     #plot significantly enriched GO terms by Slim Category faceted by slim term 
   GO.plot_upslope <-  ggplot2::ggplot(go_results, aes(x = ontology, y = term)) + 
     geom_point(aes(size=over_represented_pvalue)) + 
     scale_size(name="Over rep. p-value", trans="reverse", range=c(1,3))+
-   # facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
+    facet_grid(ParentTerm ~ ., scales = "free", labeller = label_wrap_gen(width = 5, multi_line = TRUE))+
     theme_bw() + theme(panel.border = element_blank(), panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"),
     strip.text.y = element_text(angle=0, size = 10),
@@ -580,27 +573,24 @@ GO_upFlat <- GO.wall_upFlat[order(GO.wall_upFlat$over_represented_pvalue),]
 
 colnames(GO_upFlat)[1] <- "GOterm"
 
-#adjust p-values 
-GO_upFlat$bh_adjust <- p.adjust(GO_upFlat$over_represented_pvalue, method="BH") #add adjusted p-values
-
 #Write file of results 
 write.csv(GO_upFlat, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_upFlat.csv")
 
 #Filtering for p < 0.05
 GO_upFlat_05 <- GO_upFlat %>%
-        dplyr::filter(bh_adjust<0.05) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.05) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 
 #Filtering for p < 0.05
 GO_upFlat_01 <- GO_upFlat %>%
-        dplyr::filter(bh_adjust<0.01) %>%
-        dplyr::arrange(., ontology, bh_adjust)
+        dplyr::filter(over_represented_pvalue<0.01) %>%
+        dplyr::arrange(., ontology, over_represented_pvalue)
 
 dim(GO_upFlat_05)
 dim(GO_upFlat_01)
 ```
 
-There 0 243 over-represented GO terms (by padjust <0.05) in the 481 significant DEGs by Origin that are upregulated in the Flat origin in both treatments
+There are 243 over-represented GO terms (by p <0.05) in the 481 significant DEGs by Origin that are upregulated in the Flat origin in both treatments
 
 Plotting!
 
@@ -684,9 +674,6 @@ GO.wall_updownSlope <- goseq(pwf_updownSlope, ID.vector_Slope_upStable_downVaria
 GO_updownSlope <- GO.wall_updownSlope[order(GO.wall_updownSlope$over_represented_pvalue),]
 
 colnames(GO_updownSlope)[1] <- "GOterm"
-
-#adjust p-values 
-GO_updownSlope$bh_adjust <- p.adjust(GO_updownSlope$over_represented_pvalue, method="BH") #add adjusted p-values
     
 #Write file of results 
 write.csv(GO_updownSlope, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_Slope_upStable_downVariable.csv")
@@ -706,7 +693,7 @@ dim(GO_updownSlope_01)
 
 ```
 
-There are 0 over-represented GO terms (by p <0.05) in the 11 significant DEGs by Origin that are upregulated in the Slope origin in Stable treatment and downregulated in the variable treatment
+There are 151 over-represented GO terms (by p <0.05) in the 11 significant DEGs by Origin that are upregulated in the Slope origin in Stable treatment and downregulated in the variable treatment
 
 Plotting!
 
@@ -797,10 +784,6 @@ GO_downupSlope <- GO.wall_downupSlope[order(GO.wall_downupSlope$over_represented
 
 colnames(GO_downupSlope)[1] <- "GOterm"
     
-#adjust p-values 
-GO_downupSlope$bh_adjust <- p.adjust(GO_downupSlope$over_represented_pvalue, method="BH") #add adjusted p-values
-  
-
 #Write file of results 
 write.csv(GO_downupSlope, "../../../output/glmmseq/GOSeq/GOseq_DEG_Origin_Slope_downStable_upVariable.csv")
 
@@ -819,7 +802,7 @@ dim(GO_downupSlope_01)
 
 ```
 
-There are 0 over-represented GO terms (by p <0.05) in the 2 significant DEGs by Origin that are downregulated in the Slope origin in Stable treatment and upregulated in the variable treatment
+There are 11 over-represented GO terms (by p <0.05) in the 2 significant DEGs by Origin that are downregulated in the Slope origin in Stable treatment and upregulated in the variable treatment
 
 Plotting!
 
