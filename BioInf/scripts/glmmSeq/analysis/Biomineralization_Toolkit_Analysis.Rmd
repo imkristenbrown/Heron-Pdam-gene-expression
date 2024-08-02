@@ -93,6 +93,7 @@ sessionInfo() #provides list of loaded packages and version of R.
 
 ```{r}
 library(dplyr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -106,7 +107,11 @@ Biomin_genes <- Biomin_genes %>% select(-`blasted protein in Stylophora`)
 ```{r}
 Biomin_blast_results <- read.delim("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomineralization_blast_results_tab.txt", header=FALSE) 
 
-Biomin_blast_results <- Biomin_blast_results %>% select(V1, V2) %>% distinct()
+Biomin_blast_results_orig <- Biomin_blast_results %>% select(V1, V2) %>% distinct() 
+
+Biomin_blast_results_filt <- Biomin_blast_results %>% filter(V11 < 0.01) %>% select(V1, V2) %>% distinct()
+
+Biomin_blast_results <- Biomin_blast_results_filt
 ```
 
 ```{r}
@@ -148,7 +153,7 @@ Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref)
 write.csv(Biomin_genes, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomin_blast_Pocillopora_acuta_best_hit_glmmSeq.csv", row.names = F)
 ```
 
-127/172 of the Biomineralization Genes are represented in our dataset of 9011 genes, matching to 65/9011 genes
+126/172 of the Biomineralization Genes are represented in our dataset of 9011 genes, matching to 64/9011 genes
 
 
 Differentially expressed genes: are any of these Biomineralization genes?
@@ -195,7 +200,7 @@ length(Biomin_Origin_DEG_names)
 Biomin_Origin_DEGs %>% select(Gene, `accessionnumber/geneID`, definition, Ref) 
 ```
 
-16/172 of the Biomineralization Genes are represented in the Origin DEGS, and these are 10 Pocillopora genes (some of the 10 have matches to multiple Biomineralization Genes) out of the 65 that are matching to Biomineralization Genes (10/65)
+15/172 of the Biomineralization Genes are represented in the Origin DEGS, and these are 9 Pocillopora genes (some of the 9 have matches to multiple Biomineralization Genes) out of the 64 that are matching to Biomineralization Genes (9/64)
 
 Pocillopora_acuta_HIv2___TS.g13222.t1b is a best match for:
   - Gene:g15294.t1	Annotated: Vitellogenin
@@ -263,9 +268,9 @@ length(Biomin_FRONTs_names)
 Biomin_FRONTs %>% select(Gene, `accessionnumber/geneID`, definition, Ref) 
 ```
 
-64/172 of the Biomineralization Genes are represented in the Frontloaded genes
+63/172 of the Biomineralization Genes are represented in the Frontloaded genes
 
-This is 29 genes, some of which are mapping to multiple Biomineralization genes, out of the 65 that are matching to Biomineralization Genes (29/65)
+This is 28 genes, some of which are mapping to multiple Biomineralization genes, out of the 64 that are matching to Biomineralization Genes (28/64)
 
 ```{r}
 for (i in Biomin_FRONTs_names) {print(Factor_ggmodelPlot(results,
@@ -349,9 +354,9 @@ y > 2
 "Pocillopora_acuta_HIv2___TS.g1545.t1b" Uncharacterized skeletal organic matrix protein-2  (USOMP-2)
 
 ```{r}
-genes_biomin  <- c("Pocillopora_acuta_HIv2___RNAseq.g15280.t1","Pocillopora_acuta_HIv2___RNAseq.g7402.t1" , "Pocillopora_acuta_HIv2___RNAseq.g16280.t1","Pocillopora_acuta_HIv2___RNAseq.g13823.t1" ,"Pocillopora_acuta_HIv2___RNAseq.g13824.t1" , "Pocillopora_acuta_HIv2___RNAseq.g28226.t2","Pocillopora_acuta_HIv2___RNAseq.g5013.t1","Pocillopora_acuta_HIv2___TS.g12304.t1","Pocillopora_acuta_HIv2___TS.g1545.t1b")
+genes_biomin  <- c("Pocillopora_acuta_HIv2___RNAseq.g15280.t1","Pocillopora_acuta_HIv2___RNAseq.g7402.t1" , "Pocillopora_acuta_HIv2___RNAseq.g16280.t1","Pocillopora_acuta_HIv2___RNAseq.g13823.t1" ,"Pocillopora_acuta_HIv2___RNAseq.g13824.t1" , "Pocillopora_acuta_HIv2___RNAseq.g28226.t2","Pocillopora_acuta_HIv2___TS.g12304.t1","Pocillopora_acuta_HIv2___TS.g1545.t1b")
 
-names_biomin <- c("SLC4 gamma", "sodium bicarbonate cotransporter 3-like isoform X2", "CARP1", "mucin4-like protein", "carbonic anhydrase (STPCA2-2)", "von Willebrand factor D and EGF domain-containing protein-like", "Cephalotoxin-like protein", "Carbonic Anhydrase (STPCA2-1)", "USOMP-2")
+names_biomin <- c("SLC4 gamma", "sodium bicarbonate cotransporter 3-like isoform X2", "CARP1", "mucin4-like protein", "carbonic anhydrase (STPCA2-2)", "von Willebrand factor D and EGF domain-containing protein-like",  "Carbonic Anhydrase (STPCA2-1)", "USOMP-2")
 
 label_biomin <- cbind(genes_biomin,names_biomin)
 ```

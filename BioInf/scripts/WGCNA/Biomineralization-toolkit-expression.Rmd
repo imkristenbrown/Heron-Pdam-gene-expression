@@ -348,44 +348,7 @@ g21232_fig<-ggplot(data=g21232_sum, aes(y=Expression, x=Treatment2, color=Origin
 g21232_fig
 ```
 
-### Cephalotoxin-like protein
-```{r}
-biomin_all_filtered_long_g5013 <- biomin_all_filtered_long  %>%
-  filter(Gene == "Pocillopora_acuta_HIv2___RNAseq.g5013.t1")
-biomin_all_filtered_long_g5013  
-```
 
-```{r}
-library(Rmisc)
-g5013_sum<-summarySE(biomin_all_filtered_long_g5013 , measurevar='Expression', groupvars=c('Origin', 'Treatment2'), na.rm=TRUE, conf.interval = 0.95)
-g5013_sum
-```
-
-#### Figure
-```{r}
-pd<- position_dodge(0.2)
-g5013_fig<-ggplot(data=g5013_sum, aes(y=Expression, x=Treatment2, color=Origin),group = interaction(Origin))+
-  geom_point(data=biomin_all_filtered_long_g5013,aes(y=Expression, x=Treatment2, color=Origin), alpha=0.4, position = pd)+
-  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
-  geom_point(size=3, stat="identity", position = pd)+
-  geom_errorbar(aes(ymin=Expression-se, ymax=Expression+se), stat="identity",width=0.2, position = pd)+
-  scale_fill_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  scale_color_manual("Origin", values=c("RS"='#26519B', "RF"= "#FE180C"))+
-  labs(y="Cephalotoxin-like protein")+
-  ggtitle(~MEBrown)+
-  theme_classic()+
-  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
-        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
-        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
-        #strip.background = element_blank(), 
-        #strip.text = element_blank(),
-        legend.title = element_text(vjust=0.5,size=12),
-        legend.position="none",
-        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
-        axis.title.x = element_blank(),#making the axis title larger 
-        axis.title.y = element_text(size=12), plot.margin = unit(c(1,1,1,1), "lines"))#making the axis title larger 
-g5013_fig
-```
 
 ### thioredoxin reductase 1, cytoplasmic-like
 ```{r}
@@ -468,7 +431,7 @@ g13824_fig
 
 ## Comparison of all Brown and Red sig. genes
 ```{r}
-biomin_compare_figs <- cowplot::plot_grid(g12304_fig,g7908_fig,g25351_fig,g13222_fig,g21232_fig, g5013_fig,g10093_fig,g13824_fig,nrow=3)
+biomin_compare_figs <- cowplot::plot_grid(g12304_fig,g7908_fig,g25351_fig,g13222_fig,g21232_fig, g10093_fig,g13824_fig,nrow=3)
 biomin_compare_figs
 
 ggsave(filename="../../output/WGCNA/biomin_Brown_Red_compare_figs.png", plot=biomin_compare_figs, dpi=300, height=8, units="in", limitsize=FALSE)
@@ -577,7 +540,7 @@ g16715_fig
 
 ## Comparison of all Origin sig. genes of the Biomineralization toolkit
 ```{r}
-biomin_compare_figs <- cowplot::plot_grid(g25351_fig,g13222_fig,g21232_fig, g5013_fig,g10093_fig,g13824_fig,g12304_fig,g7908_fig,g20587_fig,g16715_fig,ncol=5)
+biomin_compare_figs <- cowplot::plot_grid(g25351_fig,g13222_fig,g21232_fig, g10093_fig,g13824_fig,g12304_fig,g7908_fig,g16715_fig,g20587_fig,ncol=5)
 biomin_compare_figs
 
 ggsave(filename="../../output/WGCNA/biomin_Brown_Red_nonMod_compare_figs.png", plot=biomin_compare_figs, dpi=300, height=8, width=16, units="in")
