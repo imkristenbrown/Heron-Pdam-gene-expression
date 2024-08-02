@@ -27,11 +27,12 @@ _"Ocean acidification is a growing threat to coral growth and the accretion of c
 **WGCNA analysis**
 - [WGCNA Script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/WGCNA/WGCNA.Rmd)
 - [GO Enrichment Script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/WGCNA/GO%20analysis.Rmd)
-- [Outputs]
+- [Outputs](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/WGCNA)
   - [**Figure 3**](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/WGCNA/Both_with%20phys%20and%20pHi_heatmap_new_row_clust.pdf)
   - **Figure 4**
     - [GO plots](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/WGCNA/GO_analysis/Parent_by_mod)
-    - [Eigengene plots]()
+    - [Eigengene plots](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/WGCNA/eigengene_plots)
+  - [**Figure S2**]()
 
 **glmmSeq differential expression and frontloading analysis**
 - [glmmSeq script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/glmmSeq/analysis/glmmSeq.Rmd)
@@ -47,6 +48,8 @@ _"Ocean acidification is a growing threat to coral growth and the accretion of c
 - [BLAST Script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/glmmSeq/analysis/Biomineralization_Toolkit_Analysis.Rmd)
 - [Expression Plotting Script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/WGCNA/Biomineralization-toolkit-expression.Rmd)
 - [Outputs]
+  - [**Figure 5**](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/glmmseq/frontloaded_figures)
+  - [**Figure 6**](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/WGCNA/biomin/biomin_Brown_Red_nonMod_compare_figs.pdf)
 
 **Biomineralization-related genes ([Scucchia et al., 2021](https://doi.org/10.1111/gcb.15812); [Scucchia et al., 2021](https://doi.org/10.1098/rspb.2021.0328))**
 - [Excel file](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/data/Biomineralization_Toolkit_FScucchia/Biomineralization_Toolkit_FScucchia.xlsx)
