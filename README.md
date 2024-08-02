@@ -28,11 +28,11 @@ _"Ocean acidification is a growing threat to coral growth and the accretion of c
 - [WGCNA Script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/WGCNA/WGCNA.Rmd)
 - [GO Enrichment Script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/WGCNA/GO%20analysis.Rmd)
 - [Outputs](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/WGCNA)
+  - [GO Enrichment](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/WGCNA/GO_analysis)
   - [**Figure 3**](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/WGCNA/Both_with%20phys%20and%20pHi_heatmap_new_row_clust.pdf)
   - **Figure 4**
     - [GO plots](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/WGCNA/GO_analysis/Parent_by_mod)
     - [Eigengene plots](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/WGCNA/eigengene_plots)
-  - [**Figure S2**]()
 
 **glmmSeq differential expression and frontloading analysis**
 - [glmmSeq script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/glmmSeq/analysis/glmmSeq.Rmd)
@@ -42,12 +42,23 @@ _"Ocean acidification is a growing threat to coral growth and the accretion of c
   - [DE by Treatment](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/glmmSeq/analysis/DEG_Trt_Enrich.Rmd)
   - [DE by Interaction](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/glmmSeq/analysis/DEG_Int_Enrich.Rmd)
   - [Frontloaded](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/glmmSeq/analysis/Frontloaded_Enrich.Rmd)
-- [Outputs]
+- [Outputs](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/glmmseq)
+  - [Differential expression results, all genes](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/glmmseq/signif_genes.csv)
+  - [Differentially expressed genes](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/glmmseq/DEGs)
+  - [Frontloaded genes](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/glmmseq/frontloaded_genes.csv)
+  - [GO Enrichment for DEGs](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/glmmseq/GOSeq)
+    - [DE by Origin](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/glmmseq/GOSeq/GOseq_DEG_Origin.csv)
+    - [DE by Treatment](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/glmmseq/GOSeq/Treatment/GOseq_DEG_Treatment.csv)
+    - [DE by Interaction](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/glmmseq/GOSeq/Interaction/GOseq_DEG_Interaction.csv)
+  - [GO Enrichment Frontloaded](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/glmmseq/Frontloaded_GOSeq)
+    - [Results](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/glmmseq/Frontloaded_GOSeq/GOseq_Frontloaded.csv)
 
 **Analysis of biomineralization-related genes**
 - [BLAST Script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/glmmSeq/analysis/Biomineralization_Toolkit_Analysis.Rmd)
+  - [BLAST Results](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/Biomineralization_blast_results.txt)
+  - [Best hit table](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/Biomin_blast_Pocillopora_acuta_best_hit.csv)
 - [Expression Plotting Script](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/scripts/WGCNA/Biomineralization-toolkit-expression.Rmd)
-- [Outputs]
+- Outputs
   - [**Figure 5**](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/tree/master/BioInf/output/glmmseq/frontloaded_figures)
   - [**Figure 6**](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/output/WGCNA/biomin/biomin_Brown_Red_nonMod_compare_figs.pdf)
 
