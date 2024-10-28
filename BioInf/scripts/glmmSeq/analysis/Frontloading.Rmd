@@ -9,13 +9,13 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-This is a Rmd file analyzing our raw count data by the glmmSeq package as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html) and [manual](https://cran.r-project.org/web/packages/glmmSeq/glmmSeq.pdf).
+This is a Rmd file analyzing our predicted gene expression data which was analyzed with the glmmSeq package as described in the [vignette](https://cran.r-project.org/web/packages/glmmSeq/vignettes/glmmSeq.html) and [manual](https://cran.r-project.org/web/packages/glmmSeq/glmmSeq.pdf).
 
 ```{r}
 sessionInfo() #provides list of loaded packages and version of R. I still have version 4.1 for now.
 ```
 
-```{r cars}
+```{r}
 library(dplyr)
 library(reshape2)
 sessionInfo() #list of packages after library-ing these packages
@@ -53,7 +53,7 @@ coldata <- coldata %>% filter(Coral_ID != c("RF16A","RF16C")) #removed outlier r
 head(coldata)
 ```
 
-## Whole dataset: All 9011 genes
+## Frontloading analysis, based on Sam Gurr's Script: https://github.com/SamGurr/Pgenerosa_OA_TagSeq/blob/e3f27237009d0316533d1548134a1b88a7b86d89/TagSeq/Analysis/Scripts/DE_frontloading.R from *Gurr, S. J., Trigg, S. A., Vadopalas, B., Roberts, S. B., & Putnam, H. M. (2022). Acclimatory gene expression of primed clams enhances robustness to elevated pCO2. Molecular Ecology, 31(19), 5005–5023. https://doi.org/10.1111/mec.16644*
 
 ```{r}
 melted <- DEGs %>% dplyr::select(c('Gene',coldata$Coral_ID)) %>%  #keep only the columns with the gene name and normalized count per sample
@@ -84,14 +84,7 @@ READY <- glmmSeq_predict %>%
 They are close but not exactly the same #s. Let's stick with the glmmSeq values.
 
 ```{r}
-# we have our final dataset ready to rock! 'READY' :-) 
-# lets calculate the x and y axis of the frontloading figure following Barshis et al. 2013 criteria 
-
-# X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
-# [ (MM/MA) / (AM/AA) ]
-
 #for our purposes, conditioned = Flat and naive = Slope, Ambient = Stable, and Moderate = Variable
-
 
 # X axis - this is the relative fold ratio of the conditioned-control to the naive-control as the following: 
 # [ (Variable_Flat/Stable_Flat) / (Variable_Slope/Stable_Slope) ]
@@ -114,10 +107,9 @@ READY$xall_2 <- xall_2
 READY$xall_3 <- xall_3
 
 # Y Axis - this is simply the conditioned control over the naive control 
-# ( MA / AA ) 
 
 # lets calculate it 
-yall <- (READY$y_Stable_Flat / READY$y_Stable_Slope)
+yall <- (READY$y_Variable_Flat / READY$y_Stable_Slope)
 
 READY$yall <- yall
 ```
@@ -138,7 +130,6 @@ P_allgenes <- READY %>% #dplyr::filter(yall < 6) %>%
         ggplot(aes(x=xall_1, y=yall)) +
         geom_point(colour = READY$color) +
         theme_classic() + 
-        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
         geom_hline(yintercept=1, linetype="dotted") + 
         labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
@@ -149,20 +140,19 @@ P_allgenes <- READY %>% #dplyr::filter(yall < 6) %>%
 
 P_allgenes
 
-READY_cutoff <- READY %>% dplyr::filter(yall < 6) %>% dplyr::filter(xall_1 < 6)
+READY_cutoff <- READY %>% dplyr::filter(yall < 20) %>% dplyr::filter(xall_1 < 6)
 
 P <- READY_cutoff %>% 
         ggplot(aes(x=xall_1, y=yall)) +
         geom_point(colour = READY_cutoff$color) +
         theme_classic() + 
-        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
         geom_hline(yintercept=1, linetype="dotted") + 
         labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
              x = "Flat to Slope (Conditioned to naive) foldchange ratio",
              title = "Frontloaded genes") + 
-        scale_x_continuous(limits = c(0,6.1),expand = c(0, 0)) + scale_y_continuous(limits = c(0,6.1), expand = c(0, 0)) + 
-        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 6.1, alpha = .2) + 
+        scale_x_continuous(limits = c(0,6.1),expand = c(0, 0)) + scale_y_continuous(limits = c(0,15.1), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 15.1, alpha = .2) + 
         annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5)
 
 P
@@ -189,7 +179,6 @@ P_allgenes <- READY %>% #dplyr::filter(yall < 6) %>%
         ggplot(aes(x=xall_1, y=yall)) +
         geom_point(colour = READY$color) +
         theme_classic() + 
-        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
         geom_hline(yintercept=1, linetype="dotted") + 
         labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
@@ -209,7 +198,6 @@ P <- READY_cutoff %>%
         geom_point(data = subset(READY_cutoff, READY_cutoff$color == "purple"), colour = subset(READY_cutoff$color, READY_cutoff$color == "purple"), alpha = 0.8) +
         geom_point(data = subset(READY_cutoff, READY_cutoff$color == "red"), colour = subset(READY_cutoff$color, READY_cutoff$color == "red"), alpha = 0.8) +
         theme_classic() + 
-        stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
         geom_hline(yintercept=1, linetype="dotted") + 
         labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
@@ -237,7 +225,7 @@ dim(P_frontloaded)
 head(P_frontloaded$Gene)
 ```
 
-2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
+2309 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
 
 ```{r}
 P_frontloaded_genes <- DEGs[which(DEGs$Gene %in% P_frontloaded$Gene),]
@@ -302,16 +290,16 @@ group_summary <- vst_summary %>%
 
 # anova
 ANOVA_moderate <- aov(lm(mean_val~as.character(group), data = vst_summary))
-summary(ANOVA_moderate) # as.character(group)      3     31  10.219   18.67 4.52e-12 ***
+summary(ANOVA_moderate) # as.character(group)      3     33  10.845   18.47 6.04e-12 ***
 TukeyHSD(ANOVA_moderate)
 
 #                                     diff         lwr         upr     p adj
-# Stable_Slope-Stable_Flat     -0.14750296 -0.19992035 -0.09508557 0.0000000
-# Variable_Flat-Stable_Flat    -0.04063634 -0.09305374  0.01178105 0.1910111
-# Variable_Slope-Stable_Flat   -0.07025845 -0.12267584 -0.01784106 0.0032262
-# Variable_Flat-Stable_Slope    0.10686662  0.05444923  0.15928401 0.0000010
-# Variable_Slope-Stable_Slope   0.07724451  0.02482712  0.12966190 0.0008842
-# Variable_Slope-Variable_Flat -0.02962211 -0.08203950  0.02279528 0.4668439
+# Stable_Slope-Stable_Flat     -0.15591040 -0.21384981 -0.097971003 0.0000000
+# Variable_Flat-Stable_Flat    -0.02442516 -0.08236456  0.033514246 0.6998340
+# Variable_Slope-Stable_Flat   -0.06595770 -0.12389710 -0.008018296 0.0181381
+# Variable_Flat-Stable_Slope    0.13148525  0.07354585  0.189424651 0.0000000
+# Variable_Slope-Stable_Slope   0.08995271  0.03201330  0.147892109 0.0003886
+# Variable_Slope-Variable_Flat -0.04153254 -0.09947194  0.016406860 0.2537399
 
 
 #Chi squre test
@@ -325,12 +313,12 @@ posthoc_results <- pairs(lsmeans_results)
 posthoc_results
 
  # contrast                       estimate     SE    df t.ratio p.value
- # Stable_Flat - Stable_Slope       0.1475 0.0204 10520   7.230  <.0001
- # Stable_Flat - Variable_Flat      0.0406 0.0204 10520   1.992  0.1910
- # Stable_Flat - Variable_Slope     0.0703 0.0204 10520   3.444  0.0032
- # Stable_Slope - Variable_Flat    -0.1069 0.0204 10520  -5.238  <.0001
- # Stable_Slope - Variable_Slope   -0.0772 0.0204 10520  -3.786  0.0009
- # Variable_Flat - Variable_Slope   0.0296 0.0204 10520   1.452  0.4668
+ # Stable_Flat - Stable_Slope       0.1559 0.0225 9232   6.914  <.0001
+ # Stable_Flat - Variable_Flat      0.0244 0.0225 9232   1.083  0.6998
+ # Stable_Flat - Variable_Slope     0.0660 0.0225 9232   2.925  0.0181
+ # Stable_Slope - Variable_Flat    -0.1315 0.0225 9232  -5.831  <.0001
+ # Stable_Slope - Variable_Slope   -0.0900 0.0225 9232  -3.989  0.0004
+ # Variable_Flat - Variable_Slope   0.0415 0.0225 9232   1.842  0.2537
 
 #######
 
@@ -353,15 +341,15 @@ P2 <- ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group
                            x = "Treatment",
                            title = "Mean VST Expression of Frontloaded Genes") + 
    theme(text = element_text(size=12)) +
-                      scale_y_continuous(limits = c(7.28,7.48), breaks = seq(7.2,7.5, by = .1)) +
-                        annotate(geom="text", x=0.94, y=7.31, label="b", color="black",size=4) +
-                        annotate(geom="text", x=0.94, y=7.46,  label="a", color="black",size=4) +
-                        annotate(geom="text", x=2.06, y=7.39, label="c", color="black",size=4) +
-                        annotate(geom="text", x=2.09, y=7.42,  label="a,c", color="black",size=4) +
-                        annotate(geom="text", x = 2.1, y = 7.3, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
+                      scale_y_continuous(limits = c(7.32,7.52), breaks = seq(7.3,7.5, by = .05)) +
+                        annotate(geom="text", x=0.93, y=7.345, label="b", color="black",size=4) +
+                        annotate(geom="text", x=0.93, y=7.5025,  label="a", color="black",size=4) +
+                        annotate(geom="text", x=2.07, y=7.435, label="c", color="black",size=4) +
+                        annotate(geom="text", x=2.1, y=7.4775,  label="a,c", color="black",size=4) +
+                        annotate(geom="text", x = 2, y = 7.34, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
 
 P2
-ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/VST_frontloaded.pdf", plot =P2, width= 7, height = 5)
+ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/glmmseq/frontloaded_figures/VST_frontloaded.pdf", plot =P2, width= 7, height = 5)
 ```
 
 
