@@ -1,0 +1,595 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(Rmisc)
+library(lubridate)
+library(ggplot2)
+library(car)
+library(MASS)
+library(mgcv)
+library(MuMIn)
+library(emmeans)
+```
+
+#Heron pHi skeletal macro-morphology 
+##Macro
+###Number of corallites
+```{r}
+macro<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Skeleton macro-morphology/Macro.csv", strip.white=T)
+macro$Origin<-as.factor(macro$Origin)
+macro$Treatment<-as.factor(macro$Treatment)
+macro$Colony.ID<-as.factor(macro$Colony.ID)
+macro
+```
+
+####Normality
+```{r}
+hist(macro$Number.of.corallites.area.1)
+```
+
+```{r}
+num_cor.lm<- lm(Number.of.corallites.area.1~Origin*Treatment, data=macro) 
+par(mfrow=c(2,3))
+plot(num_cor.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+num_cor.lme <- lme(Number.of.corallites.area.1~Origin*Treatment, random = ~1|Colony.ID, data=macro, na.action=na.exclude)
+car::Anova(num_cor.lme, type=3)
+tukey3<- emmeans(num_cor.lme, list(pairwise ~ Origin:Treatment), adjust = "tukey")
+tukey3
+```
+```{r}
+num_coravg<-summarySE(macro, measurevar='Number.of.corallites.area.1', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+num_coravg
+```
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+num_cor_fig<-ggplot(data=num_coravg, aes(y=Number.of.corallites.area.1, x=Treatment, color=Origin),group = interaction(Origin))+
+  #geom_point(data=diameter,aes(y=Length..cm., x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Number.of.corallites.area.1-se, ymax=Number.of.corallites.area.1+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Number~of~corallites))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+num_cor_fig
+```
+###Corallite diameter
+
+####Normality
+```{r}
+hist(macro$Corallite.diameter..mm.)
+```
+
+```{r}
+cor_diameter.lm<- lm(Corallite.diameter..mm.~Origin*Treatment, data=macro) 
+par(mfrow=c(2,3))
+plot(cor_diameter.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+cor_diameter.lme <- lme(Corallite.diameter..mm.~Origin*Treatment, random = ~1|Colony.ID, data=macro, na.action=na.exclude)
+car::Anova(cor_diameter.lme, type=3)
+tukey3<- emmeans(cor_diameter.lme, list(pairwise ~ Origin:Treatment), adjust = "tukey")
+tukey3
+```
+
+###Distance between corallites
+
+####Normality
+```{r}
+hist(macro$Distance.between.corallites..mm.)
+```
+
+```{r}
+cor_distance.lm<- lm(Distance.between.corallites..mm.~Origin*Treatment, data=macro) 
+par(mfrow=c(2,3))
+plot(cor_distance.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+cor_distance.lme <- lme(Distance.between.corallites..mm.~Origin*Treatment, random = ~1|Colony.ID, data=macro, na.action=na.exclude)
+car::Anova(cor_distance.lme, type=3)
+tukey3<- emmeans(cor_distance.lme, list(pairwise ~ Origin:Treatment), adjust = "tukey")
+tukey3
+```
+
+```{r}
+distanceavg<-summarySE(macro, measurevar='Distance.between.corallites..mm.', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+distanceavg
+```
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+distance_fig<-ggplot(data=distanceavg, aes(y=Distance.between.corallites..mm., x=Treatment, color=Origin),group = interaction(Origin))+
+  #geom_point(data=diameter,aes(y=Length..cm., x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Distance.between.corallites..mm.-se, ymax=Distance.between.corallites..mm.+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Septa~thickness~(mm)))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+distance_fig
+```
+```{r}
+figure_test<-ggplot(macro, aes(y=Distance.between.corallites..mm., x=Corallite.diameter..mm., color=Origin, fill=Origin, shape=Treatment))+ 
+  geom_point(alpha=0.4)+
+  geom_smooth(method="lm")+
+  #geom_smooth(method="gam", formula = y ~ s(x, bs = "cs", k=3))+
+  #geom_boxplot(aes(group = interaction(Date,Bleach), stat="identity"), alpha=0.7,  outlier.shape = NA)+
+  facet_wrap(~Treatment, scales="free")+
+  #scale_x_date(date_breaks = "4 months", date_labels = "%b %y")+ 
+  scale_y_continuous(expression(Septa~thickness~(mm)))+
+  scale_x_continuous(expression(Corallite~diameter~(mm)))+
+scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5, size=12),
+        axis.text.y=element_text(vjust=0.5, size=12),
+        axis.title.x=element_text(size=12),
+        axis.title.y=element_text(size=12),
+        legend.text = element_text(vjust=0.5, size=12),
+        #legend.position="none",
+        panel.background= element_rect(fill=NA, color='black'),
+        strip.text = element_text(size=12))
+figure_test
+```
+
+##Polyp
+###Corallite diameter
+```{r}
+polyp<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Skeleton macro-morphology/Polyp.csv", strip.white=T)
+polyp$Origin<-as.factor(polyp$Origin)
+polyp$Treatment<-as.factor(polyp$Treatment)
+polyp$Colony.ID<-as.factor(polyp$Colony.ID)
+polyp
+```
+
+####Normality
+```{r}
+hist(polyp$Corallite.diameter..um.)
+```
+
+```{r}
+cor_diameter2.lm<- lm(Corallite.diameter..um.~Origin*Treatment, data=polyp) 
+par(mfrow=c(2,3))
+plot(cor_diameter2.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+cor_diameter2.lme <- lme(Corallite.diameter..um.~Origin*Treatment, random = ~1|Colony.ID, data=polyp, na.action=na.exclude)
+car::Anova(cor_diameter2.lme, type=3)
+tukey3<- emmeans(cor_diameter2.lme, list(pairwise ~ Origin), adjust = "tukey")
+tukey3
+```
+
+```{r}
+diameteravg<-summarySE(polyp, measurevar='Corallite.diameter..um.', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+diameteravg
+```
+
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+diameter_fig<-ggplot(data=diameteravg, aes(y=Corallite.diameter..um., x=Treatment, color=Origin),group = interaction(Origin))+
+  #geom_point(data=diameter,aes(y=Length..cm., x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Corallite.diameter..um.-se, ymax=Corallite.diameter..um.+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Corallite~diameter~(mu~m)))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+diameter_fig
+```
+
+###Circularity
+####Normality
+```{r}
+hist(polyp$Circularity)
+```
+
+```{r}
+cor_circle.lm<- lm(Circularity~Origin*Treatment, data=polyp) 
+par(mfrow=c(2,3))
+plot(cor_circle.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+cor_circle.lme <- lme(Circularity~Origin*Treatment, random = ~1|Colony.ID, data=polyp, na.action=na.exclude)
+car::Anova(cor_circle.lme, type=3)
+tukey3<- emmeans(cor_circle.lme, list(pairwise ~ Origin:Treatment), adjust = "tukey")
+tukey3
+```
+```{r}
+cor_circleavg<-summarySE(polyp, measurevar='Circularity', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+cor_circleavg
+```
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+cor_circle_fig<-ggplot(data=cor_circleavg, aes(y=Circularity, x=Treatment, color=Origin),group = interaction(Origin))+
+  #geom_point(data=diameter,aes(y=Length..cm., x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Circularity-se, ymax=Circularity+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Circularity~of~corallites))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+cor_circle_fig
+```
+##Spines in calyx
+###Number of spines within calyx
+```{r}
+sc<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Skeleton macro-morphology/Spines in calyx.csv", strip.white=T)
+sc$Origin<-as.factor(sc$Origin)
+sc$Treatment<-as.factor(sc$Treatment)
+sc$Colony.ID<-as.factor(sc$Colony.ID)
+sc$Spine.width..um.<-as.numeric(sc$Spine.width..um.)
+sc
+```
+
+####Normality
+```{r}
+hist(sc$Number.of.spines.within.calyx)
+```
+
+```{r}
+num_calyx.lm<- lm(Number.of.spines.within.calyx~Origin*Treatment, data=sc) 
+par(mfrow=c(2,3))
+plot(num_calyx.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+num_calyx.lme <- lme(Number.of.spines.within.calyx~Origin*Treatment, random = ~1|Colony.ID, data=sc, na.action=na.exclude)
+car::Anova(num_calyx.lme, type=3)
+tukey3<- emmeans(num_calyx.lme, list(pairwise ~ Origin), adjust = "tukey")
+tukey3
+```
+```{r}
+num_calyxavg<-summarySE(sc, measurevar='Number.of.spines.within.calyx', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+num_calyxavg
+```
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+num_calyx_fig<-ggplot(data=num_calyxavg, aes(y=Number.of.spines.within.calyx, x=Treatment, color=Origin),group = interaction(Origin))+
+  #Spigeom_point(data=spine,aes(y=Number.of.RADs.on.spine, x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Number.of.spines.within.calyx-se, ymax=Number.of.spines.within.calyx+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Number~of~spines~within~calyx), limits=c(0,30))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+num_calyx_fig
+```
+###Spine length
+####Normality
+```{r}
+hist(sc$Spine.length..um.)
+```
+
+```{r}
+spine_length.lm<- lm(Spine.length..um.~Origin*Treatment, data=sc) 
+par(mfrow=c(2,3))
+plot(spine_length.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+spine_length.lme <- lme(Spine.length..um.~Origin*Treatment, random = ~1|Colony.ID, data=sc, na.action=na.exclude)
+car::Anova(spine_length.lme, type=3)
+tukey3<- emmeans(spine_length.lme, list(pairwise ~ Origin), adjust = "tukey")
+tukey3
+```
+
+###Spine width
+####Normality
+```{r}
+hist(sc$Spine.width..um.)
+```
+
+```{r}
+spine_width.lm<- lm(Spine.width..um.~Origin*Treatment, data=sc) 
+par(mfrow=c(2,3))
+plot(spine_width.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+spine_width.lme <- lme(Spine.width..um.~Origin*Treatment, random = ~1|Colony.ID, data=sc, na.action=na.exclude)
+car::Anova(spine_width.lme, type=3)
+tukey3<- emmeans(spine_width.lme, list(pairwise ~ Origin), adjust = "tukey")
+tukey3
+```
+
+##Spines between calyx
+###Spine length
+```{r}
+sbc<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Skeleton macro-morphology/Spines between calyx.csv", strip.white=T)
+sbc$Origin<-as.factor(sbc$Origin)
+sbc$Treatment<-as.factor(sbc$Treatment)
+sbc$Colony.ID<-as.factor(sbc$Colony.ID)
+sbc
+```
+
+####Normality
+```{r}
+hist(sbc$Spine.length..mm.)
+```
+
+```{r}
+spine_length.lm<- lm(Spine.length..mm.~Origin*Treatment, data=sbc) 
+par(mfrow=c(2,3))
+plot(spine_length.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+spine_length.lme <- lme(Spine.length..mm.~Origin*Treatment, random = ~1|Colony.ID, data=sbc, na.action=na.exclude)
+car::Anova(spine_length.lme, type=3)
+tukey3<- emmeans(spine_length.lme, list(pairwise ~ Treatment), adjust = "tukey")
+tukey3
+```
+```{r}
+spine_lengthavg<-summarySE(sbc, measurevar='Spine.length..mm.', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+spine_lengthavg
+```
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+spine_length_fig<-ggplot(data=spine_lengthavg, aes(y=Spine.length..mm., x=Treatment, color=Origin),group = interaction(Origin))+
+  #Spigeom_point(data=spine,aes(y=Number.of.RADs.on.spine, x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Spine.length..mm.-se, ymax=Spine.length..mm.+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Septa~spine~length~(mm)))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+spine_length_fig
+```
+
+##Spine width
+####Normality
+```{r}
+hist(sbc$Spine.width..mm.)
+```
+
+```{r}
+spine_width.lm<- lm(Spine.width..mm.~Origin*Treatment, data=sbc) 
+par(mfrow=c(2,3))
+plot(spine_width.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+spine_width.lme <- lme(Spine.width..mm.~Origin*Treatment, random = ~1|Colony.ID, data=sbc, na.action=na.exclude)
+car::Anova(spine_width.lme, type=3)
+tukey3<- emmeans(spine_width.lme, list(pairwise ~ Treatment), adjust = "tukey")
+tukey3
+```
+```{r}
+spine_widthavg<-summarySE(sbc, measurevar='Spine.width..mm.', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+spine_widthavg
+```
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+spine_width_fig<-ggplot(data=spine_widthavg, aes(y=Spine.width..mm., x=Treatment, color=Origin),group = interaction(Origin))+
+  #Spigeom_point(data=spine,aes(y=Number.of.RADs.on.spine, x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Spine.width..mm.-se, ymax=Spine.width..mm.+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Septa~spine~width~(mm)))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+spine_width_fig
+```
+##Spine
+###Number of RADs on spine
+```{r}
+spine<-read.csv("/Users/imkri/Desktop/Penn Postdoc/Heron experiment/Skeleton macro-morphology/spine.csv", strip.white=T)
+spine$Origin<-as.factor(spine$Origin)
+spine$Treatment<-as.factor(spine$Treatment)
+spine$Colony.ID<-as.factor(spine$Colony.ID)
+spine
+```
+
+####Normality
+```{r}
+hist(spine$Number.of.RADs.on.spine)
+```
+
+```{r}
+num_rad_spine.lm<- lm(Number.of.RADs.on.spine~Origin*Treatment, data=spine) 
+par(mfrow=c(2,3))
+plot(num_rad_spine.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+num_rad_spine.lme <- lme(Number.of.RADs.on.spine~Origin*Treatment, random = ~1|Colony.ID, data=spine, na.action=na.exclude)
+car::Anova(num_rad_spine.lme, type=3)
+tukey3<- emmeans(num_rad_spine.lme, list(pairwise ~ Treatment), adjust = "tukey")
+tukey3
+tukey3<- emmeans(num_rad_spine.lme, list(pairwise ~ Origin), adjust = "tukey")
+tukey3
+```
+```{r}
+num_rad_spineavg<-summarySE(spine, measurevar='Number.of.RADs.on.spine', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+num_rad_spineavg
+```
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+num_rad_spine_fig<-ggplot(data=num_rad_spineavg, aes(y=Number.of.RADs.on.spine, x=Treatment, color=Origin),group = interaction(Origin))+
+  #geom_point(data=spine,aes(y=Number.of.RADs.on.spine, x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Number.of.RADs.on.spine-se, ymax=Number.of.RADs.on.spine+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Number~of~RADs~spine^-1))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+num_rad_spine_fig
+```
+
+###Area of RAD
+####Normality
+```{r}
+hist(spine$Area.of.RAD..um.)
+```
+
+```{r}
+area_rad_spine.lm<- lm(Area.of.RAD..um.~Origin*Treatment, data=spine) 
+par(mfrow=c(2,3))
+plot(area_rad_spine.lm, ask=FALSE, which=1:6)
+```
+
+####Stats
+```{r}
+area_rad_spine.lme <- lme(Area.of.RAD..um.~Origin*Treatment, random = ~1|Colony.ID, data=spine, na.action=na.exclude)
+car::Anova(area_rad_spine.lme, type=3)
+tukey3<- emmeans(area_rad_spine.lme, list(pairwise ~ Origin:Treatment), adjust = "tukey")
+tukey3
+```
+
+```{r}
+area_rad_spineavg<-summarySE(spine, measurevar='Area.of.RAD..um.', groupvars=c('Origin', 'Treatment'), na.rm=TRUE, conf.interval = 0.95)
+area_rad_spineavg
+```
+####Figure
+```{r}
+pd<- position_dodge(0.2)
+area_rad_spine_fig<-ggplot(data=area_rad_spineavg, aes(y=Area.of.RAD..um., x=Treatment, color=Origin),group = interaction(Origin))+
+  #geom_point(data=spine,aes(y=Area.of.RAD..um., x=Treatment, color=Origin), alpha=0.2, position = pd)+
+  geom_line(aes(group = interaction(Origin), stat="identity"),position=position_dodge(0.2))+
+  geom_point(size=3, stat="identity", position = pd)+
+  geom_errorbar(aes(ymin=Area.of.RAD..um.-se, ymax=Area.of.RAD..um.+se), stat="identity",width=0.2, position = pd)+
+  scale_fill_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_color_manual("Origin", values=c("Reef slope"='#26519B', "Reef flat"= "#FE180C"))+
+  scale_y_continuous(expression(Size~of~RADs~on~spine~(mu~m)), limits=c(12,22))+
+  theme_classic()+
+  theme(axis.text.x=element_text(vjust=0.5,size=12),#angling the labels on the x-axis
+        plot.title = element_text(margin = margin(t = 10, b = 10), hjust=0.5),#telling it where to position our plot title
+        panel.background= element_rect(fill=NA, color='black'),#this is making the black box around the graph
+        #strip.background = element_blank(), 
+        #strip.text = element_blank(),
+        legend.title = element_text(vjust=0.5,size=12),
+        legend.position="none",
+        axis.text.y = element_text(vjust=0.5, size=12), #making the axis text larger 
+        axis.title.x = element_blank(),#making the axis title larger 
+        axis.title.y = element_text(size=12))#making the axis title larger 
+area_rad_spine_fig
+```
+
+```{r}
+csfigs<-cowplot::plot_grid(diameter_fig,distance_fig,spine_length_fig,num_rad_spine_fig,area_rad_spine_fig,  ncol=3, nrow=3)
+csfigs
+```
+
+```{r}
+csfigs_supp<-cowplot::plot_grid(num_cor_fig,cor_circle_fig,num_calyx_fig,num_rad_spine_fig,spine_width_fig,num_cor_fig,cor_circle_fig,num_calyx_fig,num_rad_spine_fig,spine_width_fig,  ncol=3, nrow=6)
+csfigs_supp
+```
+
+
