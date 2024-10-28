@@ -37,7 +37,7 @@ sessionInfo() #list of packages after library-ing these packages
 ```
 
 
-2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
+2309 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
 
 ```{r}
 DEGs <- read.csv(file="../../../output/glmmseq/signif_genes_normcts.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
@@ -91,12 +91,12 @@ LENGTH.vector <- as.integer(geneInfo$Length)
 
 
 #### THIS IS WHERE THE FRONTLOADING NEEDS TO COME IN
-#2631 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
+#2309 genes are frontloaded, with a yall ratio larger than 1 and a xall_1 ratio less than 1.
 
 
 FRONTs <- read.csv(file="../../../output/glmmseq/frontloaded_genes.csv", sep=',', header=TRUE)  %>% dplyr::select(!c('X'))
 
-### Generate vector with names of the 2631 frontloaded genes
+### Generate vector with names of the 2309 frontloaded genes
 ID.vector <- geneInfo %>%
   filter(gene_id %in% FRONTs$Gene) %>%
   pull(gene_id)
@@ -123,9 +123,9 @@ pwf <- nullp(gene.vector, bias.data = LENGTH.vector)
 ```
 
 ```{r}
-#how many go terms from the 2631 genes
+#how many go terms from the 2309 genes
 
-##Get a list of GO Terms for the 2631 frontloaded genes
+##Get a list of GO Terms for the 2309 frontloaded genes
 GO.terms_front <- geneInfo %>% filter(gene_id %in% FRONTs$Gene) %>%
   dplyr::select(gene_id, Annotation.GO.ID)
 
