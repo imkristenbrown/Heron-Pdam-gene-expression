@@ -14,6 +14,9 @@ _"Ocean acidification is a growing threat to coral growth and the accretion of c
 - [Metadata (Origin/Treatment) for all samples](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/TagSeq_Submission/RNA%20Submission%20Sample%20List%20metadata.csv)
 - [Physiological Data](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/BioInf/data/Heron%20pHi%20coral%20physiology%20and%20respirometry%20R_reduced.csv) from [Brown et al., 2022](https://royalsocietypublishing.org/doi/10.1098/rspb.2022.0941)
 
+**Scanning Electron Microscopy (SEM) data analyses**
+- **Figure 2**
+  
 **Summary of all laboratory work for DNA/RNA extraction:**
 - [DNA/RNA Extractions](https://github.com/imkristenbrown/Heron-Pdam-gene-expression/blob/master/Project-Summary-Barott-and-Brown-Pdam-RNA-DNA-Extractions.md)
 
