@@ -86,6 +86,7 @@ scp  zdellaert@ssh3.hac.uri.edu:/data/putnamlab/zdellaert/Pdam-TagSeq/blast/Biom
 
 Now, will take the best Pacuta alignment for each Biomineralization Gene and match to the name of that gene and make the dataframe into a format to match with differentially expressed/frontloaded genes or modules.
 
+# R analysis
  
 ```{r}
 sessionInfo() #provides list of loaded packages and version of R. 
@@ -98,14 +99,14 @@ library(ggplot2)
 
 ```{r}
 library(readxl)
-Biomin_genes <- read_excel("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/data/Biomineralization_Toolkit_FScucchia/Biomineralization_Toolkit_FScucchia.xlsx")
+Biomin_genes <- read_excel("../../../data/Biomineralization_Toolkit_FScucchia/Biomineralization_Toolkit_FScucchia.xlsx")
 
 Biomin_genes <- Biomin_genes %>% select(-`blasted protein in Stylophora`)
 ```
 
 
 ```{r}
-Biomin_blast_results <- read.delim("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomineralization_blast_results_tab.txt", header=FALSE) 
+Biomin_blast_results <- read.delim("../../../output/Biomineralization_blast_results_tab.txt", header=FALSE) 
 
 Biomin_blast_results_orig <- Biomin_blast_results %>% select(V1, V2) %>% distinct() 
 
@@ -119,7 +120,7 @@ Biomin_blast_results <- Biomin_blast_results_filt
 merged_data <- Biomin_genes %>%
   inner_join(Biomin_blast_results, by = c("accessionnumber/geneID" = "V1")) %>% rename("Pocillopora_acuta_best_hit" = "V2")
 
-write.csv(merged_data, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomin_blast_Pocillopora_acuta_best_hit.csv", row.names = F)
+write.csv(merged_data, "../../../output/Biomin_blast_Pocillopora_acuta_best_hit.csv", row.names = F)
 ```
 
 
@@ -150,7 +151,7 @@ Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref)
 #Biomin_genes %>% select(Gene, `accessionnumber/geneID`, definition, Ref, Origin, Treatment, Treatment.Origin) %>% View()
 
 
-write.csv(Biomin_genes, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomin_blast_Pocillopora_acuta_best_hit_glmmSeq.csv", row.names = F)
+write.csv(Biomin_genes, "../../../output/Biomin_blast_Pocillopora_acuta_best_hit_glmmSeq.csv", row.names = F)
 ```
 
 126/172 of the Biomineralization Genes are represented in our dataset of 9011 genes, matching to 64/9011 genes
@@ -257,20 +258,22 @@ FRONTs <- read.csv(file="../../../output/glmmseq/frontloaded_genes.csv", sep=','
 Biomin_FRONTs <- FRONTs %>%
   inner_join(merged_data, by = c("Gene" = "Pocillopora_acuta_best_hit"))
 
-Biomin_FRONTs$definition
-
-length(Biomin_FRONTs$definition)
+length(Biomin_FRONTs$definition) #how many biomineralization genes are represented
 
 Biomin_FRONTs_names <- unique(Biomin_FRONTs$Gene)
 
-length(Biomin_FRONTs_names)
+length(Biomin_FRONTs_names) #how many unique P. acuta genes is this? some match to more than one biomineralization gene
 
-Biomin_FRONTs %>% select(Gene, `accessionnumber/geneID`, definition, Ref) 
+Biomin_FRONTs <- Biomin_FRONTs %>% select(`accessionnumber/geneID`, definition, Ref, Gene) 
+
+#Output list of frontloaded genes with Biomineralization gene info
+
+write.csv(Biomin_FRONTs, "../../../output/Biomin_frontloaded.csv", row.names = F)
 ```
 
-63/172 of the Biomineralization Genes are represented in the Frontloaded genes
+56/172 of the Biomineralization Genes are represented in the Frontloaded genes
 
-This is 28 genes, some of which are mapping to multiple Biomineralization genes, out of the 64 that are matching to Biomineralization Genes (28/64)
+This is 23 genes, some of which are mapping to multiple Biomineralization genes, out of the 56 that are matching to Biomineralization Genes (23/56)
 
 ```{r}
 for (i in Biomin_FRONTs_names) {print(Factor_ggmodelPlot(results,
@@ -291,9 +294,9 @@ READY <- read.csv(file="../../../output/glmmseq/frontloaded_genes_plotting.csv",
 
 READY$color <- rep('gray', nrow(READY))
 #These are "frontloaded, need a different color:
-READY$color[READY$yall > 1 & READY$xall_1 < 1] <- 'gray40'
-READY$color[READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- '#4D004B'
-READY$color[READY$yall > 1 & READY$xall_1 < 1 & READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- '#df74ff'
+READY$color[READY$yall > 1 & READY$xall_1 < 1] <- 'gray40' #frontloaded genes
+READY$color[READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- '#4D004B' #biomin genes
+READY$color[READY$yall > 1 & READY$xall_1 < 1 & READY$Gene %in% merged_data$Pocillopora_acuta_best_hit] <- '#df74ff' #frontloaded biomin genes
 
 READY_cutoff <- READY %>% dplyr::filter(yall < 6) %>% dplyr::filter(xall_1 < 6)
 
@@ -309,7 +312,7 @@ P <- READY_cutoff %>%
             geom_text_repel(data = subset(READY_cutoff, READY_cutoff$color == "#df74ff"), aes(label = Gene),
                             box.padding   = 0.0, 
                             point.padding = 0.0,
-                            segment.color = 'grey50', size=3) + 
+                            segment.color = 'grey50', size=3, max.overlaps = 18) + 
         theme_classic() + 
         stat_smooth(method = "lm", formula = y ~ x + poly(x, 2) - 1) +
         geom_vline(xintercept=1, linetype="dotted") + 
@@ -323,49 +326,56 @@ P <- READY_cutoff %>%
 
 P
 
-ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/Biomin_frontloaded.pdf", plot =P)
+ggsave("../../../output/glmmseq/frontloaded_figures/Biomin_frontloaded.pdf", plot =P)
 ```
 
-Genes to label:
-y > 2
-"Pocillopora_acuta_HIv2___RNAseq.g15280.t1" (SLC4 gamma)
-"Pocillopora_acuta_HIv2___RNAseq.g7402.t1" sodium bicarbonate cotransporter 3-like isoform X2
-"Pocillopora_acuta_HIv2___RNAseq.g16280.t1" CARP1
-"Pocillopora_acuta_HIv2___RNAseq.g13823.t1" mucin4-like protein
+## Choosing genes to label:
 
 ```{r}
-READY %>% filter(Gene %in% Biomin_FRONTs_names) %>% filter (yall >2)
+Biomin_front_labels <- Biomin_FRONTs %>% select(Gene, definition) %>% group_by(Gene) %>%
+  summarise(
+    def = paste(unique(definition), collapse = ";")
+    )
 
-# highest frontloaded biomineralization gene has a y value of ~14
-
-READY %>% filter(Gene %in% Biomin_FRONTs_names) %>% filter (yall >2) %>% select(Gene)
+head(Biomin_front_labels)
 ```
 
-Genes to label:
-y > 2
-"Pocillopora_acuta_HIv2___RNAseq.g15280.t1" (SLC4 gamma)
-"Pocillopora_acuta_HIv2___RNAseq.g7402.t1" sodium bicarbonate cotransporter 3-like isoform X2
-"Pocillopora_acuta_HIv2___RNAseq.g16280.t1" CARP1
-"Pocillopora_acuta_HIv2___RNAseq.g13823.t1" mucin4-like protein
-"Pocillopora_acuta_HIv2___RNAseq.g13824.t1" carbonic anhydrase (STPCA2-2)
-"Pocillopora_acuta_HIv2___RNAseq.g28226.t2" von Willebrand factor D and EGF domain-containing protein-like, partial [Stylophora pistillata]
-"Pocillopora_acuta_HIv2___RNAseq.g5013.t1" Cephalotoxin-like protein
-"Pocillopora_acuta_HIv2___TS.g12304.t1" Carbonic Anhydrase (STPCA2-1)
-"Pocillopora_acuta_HIv2___TS.g1545.t1b" Uncharacterized skeletal organic matrix protein-2  (USOMP-2)
-
 ```{r}
-genes_biomin  <- c("Pocillopora_acuta_HIv2___RNAseq.g15280.t1","Pocillopora_acuta_HIv2___RNAseq.g7402.t1" , "Pocillopora_acuta_HIv2___RNAseq.g16280.t1","Pocillopora_acuta_HIv2___RNAseq.g13823.t1" ,"Pocillopora_acuta_HIv2___RNAseq.g13824.t1" , "Pocillopora_acuta_HIv2___RNAseq.g28226.t2","Pocillopora_acuta_HIv2___TS.g12304.t1","Pocillopora_acuta_HIv2___TS.g1545.t1b")
-
-names_biomin <- c("SLC4 gamma", "sodium bicarbonate cotransporter 3-like isoform X2", "CARP1", "mucin4-like protein", "carbonic anhydrase (STPCA2-2)", "von Willebrand factor D and EGF domain-containing protein-like",  "Carbonic Anhydrase (STPCA2-1)", "USOMP-2")
-
-label_biomin <- cbind(genes_biomin,names_biomin)
+Biomin_front_labels <- Biomin_front_labels %>% left_join(READY, by = "Gene") %>% select(Gene, def, xall_1, yall) %>% arrange(-yall) 
 ```
 
+The highest value for yall of a biomineralization gene is 12.4.
 
-Plotting all points < 20
+We can't label all 23 genes on the plot, so let's choose all the ones with a yall > 1.5 (9 genes)
+
 ```{r}
+max(Biomin_front_labels$yall)
 
-READY_cutoff <- READY %>% dplyr::filter(yall < 20) %>% dplyr::filter(xall_1 < 6)
+Biomin_front_labels_subset <- Biomin_front_labels %>% filter(yall>1.5) 
+nrow(Biomin_front_labels_subset)
+```
+
+```{r}
+names_biomin <- Biomin_front_labels_subset %>% select(def) %>% as.vector()
+names_biomin_modified <- c("Carbonic Anhydrase (STPCA2-2)",
+                           "digestive cysteine proteinase 1-like",
+                           "Late embryogenesis protein",
+                           "von Willebrand factor D and EGF domain-containing protein",
+                           "Hephaestin-like protein",
+                           "Carbonic Anhydrase (STPCA2-1)",
+                           "PKD1-related protein",
+                           "USOMP-2",
+                           "SLC4 gamma")
+
+Biomin_front_labels_subset <- Biomin_front_labels_subset %>% mutate(names_biomin_modified= names_biomin_modified)
+```
+
+Plotting all points < 15
+
+```{r}
+READY_cutoff <- READY %>% dplyr::filter(yall < 15) %>% dplyr::filter(xall_1 < 6) 
+
+READY_cutoff <- READY_cutoff %>% left_join(select(Biomin_front_labels_subset, c(Gene, names_biomin_modified)), by = "Gene") 
 
 P <- READY_cutoff %>% 
         ggplot(aes(x=xall_1, y=yall)) +
@@ -383,24 +393,36 @@ P <- READY_cutoff %>%
         scale_x_continuous(limits = c(0,6.1),expand = c(0, 0)) + scale_y_continuous(limits = c(0,15.1), expand = c(0, 0)) + 
         annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 15.1, alpha = .2) + 
         annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5) +
-            geom_label_repel(data = subset(READY_cutoff, READY_cutoff$Gene %in% genes_biomin), aes(label = Gene),
+            geom_label_repel(data = subset(READY_cutoff, READY_cutoff$Gene %in% Biomin_front_labels_subset$Gene), aes(label = Gene),
                             segment.color = 'black', size=3, nudge_y = 0.5, nudge_x = 1.5, force = 25)
 
 P
 
-ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/Biomin_frontloaded_labelled.pdf", plot =P, width = 7, height = 4)
+ggsave("../../../output/glmmseq/frontloaded_figures/Biomin_frontloaded_labelled.pdf", plot =P, width = 7, height = 4)
+
+P <- READY_cutoff %>% 
+        ggplot(aes(x=xall_1, y=yall)) +
+        #geom_point(colour = READY_cutoff$color, alpha=0.8) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color != "#4D004B"), colour = subset(READY_cutoff$color, READY_cutoff$color != "#4D004B"), alpha = 0.7) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "#4D004B"), colour = subset(READY_cutoff$color, READY_cutoff$color == "#4D004B"), alpha = 1) +
+        geom_point(data = subset(READY_cutoff, READY_cutoff$color == "#df74ff"), colour = subset(READY_cutoff$color, READY_cutoff$color == "#df74ff"), alpha = 1) +
+          #geom_text(data = subset(READY_cutoff, READY_cutoff$color == "#df74ff"), hjust=0, vjust=0)+
+        theme_classic() + 
+        geom_vline(xintercept=1, linetype="dotted") + 
+        geom_hline(yintercept=1, linetype="dotted") + 
+        labs(y= "Flat to Slope (Conditioned to naive) control ratio", 
+             x = "Flat to Slope (Conditioned to naive) foldchange ratio",
+             title = "Frontloaded genes") + 
+        scale_x_continuous(limits = c(0,6.1),expand = c(0, 0)) + scale_y_continuous(limits = c(0,15.1), expand = c(0, 0)) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 1, ymax = 15.1, alpha = .2) + 
+        annotate("rect", xmin = 0, xmax = 1, ymin = 0, ymax = 1,alpha = .5) +
+            geom_label_repel(data = subset(READY_cutoff, READY_cutoff$Gene %in% Biomin_front_labels_subset$Gene), aes(label = names_biomin_modified),
+                            segment.color = 'black', size=3, nudge_y = 0.5, nudge_x = 1.5, force = 25)
+
+P
+
+ggsave("../../../output/glmmseq/frontloaded_figures/Biomin_frontloaded_labelled_definitions.pdf", plot =P, width = 7, height = 4)
 ```
-
-Output lists of frontloaded genes with Biomineralization gene info
-
-```{r}
-Biomin_FRONTs_info <- merged_data %>% filter(merged_data$Pocillopora_acuta_best_hit %in% Biomin_FRONTs_names)
-
-
-write.csv(Biomin_FRONTs_info, "~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Biomin_frontloaded.csv", row.names = F)
-
-```
-
 
 -----
 
@@ -418,10 +440,10 @@ Lets also pull in our metadata
 ```{r}
 coldata <- read.csv("../../../../TagSeq_Submission/RNA Submission Sample List metadata.csv") #read in metadata file
 coldata <- plyr::rename(coldata, c("Sample.Name"="Coral_ID")) #Make a column that represents the colonies
-coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by remobing letters after colony name
-coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
-coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
-coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by remobing letters after colony name
+coldata$Colony <- gsub("A", "", coldata$Coral_ID) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("B", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("C", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
+coldata$Colony <- gsub("D", "", coldata$Colony) #ID which sample is from which colony by removing letters after colony name
 
 coldata$Origin <- factor(coldata$Origin) #set variables to factors
 coldata$Colony <- factor(coldata$Colony) #set variables to factors
@@ -458,16 +480,16 @@ group_summary <- vst_summary %>%
 
 # anova
 ANOVA_moderate <- aov(lm(mean_val~as.character(group), data = vst_summary))
-summary(ANOVA_moderate) # as.character(group)      3    1.4  0.4666   0.154  0.927
+summary(ANOVA_moderate) # as.character(group)      3   1.66   0.554   0.167  0.918
 TukeyHSD(ANOVA_moderate)
 
 #                                    diff        lwr       upr     p adj
-#Stable_Slope-Stable_Flat     -0.28439865 -1.4761351 0.9073378 0.9247110
-#Variable_Flat-Stable_Flat    -0.05615529 -1.2478918 1.1355812 0.9993328
-#Variable_Slope-Stable_Flat   -0.17559153 -1.3673280 1.0161449 0.9806102
-#Variable_Flat-Stable_Slope    0.22824336 -0.9634931 1.4199798 0.9590235
-#Variable_Slope-Stable_Slope   0.10880712 -1.0829293 1.3005436 0.9952236
-#Variable_Slope-Variable_Flat -0.11943624 -1.3111727 1.0723002 0.9937106
+# Stable_Slope-Stable_Flat     -0.34210947 -1.749000 1.064781 0.9198326
+# Variable_Flat-Stable_Flat    -0.05514339 -1.462034 1.351747 0.9996099
+# Variable_Slope-Stable_Flat   -0.21219166 -1.619082 1.194699 0.9789810
+# Variable_Flat-Stable_Slope    0.28696608 -1.119924 1.693856 0.9505021
+# Variable_Slope-Stable_Slope   0.12991781 -1.276973 1.536808 0.9949917
+# Variable_Slope-Variable_Flat -0.15704827 -1.563939 1.249842 0.9912446
 
 
 #Chi squre test
@@ -481,12 +503,12 @@ posthoc_results <- pairs(lsmeans_results)
 posthoc_results
 
  # contrast                       estimate    SE  df t.ratio p.value
- # Stable_Flat - Stable_Slope       0.2844 0.457 112   0.622  0.9247
- # Stable_Flat - Variable_Flat      0.0562 0.457 112   0.123  0.9993
- # Stable_Flat - Variable_Slope     0.1756 0.457 112   0.384  0.9806
- # Stable_Slope - Variable_Flat    -0.2282 0.457 112  -0.499  0.9590
- # Stable_Slope - Variable_Slope   -0.1088 0.457 112  -0.238  0.9952
- # Variable_Flat - Variable_Slope   0.1194 0.457 112   0.261  0.9937
+ # Stable_Flat - Stable_Slope       0.3421 0.537 88   0.637  0.9198
+ # Stable_Flat - Variable_Flat      0.0551 0.537 88   0.103  0.9996
+ # Stable_Flat - Variable_Slope     0.2122 0.537 88   0.395  0.9790
+ # Stable_Slope - Variable_Flat    -0.2870 0.537 88  -0.534  0.9505
+ # Stable_Slope - Variable_Slope   -0.1299 0.537 88  -0.242  0.9950
+ # Variable_Flat - Variable_Slope   0.1570 0.537 88   0.292  0.9912
 
 #######
 
@@ -516,7 +538,7 @@ P2 <- ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group
                         #annotate(geom="text", x=2.09, y=7.42,  label="a,c", color="black",size=4) +
                         annotate(geom="text", x = 2.3, y = 7.9, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
 
-ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/Figures/VST_Biomin_frontloaded.pdf", plot =P2, width= 7, height = 5)
+ggsave("../../../output/glmmseq/frontloaded_figures/VST_Biomin_frontloaded.pdf", plot =P2, width= 7, height = 5)
 ```
 
 

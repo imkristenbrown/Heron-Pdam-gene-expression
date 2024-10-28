@@ -349,7 +349,7 @@ P2 <- ggplot(group_summary, aes(x = Treatment, y = meanExp, fill = Origin, group
                         annotate(geom="text", x = 2, y = 7.34, label=paste("N = ",group_summary$n[1]), size = 5) + guides(fill = FALSE, shape = FALSE)
 
 P2
-ggsave("~/Documents/URI/Heron-Pdam-gene-expression/BioInf/output/glmmseq/frontloaded_figures/VST_frontloaded.pdf", plot =P2, width= 7, height = 5)
+ggsave("../../../output/glmmseq/frontloaded_figures/VST_frontloaded.pdf", plot =P2, width= 7, height = 5)
 ```
 
 
